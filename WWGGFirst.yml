@@ -1,7 +1,7 @@
 tree: myana/mytree
 eras:
   HL-LHC:
-    luminosity: 3E+06 # 1/fb
+    luminosity: 3000000 # 1/fb
 samples:
   GluGluToHHTo2G2Qlnu_node_cHHH0_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL-LHC
@@ -13,7 +13,7 @@ samples:
      - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/GluGluToHHTo2G2Qlnu_node_cHHH0_TuneCP5_14TeV-powheg-pythia8_200PU/GluGluToHHTo2G2Qlnu_node_cHHH0_TuneCP5_14TeV-powheg-pythia8_ntuple_28_0.root
     generated-events: sumgenweight
     cross-section: 7.086E+03 #xs * 1000
-    legend: 'HH \rightarrow WW #gamma#gamma x 10^{3}'
+    legend: 'HH \rightarrow WW #gamma#gamma x 10^{5}'
     line-color: "#260AB3" #blue 
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     era: HL-LHC
@@ -26,7 +26,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 94610
     legend: ' #gamma #gamma + jets'
-    fill-color: "#EBCA5D" 
+    fill-color: "#E2283B"
     order: 1
   #GJet 40toInf:
 
@@ -42,7 +42,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 47340 #not the same in the sheet
     legend: 'W0Jets \rightarrow L#nu'
-    fill-color: "#E2283B" # red
+    fill-color: "#EBCA5D" 
     order: 2
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     era: HL-LHC
@@ -81,7 +81,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 1268 #not the same in the sheet
     legend: 'W3Jets \rightarrow L#nu'
-    fill-color: "#D489FF" # lightpurple #CHANGETHECOLOR
+    fill-color: "#D489FF" 
     order: 5    
 plotIt:
   configuration:
@@ -97,8 +97,8 @@ plotIt:
     log-y: false 
     sort-by-yields: False 
   legend:
-    position: [0.7, 0.7, 1.0, 0.91]
-
+    position: [0.6, 0.5, 1.0, 0.9]
+    
 
 
 
