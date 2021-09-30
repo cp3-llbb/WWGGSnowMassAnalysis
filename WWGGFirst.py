@@ -118,7 +118,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         
         sel3 = sel2.refine("TwoPhOneL", cut = op.OR(op.rng_len(cleanedElectrons) >= 1, op.rng_len(cleanedMuons) >= 1, op.rng_len(cleanedTaus) >= 1))
      
-        sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30)))
+        sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30))) #remove the MET cut here ?
        #plots
        
        #sel1
