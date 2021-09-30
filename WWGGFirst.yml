@@ -23,48 +23,51 @@ samples:
   GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    
+    files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt    
     generated-events: sumgenweight
     cross-section: 998.1 
     legend: 'G+jets'
     fill-color: "#FFFF00"
     order: 2
   W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
     era: HL-LHC
     type: mc
     files: W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 47340 #not the same in the sheet
-    legend: 'W0Jets \rightarrow L#nu'
-    fill-color: "#EBCA5D" 
+    #legend: 'W0Jets \rightarrow L#nu'
+    #fill-color: "#EBCA5D" 
     order: 3
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
     era: HL-LHC
     type: mc
     files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 10370 #not the same in the sheet
-    legend: 'W1Jets \rightarrow L#nu'
-    fill-color: "#40D51A"
+    #legend: 'W1Jets \rightarrow L#nu'
+    #fill-color: "#40D51A"
     order: 4
   W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
     era: HL-LHC
     type: mc
     files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 2965 #not the same in the sheet
-    legend: 'W2Jets \rightarrow L#nu'
-    fill-color: "#1AD5B0" # lightpurple #CHANGETHECOLOR
+    #legend: 'W2Jets \rightarrow L#nu'
+    #fill-color: "#1AD5B0" # lightpurple #CHANGETHECOLOR
     order: 5
   W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
     era: HL-LHC
     type: mc
     files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 1268 #not the same in the sheet
-    legend: 'W3Jets \rightarrow L#nu'
-    fill-color: "#D489FF" 
+    #legend: 'W3Jets \rightarrow L#nu'
+    #fill-color: "#D489FF" 
     order: 6    
 plotIt:
   configuration:
@@ -81,6 +84,10 @@ plotIt:
     sort-by-yields: False 
   legend:
     position: [0.7, 0.6, 1.1, 0.9]
+  groups:
+    WJets:
+      legend: WJets
+      fill-color: "#EDC951"
     
 
 

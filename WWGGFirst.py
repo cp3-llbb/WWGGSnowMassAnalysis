@@ -151,6 +151,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
        #HH invariant mass  
        # plots.append(Plot.make1D("Inv_mass_HH",mHH,sel4,EqB(50, 200.,1000.), title = "m_{HH}"))
 
+
        #yields
         yields = CutFlowReport("yields", recursive=True, printInLog=True)
         plots.append(yields)
