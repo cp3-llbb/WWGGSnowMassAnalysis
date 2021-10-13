@@ -6,26 +6,29 @@ samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL-LHC
     type: signal
-    files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU/GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_ntuple_9_0.root
     generated-events: sumgenweight
-    cross-section: 7086 #xs * 1000
+    cross-section: 0.013 #13 TeV  0.01328454187
     legend: 'HH \rightarrow WW #gamma#gamma x 10^{5}'
     line-color: "#260AB3" #blue 
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     era: HL-LHC
     type: mc
-    files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.txt
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU/DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_ntuple_0_1.root
     generated-events: sumgenweight
-    cross-section: 94610
+    cross-section: 84.4 #13TeV
     legend: ' #gamma#gamma + jets'
     fill-color: "#E2283B"
     order: 1
   GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt    
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_ntuple_9_2.root
     generated-events: sumgenweight
-    cross-section: 998.1 
+    cross-section: 850.8 #13TeV
     legend: 'G+jets'
     fill-color: "#FFFF00"
     order: 2
@@ -33,7 +36,8 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_3.root
     generated-events: sumgenweight
     cross-section: 47340 #not the same in the sheet
     #legend: 'W0Jets \rightarrow L#nu'
@@ -43,9 +47,10 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_1.root
     generated-events: sumgenweight
-    cross-section: 10370 #not the same in the sheet
+    cross-section: 7825.1 #13TeV
     #legend: 'W1Jets \rightarrow L#nu'
     #fill-color: "#40D51A"
     order: 4
@@ -53,9 +58,10 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_1.root
     generated-events: sumgenweight
-    cross-section: 2965 #not the same in the sheet
+    cross-section: 3807.1 #13TeV
     #legend: 'W2Jets \rightarrow L#nu'
     #fill-color: "#1AD5B0" # lightpurple #CHANGETHECOLOR
     order: 5
@@ -63,21 +69,23 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_1.root
     generated-events: sumgenweight
-    cross-section: 1268 #not the same in the sheet
+    cross-section: 991.6 #13TeV
     #legend: 'W3Jets \rightarrow L#nu'
     #fill-color: "#D489FF" 
-    order: 6 
+    order: 6
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_ntuple_107_3.root  
     generated-events: sumgenweight
     cross-section: 864.4 
     legend: t\bar{t} (inclusive)
     fill-color: "#D489FF" 
-    order: 7
+    order: 7    
 plotIt:
   configuration:
     width: 700
@@ -92,11 +100,11 @@ plotIt:
     log-y: false 
     sort-by-yields: False 
   legend:
-    position: [0.7, 0.6, 1.1, 0.9]
+    position: [0.7, 0.6, 1.05, 0.9]
   groups:
     WJets:
       legend: WJets
-      fill-color: "#EDC951"
+      fill-color: "#1AD5B0"
     
 
 

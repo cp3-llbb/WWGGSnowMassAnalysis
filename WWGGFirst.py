@@ -82,16 +82,28 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         ))
         
         identifiedElectrons = op.select(electrons, lambda el : el.idpass & (1<<0) )  #apply loose ID  
-        cleanedElectrons = op.select(identifiedElectrons, lambda el : op.NOT(op.rng_any(photons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4))) #apply a deltaR  
+        cleanedElectrons = op.select(identifiedElectrons, lambda el : op.NOT(op.rng_any(photons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4))) #apply a deltaR 
         
+
         isolatedMuons = op.select(muons, lambda mu : mu.isopass & (1<<2) ) #apply tight ID & isolation
         identifiedMuons = op.select(isolatedMuons, lambda mu : mu.idpass & (1<<2) ) 
+        identifiedmuons = op.select(muons, lambda mu : mu.idpass & (1<<2) ) #this is for ID efficiency
         cleanedMuons = op.select(identifiedMuons, lambda mu : op.NOT(op.rng_any(photons, lambda ph : op.deltaR(mu.p4, ph.p4) < 0.4 )))
-    
+        
+
         isolatedTaus = op.select(taus, lambda ta : ta.isopass & (1<<2) )
        # identifiedTaus = op.select(isolatedTaus, lambda ta : ta.idpass & (1<<2) )
         cleanedTaus = op.select(isolatedTaus, lambda ta : op.NOT(op.rng_any(photons, lambda ph : op.deltaR(ta.p4, ph.p4) < 0.4 )))
-          
+     
+
+        sort_el = op.sort(electrons, lambda el : -el.pt)
+        sorted_el = op.sort(identifiedElectrons, lambda el : -el.pt)
+    
+        sort_mu = op.sort(muons, lambda mu : -mu.pt)
+        sorted_mu = op.sort(isolatedMuons, lambda mu : -mu.pt)
+        sorteD_mu = op.sort(identifiedmuons, lambda mu : -mu.pt) 
+
+
         #select jets with pt>25 GeV end eta in the detector acceptance
         jets = op.select(t.jetpuppi, lambda jet : op.AND(jet.pt > 30., op.abs(jet.eta) < 2.5))
         
@@ -116,9 +128,13 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         sel2 = noSel.refine("Lphoton", cut = op.AND((op.rng_len(sorted_ph) >= 2), (sorted_ph[0].pt > 35.)))
         
-        sel3 = sel2.refine("TwoPhOneL", cut = op.OR(op.rng_len(cleanedElectrons) >= 1, op.rng_len(cleanedMuons) >= 1, op.rng_len(cleanedTaus) >= 1))
+        sel3 = sel2.refine("TwoPhOneL", cut = op.OR(op.rng_len(cleanedElectrons) == 1, op.rng_len(cleanedMuons) == 1))
      
-        sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30))) #remove the MET cut here ?
+        #sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30)))
+        sel4 = sel3.refine("TwoPhLNuTwoJ", cut = (op.rng_len(cleanedJets) >= 2)) 
+
+        sel5 = noSel.refine("OneL", cut = op.AND(op.rng_len(electrons) >= 1))
+
        #plots
        
        #sel1
@@ -136,11 +152,21 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("LeadingPhotonPtSel3", sorted_ph[0].pt, sel3, EqB(30, 0., 250.), title="Leading Photon pT"))
    
         plots.append(Plot.make1D("SubLeadingPhotonPtSel3", sorted_ph[1].pt, sel3, EqB(30, 0., 250.), title="SubLeading Photon pT"))
+
+        #plots.append(Plot.make1D("LeadingElectronPtSel3", cleanedElectrons[0].pt, sel3, EqB(30, 0., 250.), title="Leading Electron pT"))
+
+        #plots.append(Plot.make1D("LeadingMuonPtSel3", cleanedMuons[0].pt, sel3, EqB(30, 0., 250.), title="Leading Muon pT"))
     
        #sel4
         plots.append(Plot.make1D("LeadingPhotonPtSel4", sorted_ph[0].pt, sel4, EqB(30, 0., 250.), title="Leading Photon pT"))
 
         plots.append(Plot.make1D("SubLeadingPhotonPtSel4", sorted_ph[1].pt, sel4, EqB(30, 0., 250.), title="SubLeading Photon pT"))    
+
+       #sel5
+        plots.append(Plot.make1D("LeadingElectronPtNOID", sort_el[0].pt, noSel, EqB(30, 0., 250.), title="Leading Electron pT")) 
+        plots.append(Plot.make1D("LeadingElectronPtID", sorted_el[0].pt, noSel, EqB(30, 0., 250.), title="Leading Electron pT"))
+
+   
 
        #diphoton invariant mass plot
         #plots.append(Plot.make1D("Inv_mass_ggSel1",mGG,sel1,EqB(50, 100.,150.), title = "m_{\gamma\gamma}")) #segmentation error? how?
@@ -160,5 +186,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         yields.add(sel2, title='sel2')
         yields.add(sel3, title='sel3')
         yields.add(sel4, title='sel4')
+        #yields.add(sel5, title='sel5')
 
         return plots
