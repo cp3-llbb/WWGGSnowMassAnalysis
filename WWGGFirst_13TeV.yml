@@ -32,17 +32,17 @@ samples:
     legend: 'G+jets'
     fill-color: "#FFFF00"
     order: 2
-  W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
-    group: WJets
-    era: HL-LHC
-    type: mc
-    files: 
-    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_3.root
-    generated-events: sumgenweight
-    cross-section: 47340 #not the same in the sheet
+  #W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    #group: WJets
+    #era: HL-LHC
+    #type: mc
+    #files: 
+    #- root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_3.root
+    #generated-events: sumgenweight
+    #cross-section: 47340 #not the same in the sheet
     #legend: 'W0Jets \rightarrow L#nu'
     #fill-color: "#EBCA5D" 
-    order: 3
+    #order: 3
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
     era: HL-LHC
@@ -82,7 +82,7 @@ samples:
     files: 
     - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_ntuple_107_3.root  
     generated-events: sumgenweight
-    cross-section: 864.4 
+    cross-section: 830 #13TeV 
     legend: t\bar{t} (inclusive)
     fill-color: "#D489FF" 
     order: 7    
