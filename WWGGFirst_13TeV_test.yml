@@ -6,7 +6,8 @@ samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL-LHC
     type: signal
-    files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU/GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_ntuple_9_0.root
     generated-events: sumgenweight
     cross-section: 0.013 #13 TeV  0.01328454187
     legend: '$ HH \rightarrow \tau\tau\gamma\gamma $'
@@ -14,7 +15,8 @@ samples:
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     era: HL-LHC
     type: mc
-    files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.txt
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU/DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_ntuple_0_1.root
     generated-events: sumgenweight
     cross-section: 84.4 #13TeV
     legend: ' \gamma\gamma + jets'
@@ -24,7 +26,8 @@ samples:
     group: GJet
     era: HL-LHC
     type: mc
-    files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt   
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_ntuple_9_2.root
     generated-events: sumgenweight
     cross-section: 850.8 #13TeV
     #legend: 'G+jets'
@@ -45,7 +48,8 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_1.root
     generated-events: sumgenweight
     cross-section: 7825.1 #13TeV
     #legend: 'W1Jets \rightarrow L#nu'
@@ -55,7 +59,8 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_1.root
     generated-events: sumgenweight
     cross-section: 3807.1 #13TeV
     #legend: 'W2Jets \rightarrow L#nu'
@@ -65,7 +70,8 @@ samples:
     group: WJets
     era: HL-LHC
     type: mc
-    files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU/W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_ntuple_9_1.root
     generated-events: sumgenweight
     cross-section: 991.6 #13TeV
     #legend: 'W3Jets \rightarrow L#nu'
@@ -74,7 +80,8 @@ samples:
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_ntuple_107_3.root  
     generated-events: sumgenweight
     cross-section: 830 #13TeV 
     legend: 't\bar{t} (inclusive)'
@@ -84,7 +91,8 @@ samples:
     group: GJet
     era: HL-LHC
     type: mc
-    files: GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_ntuple_1000_0.root
     generated-events: sumgenweight
     cross-section: 232.9 
     order: 7
@@ -92,7 +100,8 @@ samples:
     group: GJet
     era: HL-LHC
     type: mc
-    files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_ntuple_0_9.root
     generated-events: sumgenweight
     cross-section: 3216.0 
     order: 8
@@ -100,7 +109,8 @@ samples:
     group: QCD
     era: HL-LHC
     type: mc
-    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU/QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_ntuple_111_1.root
     generated-events: sumgenweight
     cross-section: 113400.0 
     order: 9
@@ -108,14 +118,16 @@ samples:
     group: QCD
     era: HL-LHC
     type: mc
-    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU/QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_ntuple_100_9.root
     generated-events: sumgenweight
     cross-section:  260500.0  
     order: 10
   TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU/TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_ntuple_105_0.root
     generated-events: sumgenweight
     cross-section: 0.2001  
     legend: 'ttW'
@@ -124,7 +136,8 @@ samples:
   TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.txt
+    files:
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU/TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_ntuple_17_0.root 
     generated-events: sumgenweight
     cross-section: 0.01731 
     legend: 'ttGG'
@@ -133,7 +146,8 @@ samples:
   WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU/WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_ntuple_10_9.root
     generated-events: sumgenweight
     cross-section: 1.693
     legend: 'WGGJets'
@@ -142,7 +156,8 @@ samples:
   WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU/WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_ntuple_20_0.root
     generated-events: sumgenweight
     cross-section: 4.958
     legend: "WGJJ"
@@ -151,7 +166,8 @@ samples:
   ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU/ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_ntuple_1005_11.root
     generated-events: sumgenweight
     cross-section: 117.864
     legend: 
@@ -160,7 +176,8 @@ samples:
   GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU/GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_ntuple_14_0.root
     generated-events: sumgenweight
     cross-section: 48.5800
     legend: '$GGH \rightarrow \gamma\gamma$'
@@ -169,7 +186,8 @@ samples:
   VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU/VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_ntuple_14_3.root
     generated-events: sumgenweight
     cross-section: 3.782
     legend: '$VBFH \rightarrow \gamma\gamma$'
@@ -178,7 +196,8 @@ samples:
   ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU/ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_ntuple_108_0.root
     generated-events: sumgenweight
     cross-section: 0.5071
     legend: '$ttH \rightarrow \gamma\gamma$'
@@ -187,12 +206,13 @@ samples:
   VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
     type: mc
-    files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    files: 
+    - root://cmseos.fnal.gov//store/user/snowmass/Snowmass2021/DelphesNtuplizer/VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU/VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_ntuple_26_1.root
     generated-events: sumgenweight
     cross-section: 2.257
     legend: '$VH \rightarrow \gamma\gamma$'
     fill-color: "#008080" 
-    order: 19
+    order: 19  
 plotIt:
   configuration:
     width: 700
