@@ -97,31 +97,7 @@ def _makeYieldsTexTable(report, samples, entryPlots, stretch=1.5, orientation="v
                 sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
             entries_smp.append(sel_eff)
             sel_list.append(colEntries_forEff)
-        from bamboo.root import gbl
-        sel_list_array = np.array(sel_list)
-        gbl.gStyle.SetPalette(1)
-        c1 = gbl.TCanvas("c1", "c1", 600, 400)
-        cutflow_histo_FS = gbl.TH1F("cutflow_histo", "Selection Cutflow", 6, 0, 6)
-        cutflow_histo_FS.GetXaxis().SetTitle("Selection")
-        cutflow_histo_FS.GetYaxis().SetTitle("Nevent")
-        cutflow_histo_Delphes = gbl.TH1F("cutflow_histo", "Delphes", 6, 0, 6)
-        for i in range(len(colEntries_forEff)):
-            cutflow_histo_FS.Fill(i, float(sel_list_array[0,i]))
-        cutflow_histo_FS.SetLineColor(2)
-        cutflow_histo_FS.SetLineWidth(3)
-        for i in range(len(colEntries_forEff)):
-            cutflow_histo_Delphes.Fill(i, float(sel_list_array[1,i]))
-        cutflow_histo_Delphes.SetLineColor(4)
-        cutflow_histo_Delphes.SetLineWidth(3)
-        cutflow_histo_FS.Draw("HIST")
-        cutflow_histo_Delphes.Draw("SAME HIST")
-        gbl.gPad.SetLogy()
-        leg = gbl.TLegend(0.78,0.695,0.980,0.935)
-        leg.AddEntry(cutflow_histo_Delphes, "Delphes", "l")
-        leg.AddEntry(cutflow_histo_FS, "FS", "l")
-        leg.Draw()
-        c1.SaveAs("cutflow.gif")
-        logger.info("Plot for selection cutflow is available")
+
     if smp_data:
         sepStr_v += f"|{align}|"
         hdrs.append("Data")

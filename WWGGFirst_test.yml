@@ -76,6 +76,16 @@ samples:
     #legend: 'W3Jets \rightarrow L#nu'
     #fill-color: "#D489FF" 
     order: 6    
+  TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: 
+    - root://se01.indiacms.res.in//cms/store/group/Snowmass_2021_2022/DelphesNtuplizer/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU/TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_ntuple_102_0.root  
+    generated-events: sumgenweight
+    cross-section: 864.4 
+    legend: t\bar{t} (inclusive)
+    fill-color: "#D489FF" 
+    order: 7
 plotIt:
   configuration:
     width: 700
