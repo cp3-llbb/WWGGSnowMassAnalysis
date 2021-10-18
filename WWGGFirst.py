@@ -56,17 +56,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #selection of photons with loose ID        
         idPhotons = op.select(sort_ph, lambda ph : ph.idpass & (1<<0))
-
-        #selection: 2 photons (at least) in an event with invariant mass within [100,150]
-        hasTwoPh = noSel.refine("hasMassPhPh", cut= op.AND(
-           (op.rng_len(sort_ph) >= 2), 
-           (op.in_range(100, op.invariant_mass(sort_ph[0].p4, sort_ph[1].p4), 180)) 
-           ))
-
-        mGG = op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4)
-        hGG = op.sum(idPhotons[0].p4, idPhotons[1].p4)
-
-       #H->WW->2q1l1nu
+        #H->WW->2q1l1nu
        
         electrons = op.select(t.elec, lambda el : op.AND(
         el.pt > 10., op.abs(el.eta) < 2.5
@@ -91,26 +81,28 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         jets = op.select(t.jetpuppi, lambda jet : op.AND(jet.pt > 30., op.abs(jet.eta) < 2.5))
          
         clJets = op.select(jets, lambda j : op.AND(
+            op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(ph.p4, j.p4) < 0.4) ),
             op.NOT(op.rng_any(idElectrons, lambda el : op.deltaR(el.p4, j.p4) < 0.4) ),  
             op.NOT(op.rng_any(idMuons, lambda mu : op.deltaR(mu.p4, j.p4) < 0.4) )
         ))
         sort_jets = op.sort(clJets, lambda jet : -jet.pt)  
         idJets = op.select(sort_jets, lambda j : j.idpass & (1<<2))
         
-         
+        mGG = op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4)
+        hGG = op.sum(idPhotons[0].p4, idPhotons[1].p4)
         mJets= op.invariant_mass(idJets[0].p4, idJets[1].p4)
         hJets = op.sum(idJets[0].p4, idJets[1].p4)
        
         #missing transverse energy
         met = op.select(t.metpuppi)      
 
-      #define more variables for ease of use
+        #define more variables for ease of use
         nElec = op.rng_len(idElectrons)
         nMuon = op.rng_len(idMuons)
         nJet = op.rng_len(idJets)
         nPhoton = op.rng_len(idPhotons)
 
-      #selections for efficiency check
+        #selections for efficiency check
 
         sel1_p = noSel.refine("2Photon", cut = op.AND((op.rng_len(sort_ph) >= 2), (sort_ph[0].pt > 35.)))
 
@@ -127,15 +119,15 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30)))
 
 
-      #selections for final desired final state
-
+        #selections for final desired final state
+      
         #sel3 = sel2_p.refine("TwoPhOneL", cut = op.OR(op.rng_len(clElectrons) == 1, op.rng_len(clMuons) == 1))
 
         #sel4 = sel3.refine("TwoPhOneLTwoJ", cut = op.rng_len(clJets) >= 2)
 
         #selection: 2 photons (at least) in an event 
         hasTwoPh = sel2_p.refine("hasTwoPh", cut= op.AND(
-            (op.rng_len(sort_ph) >= 2)
+            (op.rng_len(idPhotons) >= 2)
             #(op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
         ))
 
@@ -214,13 +206,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #plots.append(Plot.make1D("Inv_mass_gghasTwoJ",mGG , hasTwoJ, EqB(50, 100.,180.), title = "m_{\gamma\gamma}"))
         #plots.append(Plot.make1D("LeadingJetPtTwoJ", idJets[0].pt, hasTwoJ, EqB(10, 0., 10.), title = 'Leading Jet pT'))
 
-
-       #diphoton invariant mass plot
-        #plots.append(Plot.make1D("Inv_mass_ggSel1",mGG,sel1,EqB(50, 100.,150.), title = "m_{\gamma\gamma}")) #segmentation error? how?
-        #plots.append(Plot.make1D("Inv_mass_ggSel2",mGG,sel2,EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
-        #plots.append(Plot.make1D("Inv_mass_ggSel3",mGG,sel3,EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
-        #plots.append(Plot.make1D("Inv_mass_ggSel4",mGG,sel4,EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
-         
        #HH invariant mass  
        # plots.append(Plot.make1D("Inv_mass_HH",mHH,sel4,EqB(50, 200.,1000.), title = "m_{HH}"))
 
