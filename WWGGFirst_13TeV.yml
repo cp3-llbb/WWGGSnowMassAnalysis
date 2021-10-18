@@ -9,7 +9,7 @@ samples:
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
     cross-section: 13.28 #13 TeV  0.01328454187
-    legend: 'HH \rightarrow WW\gamma\gamma'
+    legend: 'HH \rightarrow WW\gamma\gamma x 10^{3}'
     line-color: "#260AB3" #blue 
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     era: HL-LHC
@@ -164,7 +164,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 48.5800
     legend: 'GGH \rightarrow \gamma\gamma'
-    fill-color: "#FFF99"
+    fill-color: "#FFFF99"
     order: 16
   VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
     era: HL-LHC

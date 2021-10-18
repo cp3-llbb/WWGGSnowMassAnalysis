@@ -73,7 +73,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         clMuons = op.select(muons, lambda mu : op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(mu.p4, ph.p4) < 0.4 )))
         sort_mu = op.sort(clMuons, lambda mu : -mu.pt)
-        idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply loose ID  
+        idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply tight ID  
         isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
      
 
@@ -221,7 +221,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #yields.add(sel1_m, title='sel1_m')
         #yields.add(sel2_m, title='sel2_m')
         yields.add(hasTwoPh, title='hasTwoPh')
-        yields.add(hasInvM, title='hasTwoPh')
+        yields.add(hasInvM, title='hasInvM')
         yields.add(hasOneL, title='hasOneL')
         #yields.add(hasTwoJ, title='hasTwoJ')
 
