@@ -8,8 +8,8 @@ samples:
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
-    cross-section: 0.013 #13 TeV  0.01328454187
-    legend: '$ HH \rightarrow \tau\tau\gamma\gamma $'
+    cross-section: 13.28 #13 TeV  0.01328454187
+    legend: 'HH \rightarrow WW\gamma\gamma'
     line-color: "#260AB3" #blue 
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     era: HL-LHC
@@ -17,7 +17,7 @@ samples:
     files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
     cross-section: 84.4 #13TeV
-    legend: ' \gamma\gamma + jets'
+    legend: '\gamma\gamma + jets'
     fill-color: "#E2283B"
     order: 1
   GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
@@ -145,7 +145,7 @@ samples:
     files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 4.958
-    legend: "WGJJ"
+    legend: 'WGJJ'
     fill-color: "#28CCE2"
     order: 14
   ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
@@ -163,7 +163,7 @@ samples:
     files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 48.5800
-    legend: '$GGH \rightarrow \gamma\gamma$'
+    legend: 'GGH \rightarrow \gamma\gamma'
     fill-color: "#FFF99"
     order: 16
   VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
@@ -172,7 +172,7 @@ samples:
     files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 3.782
-    legend: '$VBFH \rightarrow \gamma\gamma$'
+    legend: 'VBFH \rightarrow \gamma\gamma'
     fill-color: "#00FF99"
     order: 17
   ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
@@ -181,7 +181,7 @@ samples:
     files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.5071
-    legend: '$ttH \rightarrow \gamma\gamma$'
+    legend: 'ttH \rightarrow \gamma\gamma'
     fill-color: "#FFCC33" 
     order: 18
   VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
@@ -190,7 +190,7 @@ samples:
     files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 2.257
-    legend: '$VH \rightarrow \gamma\gamma$'
+    legend: 'VH \rightarrow \gamma\gamma'
     fill-color: "#008080" 
     order: 19
 plotIt:
