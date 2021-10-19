@@ -11,6 +11,7 @@ samples:
     cross-section: 13.28 #13 TeV  0.01328454187
     legend: 'HH \rightarrow WW\gamma\gamma x 10^{3}'
     line-color: "#260AB3" #blue 
+    split: 4
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     era: HL-LHC
     type: mc
@@ -20,6 +21,7 @@ samples:
     legend: '\gamma\gamma + jets'
     fill-color: "#E2283B"
     order: 1
+    split: 4
   GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: GJet
     era: HL-LHC
@@ -30,6 +32,7 @@ samples:
     #legend: 'G+jets'
     #fill-color: "#FFFF00"
     order: 2
+    split: 4
   #W0JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     #group: WJets
     #era: HL-LHC
@@ -51,6 +54,7 @@ samples:
     #legend: 'W1Jets \rightarrow L#nu'
     #fill-color: "#40D51A"
     order: 3
+    split: 4
   W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
     era: HL-LHC
@@ -61,6 +65,7 @@ samples:
     #legend: 'W2Jets \rightarrow L#nu'
     #fill-color: "#1AD5B0" # lightpurple #CHANGETHECOLOR
     order: 4
+    split: 4
   W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
     era: HL-LHC
@@ -71,6 +76,7 @@ samples:
     #legend: 'W3Jets \rightarrow L#nu'
     #fill-color: "#D489FF" 
     order: 5
+    split: 4
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -79,7 +85,8 @@ samples:
     cross-section: 830 #13TeV 
     legend: 't\bar{t} (inclusive)'
     fill-color: "#D489FF" 
-    order: 6 
+    order: 6
+    split: 4 
   GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU:
     group: GJet
     era: HL-LHC
@@ -88,6 +95,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 232.9 
     order: 7
+    split: 4
   GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU:
     group: GJet
     era: HL-LHC
@@ -96,6 +104,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 3216.0 
     order: 8
+    split: 4
   QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: QCD
     era: HL-LHC
@@ -104,6 +113,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 113400.0 
     order: 9
+    split: 4
   QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: QCD
     era: HL-LHC
@@ -112,6 +122,7 @@ samples:
     generated-events: sumgenweight
     cross-section:  260500.0  
     order: 10
+    split: 4
   TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -121,6 +132,7 @@ samples:
     legend: 'ttW'
     fill-color: "#c7e619"
     order: 11
+    split: 4
   TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -130,6 +142,7 @@ samples:
     legend: 'ttGG'
     fill-color: "#28E298" 
     order: 12
+    split: 4
   WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -139,6 +152,7 @@ samples:
     legend: 'WGGJets'
     fill-color: "#28CCE2"
     order: 13
+    split: 4
   WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -148,6 +162,7 @@ samples:
     legend: 'WGJJ'
     fill-color: "#28CCE2"
     order: 14
+    split: 4
   ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -157,6 +172,7 @@ samples:
     legend: 
     fill-color: "#990066"  
     order: 15
+    split: 4
   GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -166,6 +182,7 @@ samples:
     legend: 'GGH \rightarrow \gamma\gamma'
     fill-color: "#FFFF99"
     order: 16
+    split: 4
   VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -175,6 +192,7 @@ samples:
     legend: 'VBFH \rightarrow \gamma\gamma'
     fill-color: "#00FF99"
     order: 17
+    split: 4
   ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -184,6 +202,7 @@ samples:
     legend: 'ttH \rightarrow \gamma\gamma'
     fill-color: "#FFCC33" 
     order: 18
+    split: 4
   VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -193,6 +212,7 @@ samples:
     legend: 'VH \rightarrow \gamma\gamma'
     fill-color: "#008080" 
     order: 19
+    split: 4
 plotIt:
   configuration:
     width: 700
