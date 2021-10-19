@@ -42,10 +42,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         from bamboo import treefunctions as op
         
         #count no of events here 
-
         noSel = noSel.refine("withgenweight", weight=t.genweight)
-
         plots = []
+        #yields
+        yields = CutFlowReport("yields", recursive=True, printInLog=True)
+        plots.append(yields)
+        yields.add(noSel, title= 'noSel')
 
         #H->gg 
 
@@ -73,8 +75,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         clMuons = op.select(muons, lambda mu : op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(mu.p4, ph.p4) < 0.4 )))
         sort_mu = op.sort(clMuons, lambda mu : -mu.pt)
-        idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply tight ID  
-        isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
+        idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply loose ID  
+        #isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
      
 
         #select jets with pt>25 GeV end eta in the detector acceptance
@@ -114,7 +116,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         sel1_m = noSel.refine("OneM", cut = op.AND(op.rng_len(sort_mu) >= 1))
         
-        sel2_m = sel1_e.refine("idMuon", cut = op.AND(op.rng_len(idMuons) >= 1))
+        sel2_m = sel1_m.refine("idMuon", cut = op.AND(op.rng_len(idMuons) >= 1))
          
         #sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30)))
 
@@ -131,20 +133,24 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             #(op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
         ))
 
+        yields.add(hasTwoPh, title='hasTwoPh')
+
         #selections for the event inv mass of photons within the 100-180 window
         hasInvM = hasTwoPh.refine("hasInvM", cut= op.AND(
             (op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
         ))
+        yields.add(hasInvM, title='hasInvM')
 
         #selections for semileptonic final state
         hasOneL = hasInvM.refine("hasOneL", cut = op.AND(op.OR(nElec == 1, nMuon == 1)))
+        yields.add(hasOneL, title='hasOneL')
 
         #adding two jets on the semileptonic final state
         #hasTwoJ = hasOneL.refine("hasTwoJ", cut = op.rng_len(idJets) >= 2)
 
-       #plots
-       
-       #sel1_p
+        #plots
+        
+        #sel1_p
         plots.append(Plot.make1D("LeadingPhotonPTNoID", sort_ph[0].pt, sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))        
         plots.append(Plot.make1D("SubLeadingPhotonPTNoID", sort_ph[1].pt, sel1_p, EqB(30, 0., 300.), title="SubLeading Photon pT"))
        
@@ -152,19 +158,19 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("LeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))    
         plots.append(Plot.make1D("SubLeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="SubLeading Photon pT")) 
        
-       #sel1_e
+        #sel1_e
         plots.append(Plot.make1D("LeadingElectronNoID", sort_el[0].pt, sel1_e, EqB(30, 0., 300.), title="Leading Electron pT"))
        
-       #sel2_e
+        #sel2_e
         plots.append(Plot.make1D("LeadingElectronID", idElectrons[0].pt, sel2_e, EqB(30, 0., 300.), title="Leading Electron pT"))
 
-       #sel1_m
+        #sel1_m
         plots.append(Plot.make1D("LeadingMuonNoID", sort_mu[0].pt, sel1_m, EqB(30, 0., 300.), title="Leading Muon pT"))
        
-       #sel2_m
+        #sel2_m
         plots.append(Plot.make1D("LeadingMuonID", idMuons[0].pt, sel2_m, EqB(30, 0., 300.), title="Leading Muon pT"))
 
-       #sel3
+        #sel3
         #plots.append(Plot.make1D("LeadingPhotonPtSel3", idPhotons[0].pt, sel3, EqB(30, 0., 250.), title="Leading Photon pT"))
         #plots.append(Plot.make1D("SubLeadingPhotonPtSel3", idPhotons[1].pt, sel3, EqB(30, 0., 250.), title="SubLeading Photon pT"))
     
@@ -206,24 +212,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #plots.append(Plot.make1D("Inv_mass_gghasTwoJ",mGG , hasTwoJ, EqB(50, 100.,180.), title = "m_{\gamma\gamma}"))
         #plots.append(Plot.make1D("LeadingJetPtTwoJ", idJets[0].pt, hasTwoJ, EqB(10, 0., 10.), title = 'Leading Jet pT'))
 
-       #HH invariant mass  
-       # plots.append(Plot.make1D("Inv_mass_HH",mHH,sel4,EqB(50, 200.,1000.), title = "m_{HH}"))
-
-
-        #yields
-        yields = CutFlowReport("yields", recursive=True, printInLog=True)
-        plots.append(yields)
-        yields.add(noSel, title= 'noSel')
-        #yields.add(sel1_p, title='sel1_p')
-        #yields.add(sel2_p, title='sel2_p')
-        #yields.add(sel1_e, title='sel1_e')
-        #yields.add(sel2_e, title='sel2_e')
-        #yields.add(sel1_m, title='sel1_m')
-        #yields.add(sel2_m, title='sel2_m')
-        yields.add(hasTwoPh, title='hasTwoPh')
-        yields.add(hasInvM, title='hasInvM')
-        yields.add(hasOneL, title='hasOneL')
-        #yields.add(hasTwoJ, title='hasTwoJ')
-
+        #HH invariant mass  
+        # plots.append(Plot.make1D("Inv_mass_HH",mHH,sel4,EqB(50, 200.,1000.), title = "m_{HH}"))
+        
         return plots
 
