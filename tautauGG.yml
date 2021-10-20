@@ -1,0 +1,83 @@
+tree: myana/mytree
+eras:
+  HL-LHC:
+    luminosity: 3000000 # 1/pb
+samples:
+  GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
+    era: HL-LHC
+    type: signal
+    files: /afs/cern.ch/work/a/aguzel/private/HH_analysis/Phase_II/HH/Bamboo/tautaugg/GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 1
+    legend: '$ HH \rightarrow \tau\tau\gamma\gamma $'
+    line-color: "#260AB3" #blue
+  GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: /afs/cern.ch/work/a/aguzel/private/HH_analysis/Phase_II/HH/Bamboo/tautaugg/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 1038
+    legend: '$ \gamma + jet $'
+    fill-color: "#c7e619"
+    order: 2
+  QCD_Pt-5toInf_EMEnriched_TuneCUETP8M1_14TeV_pythia8_200PU.txt:
+    era: HL-LHC
+    type: mc
+    files: /afs/cern.ch/work/a/aguzel/private/HH_analysis/Phase_II/HH/Bamboo/tautaugg/QCD_Pt-5toInf_EMEnriched_TuneCUETP8M1_14TeV_pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 5924.8
+    legend: '$ QCD $'
+    fill-color: "#28E298"
+    order: 3
+  WGToLNuG_PtG-40_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: /afs/cern.ch/work/a/aguzel/private/HH_analysis/Phase_II/HH/Bamboo/tautaugg/WGToLNuG_PtG-40_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 18.79 #
+    legend: '$ WG \rightarrow L\nu\gamma $'
+    fill-color: "#40D51A"
+    order: 4
+  ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: /afs/cern.ch/work/a/aguzel/private/HH_analysis/Phase_II/HH/Bamboo/tautaugg/ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 145.2
+    legend: '$ ZG \rightarrow 2L \gamma $'
+    fill-color: "#28CCE2" # lightpurple
+    order: 5   
+plotIt:
+  configuration:
+    width: 700
+    height: 600
+    luminosity-label: '3000 fb^{-1} (14 TeV)'
+    experiment: CMS
+    extra-label: HL-LHC
+    luminosity-error: 0.025
+    show-overflow: true
+    for-yields: true
+  plotdefaults:
+    log-y: false 
+    sort-by-yields: False 
+  legend:
+    position: [0.7, 0.6, 1.1, 0.9]
+  groups:
+    bkg:
+      legend: Background
+      fill-color: "#EDC951"
+    
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
