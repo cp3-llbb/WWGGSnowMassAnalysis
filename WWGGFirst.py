@@ -145,8 +145,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         hasOneL = hasInvM.refine("hasOneL", cut = op.AND(op.OR(nElec == 1, nMuon == 1)))
         yields.add(hasOneL, title='hasOneL')
 
-        #adding two jets on the semileptonic final state
-        #hasTwoJ = hasOneL.refine("hasTwoJ", cut = op.rng_len(idJets) >= 2)
+        #adding jets on the semileptonic final state
+       # hasOneJ = hasOneL.refine("hasOneJ", cut = op.rng_len(idJets) >= 1)
+       # yields.add(hasOneJ, title='hasOneJ')
+
+       # hasTwoJ = hasOneJ.refine("hasTwoJ", cut = op.rng_len(idJets) >= 2)
+       # yields.add(hasTwoJ, title='hasTwoJ')
 
         #plots
         
@@ -154,26 +158,24 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("LeadingPhotonPTNoID", sort_ph[0].pt, sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))        
         plots.append(Plot.make1D("SubLeadingPhotonPTNoID", sort_ph[1].pt, sel1_p, EqB(30, 0., 300.), title="SubLeading Photon pT"))
        
-       #sel2_p  
+        #sel2_p  
         plots.append(Plot.make1D("LeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))    
         plots.append(Plot.make1D("SubLeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="SubLeading Photon pT")) 
        
         #sel1_e
         plots.append(Plot.make1D("LeadingElectronNoID", sort_el[0].pt, sel1_e, EqB(30, 0., 300.), title="Leading Electron pT"))
-       
         #sel2_e
         plots.append(Plot.make1D("LeadingElectronID", idElectrons[0].pt, sel2_e, EqB(30, 0., 300.), title="Leading Electron pT"))
+        #sel3_e
+        #plots.append(Plot.make1D("LeadingElectronNoZee", slElectrons[0].pt, sel3_e, EqB(30, 0., 300.), title="Leading Electron pT"))
 
         #sel1_m
         plots.append(Plot.make1D("LeadingMuonNoID", sort_mu[0].pt, sel1_m, EqB(30, 0., 300.), title="Leading Muon pT"))
        
         #sel2_m
         plots.append(Plot.make1D("LeadingMuonID", idMuons[0].pt, sel2_m, EqB(30, 0., 300.), title="Leading Muon pT"))
-
-        #sel3
-        #plots.append(Plot.make1D("LeadingPhotonPtSel3", idPhotons[0].pt, sel3, EqB(30, 0., 250.), title="Leading Photon pT"))
-        #plots.append(Plot.make1D("SubLeadingPhotonPtSel3", idPhotons[1].pt, sel3, EqB(30, 0., 250.), title="SubLeading Photon pT"))
-    
+        #sel3_m
+        #plots.append(Plot.make1D("LeadingMuonIso", isoMuons[0].pt, sel3_m, EqB(30, 0., 300.), title="Leading Muon pT"))
 
         #hasTwoPh
         plots.append(Plot.make1D("LeadingPhotonPtTwoPh", idPhotons[0].pt, hasTwoPh, EqB(30, 0., 300.), title="Leading Photon pT"))
@@ -197,23 +199,35 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #hasOneL
         plots.append(Plot.make1D("LeadingPhotonPtOneL", idPhotons[0].pt, hasOneL, EqB(30, 0., 300.), title="Leading Photon pT"))
         plots.append(Plot.make1D("SubLeadingPhotonPtOneL", idPhotons[1].pt, hasOneL, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+        plots.append(Plot.make1D("LeadingPhotonEtaOneL", idPhotons[0].eta, hasOneL, EqB(80, -4., 4.), title="Leading Photon eta"))
+        plots.append(Plot.make1D("SubLeadingPhotonEtaOneL", idPhotons[1].eta, hasOneL, EqB(80, -4., 4.), title="SubLeading Photon eta"))
+        plots.append(Plot.make1D("LeadingPhotonPhiOneL", idPhotons[0].phi, hasOneL, EqB(100, 0., 6.5), title="Leading Photon phi"))
+        plots.append(Plot.make1D("SubLeadingPhotonPhiOneL", idPhotons[1].phi, hasOneL, EqB(100, 0., 6.5), title="SubLeading Photon phi"))
         plots.append(Plot.make1D("nElectronsOneL", nElec, hasOneL, EqB(10, 0., 10.), title="Number of electrons"))
         plots.append(Plot.make1D("nMuonsOneL", nMuon, hasOneL, EqB(10, 0., 10.), title="Number of Muons"))
         plots.append(Plot.make1D("nJetsOneL", nJet, hasOneL, EqB(10, 0., 10.), title="Number of Jets"))
-        plots.append(Plot.make1D("Inv_mass_gghasOneL",mGG , hasOneL, EqB(50, 100.,180.), title = "m_{\gamma\gamma}"))
-        #plots.append(Plot.make1D("LeadingJetPtOneL", idJets[0].pt, hasOneL, EqB(10, 0., 10.), title = 'Leading Jet pT'))
+        plots.append(Plot.make1D("Inv_mass_gghasOneL",mGG , hasOneL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+        
+        #hasOneJ
+       # plots.append(Plot.make1D("LeadingPhotonPtOneJ", idPhotons[0].pt, hasOneJ, EqB(30, 0., 300.), title="Leading Photon pT"))
+       # plots.append(Plot.make1D("SubLeadingPhotonPtOneJ", idPhotons[1].pt, hasOneJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+       # plots.append(Plot.make1D("nElectronsOneJ", nElec, hasOneJ, EqB(10, 0., 10.), title="Number of electrons"))
+       # plots.append(Plot.make1D("nMuonsOneJ", nMuon, hasOneJ, EqB(10, 0., 10.), title="Number of Muons"))
+       # plots.append(Plot.make1D("nJetsOneJ", nJet, hasOneJ, EqB(10, 0., 10.), title="Number of Jets"))
+       # plots.append(Plot.make1D("Inv_mass_gghasOneJ",mGG , hasOneJ, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+       # plots.append(Plot.make1D("LeadingJetPthasOneJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
 
         #hasTwoJ
-        #plots.append(Plot.make1D("LeadingPhotonPtTwoJ", idPhotons[0].pt, hasTwoJ, EqB(30, 0., 300.), title="Leading Photon pT"))
-        #plots.append(Plot.make1D("SubLeadingPhotonPtTwoJ", idPhotons[1].pt, hasTwoJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
-        #plots.append(Plot.make1D("nElectronsTwoJ", nElec, hasTwoJ, EqB(10, 0., 10.), title="Number of electrons"))
-        #plots.append(Plot.make1D("nMuonsOneTwoJ", nMuon, hasTwoJ, EqB(10, 0., 10.), title="Number of Muons"))
-        #plots.append(Plot.make1D("nJetsOneTwoJ", nJet, hasTwoJ, EqB(10, 0., 10.), title="Number of Jets"))
-        #plots.append(Plot.make1D("Inv_mass_gghasTwoJ",mGG , hasTwoJ, EqB(50, 100.,180.), title = "m_{\gamma\gamma}"))
-        #plots.append(Plot.make1D("LeadingJetPtTwoJ", idJets[0].pt, hasTwoJ, EqB(10, 0., 10.), title = 'Leading Jet pT'))
+       # plots.append(Plot.make1D("LeadingPhotonPtTwoJ", idPhotons[0].pt, hasTwoJ, EqB(30, 0., 300.), title="Leading Photon pT"))
+       # plots.append(Plot.make1D("SubLeadingPhotonPtTwoJ", idPhotons[1].pt, hasTwoJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+       # plots.append(Plot.make1D("nElectronsTwoJ", nElec, hasTwoJ, EqB(10, 0., 10.), title="Number of electrons"))
+       # plots.append(Plot.make1D("nMuonsOneTwoJ", nMuon, hasTwoJ, EqB(10, 0., 10.), title="Number of Muons"))
+       # plots.append(Plot.make1D("nJetsOneTwoJ", nJet, hasTwoJ, EqB(10, 0., 10.), title="Number of Jets"))
+       # plots.append(Plot.make1D("LeadingJetPthasTwoJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
+       # plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
+       # plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 100.,180.), title = "m_{jets}"))
 
-        #HH invariant mass  
-        # plots.append(Plot.make1D("Inv_mass_HH",mHH,sel4,EqB(50, 200.,1000.), title = "m_{HH}"))
         
         return plots
+
 
