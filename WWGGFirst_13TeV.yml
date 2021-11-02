@@ -215,6 +215,8 @@ plotIt:
     luminosity-error: 0.025
     show-overflow: true
     for-yields: true
+    #error-fill-style:
+    #error-marker-style: ?
   plotdefaults:
     log-y: false 
     sort-by-yields: False 

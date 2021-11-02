@@ -36,6 +36,11 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
 ################################
 
 class SnowmassExample(CMSPhase2SimRTBHistoModule):
+    def addArgs(self, parser):
+        super().addArgs(parser)
+        parser.add_argument("--mvaSkim", action="store_true", help="Produce MVA training skims")
+        parser.add_argument("--datacards", action="store_true", help="Produce histograms for datacards")
+
     def definePlots(self, t, noSel, sample=None, sampleCfg=None):
         from bamboo.plots import Plot, CutFlowReport
         from bamboo.plots import EquidistantBinning as EqB
@@ -146,11 +151,11 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         yields.add(hasOneL, title='hasOneL')
 
         #adding jets on the semileptonic final state
-       # hasOneJ = hasOneL.refine("hasOneJ", cut = op.rng_len(idJets) >= 1)
-       # yields.add(hasOneJ, title='hasOneJ')
+        hasOneJ = hasOneL.refine("hasOneJ", cut = op.rng_len(idJets) >= 1)
+        yields.add(hasOneJ, title='hasOneJ')
 
-       # hasTwoJ = hasOneJ.refine("hasTwoJ", cut = op.rng_len(idJets) >= 2)
-       # yields.add(hasTwoJ, title='hasTwoJ')
+        hasTwoJ = hasOneJ.refine("hasTwoJ", cut = op.rng_len(idJets) >= 2)
+        yields.add(hasTwoJ, title='hasTwoJ')
 
         #plots
         
@@ -207,27 +212,67 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("nMuonsOneL", nMuon, hasOneL, EqB(10, 0., 10.), title="Number of Muons"))
         plots.append(Plot.make1D("nJetsOneL", nJet, hasOneL, EqB(10, 0., 10.), title="Number of Jets"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL",mGG , hasOneL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-        
-        #hasOneJ
-       # plots.append(Plot.make1D("LeadingPhotonPtOneJ", idPhotons[0].pt, hasOneJ, EqB(30, 0., 300.), title="Leading Photon pT"))
-       # plots.append(Plot.make1D("SubLeadingPhotonPtOneJ", idPhotons[1].pt, hasOneJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
-       # plots.append(Plot.make1D("nElectronsOneJ", nElec, hasOneJ, EqB(10, 0., 10.), title="Number of electrons"))
-       # plots.append(Plot.make1D("nMuonsOneJ", nMuon, hasOneJ, EqB(10, 0., 10.), title="Number of Muons"))
-       # plots.append(Plot.make1D("nJetsOneJ", nJet, hasOneJ, EqB(10, 0., 10.), title="Number of Jets"))
-       # plots.append(Plot.make1D("Inv_mass_gghasOneJ",mGG , hasOneJ, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-       # plots.append(Plot.make1D("LeadingJetPthasOneJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
 
-        #hasTwoJ
-       # plots.append(Plot.make1D("LeadingPhotonPtTwoJ", idPhotons[0].pt, hasTwoJ, EqB(30, 0., 300.), title="Leading Photon pT"))
-       # plots.append(Plot.make1D("SubLeadingPhotonPtTwoJ", idPhotons[1].pt, hasTwoJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
-       # plots.append(Plot.make1D("nElectronsTwoJ", nElec, hasTwoJ, EqB(10, 0., 10.), title="Number of electrons"))
-       # plots.append(Plot.make1D("nMuonsOneTwoJ", nMuon, hasTwoJ, EqB(10, 0., 10.), title="Number of Muons"))
-       # plots.append(Plot.make1D("nJetsOneTwoJ", nJet, hasTwoJ, EqB(10, 0., 10.), title="Number of Jets"))
-       # plots.append(Plot.make1D("LeadingJetPthasTwoJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
-       # plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
-       # plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 100.,180.), title = "m_{jets}"))
+        
+        hasOneJ
+        plots.append(Plot.make1D("LeadingPhotonPtOneJ", idPhotons[0].pt, hasOneJ, EqB(30, 0., 300.), title="Leading Photon pT"))
+        plots.append(Plot.make1D("SubLeadingPhotonPtOneJ", idPhotons[1].pt, hasOneJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+        plots.append(Plot.make1D("nElectronsOneJ", nElec, hasOneJ, EqB(10, 0., 10.), title="Number of electrons"))
+        plots.append(Plot.make1D("nMuonsOneJ", nMuon, hasOneJ, EqB(10, 0., 10.), title="Number of Muons"))
+        plots.append(Plot.make1D("nJetsOneJ", nJet, hasOneJ, EqB(10, 0., 10.), title="Number of Jets"))
+        plots.append(Plot.make1D("Inv_mass_gghasOneJ",mGG , hasOneJ, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+        plots.append(Plot.make1D("LeadingJetPthasOneJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
+
+        hasTwoJ
+        plots.append(Plot.make1D("LeadingPhotonPtTwoJ", idPhotons[0].pt, hasTwoJ, EqB(30, 0., 300.), title="Leading Photon pT"))
+        plots.append(Plot.make1D("SubLeadingPhotonPtTwoJ", idPhotons[1].pt, hasTwoJ, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+        plots.append(Plot.make1D("nElectronsTwoJ", nElec, hasTwoJ, EqB(10, 0., 10.), title="Number of electrons"))
+        plots.append(Plot.make1D("nMuonsOneTwoJ", nMuon, hasTwoJ, EqB(10, 0., 10.), title="Number of Muons"))
+        plots.append(Plot.make1D("nJetsOneTwoJ", nJet, hasTwoJ, EqB(10, 0., 10.), title="Number of Jets"))
+        plots.append(Plot.make1D("LeadingJetPthasTwoJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
+        plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
+        plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 100.,180.), title = "m_{jets}"))
+        plots.append(Plot.make1D("LeadingJetEtaOneL", idJets[0].eta, hasTwoJ, EqB(80, -4., 4.), title="Leading Jet eta"))
+        plots.append(Plot.make1D("SubLeadingJetEtaOneL", idJets[1].eta, hasTwoJ, EqB(80, -4., 4.), title="SubLeading Jet eta"))
+        plots.append(Plot.make1D("LeadingJetPhiOneL", idJets[0].phi, hasTwoJ, EqB(100, 0., 6.5), title="Leading Jet phi"))
+        plots.append(Plot.make1D("SubLeadingJetPhiOneL", idJets[1].phi, hasTwoJ, EqB(100, 0., 6.5), title="SubLeading Jet phi"))
 
         
         return plots
 
-
+    def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
+        super().postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
+        import os.path
+        from bamboo.analysisutils import loadPlotIt
+        if self.args.datacards:
+            # the code below will produce histograms "with datacard conventions":
+            # - scaled with lumi and cross-section
+            # - "region.root:/h_process"
+            # in practice shape systematics and renamings/regroupings may be needed,
+            # see https://gitlab.cern.ch/piedavid/cms-ttw-run2legacy/-/blob/bamboo/ttW/datacards.py
+            # for an example with a number of such things implemented
+            datacardPlots = [ap for ap in self.plotList if ap.name =="Inv_mass_gghasOneL"]
+            p_config, samples, plots_dc, systematics, legend = loadPlotIt(
+                config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
+                readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+            dcdir = os.path.join(workdir, "datacard_histograms")
+            import os
+            os.makedirs(dcdir, exist_ok=True)
+            def _saveHist(obj, name, tdir=None):
+                if tdir:
+                    tdir.cd()
+                obj.Write(name)
+            from functools import partial
+            import plotit.systematics
+            from bamboo.root import gbl
+            for plot in plots_dc:
+                for era in (self.args.eras[1] or config["eras"].keys()):
+                    f_dch = gbl.TFile.Open(os.path.join(dcdir, f"{plot.name}_{era}.root"), "RECREATE")
+                    saveHist = partial(_saveHist, tdir=f_dch)
+                    for smp in samples:
+                        smpName = smp.name
+                        if smpName.endswith(".root"):
+                            smpName = smpName[:-5]
+                        h = smp.getHist(plot, eras=era)
+                        saveHist(h.obj, f"h_{smpName}")
+                    f_dch.Close()       
