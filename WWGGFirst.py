@@ -40,6 +40,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         super().addArgs(parser)
         parser.add_argument("--mvaSkim", action="store_true", help="Produce MVA training skims")
         parser.add_argument("--datacards", action="store_true", help="Produce histograms for datacards")
+        parser.add_argument("--mvaEval", action="store_true", help="Import MVA model and evaluate it on the dataframe")
 
     def definePlots(self, t, noSel, sample=None, sampleCfg=None):
         from bamboo.plots import Plot, CutFlowReport, SummedPlot
@@ -229,35 +230,39 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #Lepton Plots
         ElectronpT = Plot.make1D("ElectronpT", idElectrons[0].pt, hasOneEl, EqB(30, 0., 300.), title = 'Leading Electron pT')
         MuonpT = Plot.make1D("MuonpT", idMuons[0].pt, hasOneMu, EqB(30, 0., 300.), title = 'Leading Muon pT')
-        plots.append(SummedPlot('LeptonpT', 
+        LeptonpT = SummedPlot('LeptonpT', 
                                 [ElectronpT,MuonpT],
-                                xTitle = 'Leading Lepton pT'))
+                                xTitle = 'Leading Lepton pT')
         plots.append(ElectronpT)
         plots.append(MuonpT)
+        plots.append(LeptonpT)
 
         ElectronE = Plot.make1D("ElectronE", idElectrons[0].p4.E(), hasOneEl, EqB(50, 0., 500.), title = 'Leading Electron E')
         MuonE = Plot.make1D("MuonE", idMuons[0].p4.E(), hasOneMu, EqB(50, 0., 500.), title = 'Leading Muon E')
-        plots.append(SummedPlot('LeptonE', 
+        LeptonE = SummedPlot('LeptonE', 
                                 [ElectronE,MuonE],
-                                xTitle = 'Leading Lepton E'))
+                                xTitle = 'Leading Lepton E')
         plots.append(ElectronE)
         plots.append(MuonE)
+        plots.append(LeptonE)
     
         ElectronEta = Plot.make1D("ElectronEta", idElectrons[0].eta, hasOneEl, EqB(80, -4., 4.), title = 'Leading Electron eta')
         MuonEta = Plot.make1D("MuonEta", idMuons[0].eta, hasOneMu, EqB(80, -4., 4.), title = 'Leading Muon eta')
-        plots.append(SummedPlot('LeptonEta', 
+        LeptonEta = SummedPlot('LeptonEta', 
                                 [ElectronEta,MuonEta],
-                                xTitle = 'Leading Lepton Eta'))
+                                xTitle = 'Leading Lepton Eta')
         plots.append(ElectronEta)
         plots.append(MuonEta)
+        plots.append(LeptonEta)
 
         ElectronPhi = Plot.make1D("ElectronPhi", idElectrons[0].phi, hasOneEl, EqB(100, -3.5, 3.5), title = 'Leading Electron phi')
         MuonPhi = Plot.make1D("MuonPhi", idMuons[0].phi, hasOneMu, EqB(100, -3.5, 3.5), title = 'Leading Muon phi')
-        plots.append(SummedPlot('LeptonPhi', 
+        LeptonPhi = SummedPlot('LeptonPhi', 
                                 [ElectronPhi,MuonPhi],
-                                xTitle = 'Leading Lepton Phi'))
+                                xTitle = 'Leading Lepton Phi')
         plots.append(ElectronPhi)
         plots.append(MuonPhi)
+        plots.append(LeptonPhi)
 
         #hasOneJ
         plots.append(Plot.make1D("LeadingPhotonPtOneJ", idPhotons[0].pt, hasOneJ, EqB(30, 0., 300.), title="Leading Photon pT"))
@@ -286,42 +291,115 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("SubLeadingJetPhiTwoJ", idJets[1].phi, hasTwoJ, EqB(100, -3.5, 3.5), title="SubLeading Jet phi"))
         plots.append(Plot.make1D("LeadingJetETwoJ", idJets[0].p4.energy(), hasTwoJ, EqB(50, 0.,500.), title = 'Leading Jet E'))
         plots.append(Plot.make1D("SubLeadingJetETwoJ", idJets[1].p4.energy(), hasTwoJ, EqB(50, 0.,500.), title = 'SubLeading Jet E'))
+
+        #hasThreeJ
+        plots.append(Plot.make1D("Inv_mass_jjThreeJ",mJets_SL,hasThreeJ,EqB(80, 100.,180.), title = "m_{jets}"))
+
+        mvaVariables = {
+                "weight": noSel.weight,
+                "njets": nJet,
+                "Eta_ph1": idPhotons[0].eta,
+                "Phi_ph1": idPhotons[0].phi,
+                "E_mGG_ph1": E_mGGL,
+                "pT_mGG_ph1": pT_mGGL,
+                "Eta_ph2": idPhotons[1].eta,
+                "Phi_ph2": idPhotons[1].phi,
+                "E_mGG_ph2": E_mGGSL,
+                "pT_mGG_ph2": pT_mGGSL,
+                "E_jet1": idJets[0].p4.E(),
+                "pt_jet1": idJets[0].pt,
+                "Eta_jet1": idJets[0].eta,
+                "Phi_jet1": idJets[0].phi,
+                "E_jet2": idJets[1].p4.E(),
+                "pt_jet2": idJets[1].pt,
+                "Eta_jet2": idJets[1].eta,
+                "Phi_jet2": idJets[1].phi,
+                #"Lepton_E": LeptonE,
+                #"Lepton_Phi": LeptonPhi,
+                #"Lepton_Eta": LeptonEta,
+                #"Lepton_pT": LeptonpT,
+                "InvM_jets1": mJets,
+                "InvM_jets2": mJets_SL
+                }
+        #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
+        if self.args.mvaSkim or self.args.mvaEval:
+            from bamboo.plots import Skim
+            plots.append(Skim("allevts", mvaVariables, hasThreeJ))
+
+        #evaluate dnn model on data
+        if self.args.mvaEval:
+           mvaVariables.pop("weight", None)
+           dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
+           plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasTwoPhTwoB,EqB(20, 1, 1.)))
         
         return plots
 
-    #def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
-    #    super().postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
-    #    import os.path
-    #    from bamboo.analysisutils import loadPlotIt
-    #    if self.args.datacards:
-            # the code below will produce histograms "with datacard conventions":
-            # - scaled with lumi and cross-section
-            # - "region.root:/h_process"
-            # in practice shape systematics and renamings/regroupings may be needed,
-            # see https://gitlab.cern.ch/piedavid/cms-ttw-run2legacy/-/blob/bamboo/ttW/datacards.py
-            # for an example with a number of such things implemented
-    #        datacardPlots = [ap for ap in self.plotList if ap.name =="Inv_mass_gghasOneL"]
-    #        p_config, samples, plots_dc, systematics, legend = loadPlotIt(
-    #            config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
-    #            readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
-    #        dcdir = os.path.join(workdir, "datacard_histograms")
-    #        import os
-    #        os.makedirs(dcdir, exist_ok=True)
-    #        def _saveHist(obj, name, tdir=None):
-    #            if tdir:
-    #                tdir.cd()
-    #            obj.Write(name)
-    #        from functools import partial
-    #        import plotit.systematics
-    #        from bamboo.root import gbl
-    #        for plot in plots_dc:
-    #            for era in (self.args.eras[1] or config["eras"].keys()):
-    #                f_dch = gbl.TFile.Open(os.path.join(dcdir, f"{plot.name}_{era}.root"), "RECREATE")
-    #                saveHist = partial(_saveHist, tdir=f_dch)
-    #                for smp in samples:
-    #                    smpName = smp.name
-    #                   if smpName.endswith(".root"):
-    #                        smpName = smpName[:-5]
-    #                    h = smp.getHist(plot, eras=era)
-    #                    saveHist(h.obj, f"h_{smpName}")
-    #                f_dch.Close()       
+    def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
+            super(SnowmassExample, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
+            from bamboo.plots import Plot, DerivedPlot
+            plotList = [ ap for ap in self.plotList if ( isinstance(ap, Plot) or isinstance(ap, DerivedPlot) ) ]
+            from bamboo.analysisutils import loadPlotIt
+            p_config, samples, plots, systematics, legend = loadPlotIt(config, plotList, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
+          
+            #mvaSkim 
+            import os.path 
+            from bamboo.plots import Skim
+            skims = [ap for ap in self.plotList if isinstance(ap, Skim)]
+            if self.args.mvaSkim and skims:
+                from bamboo.analysisutils import loadPlotIt
+                p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+                try:
+                    from bamboo.root import gbl
+                    import pandas as pd
+                    for skim in skims:
+                        frames = []
+                        for smp in samples:
+                            for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                                cols = gbl.ROOT.RDataFrame(cb.tFile.Get(skim.treeName)).AsNumpy()
+                                cols["weight"] *= cb.scale
+                                cols["process"] = [smp.name]*len(cols["weight"])
+                                frames.append(pd.DataFrame(cols))
+                        df = pd.concat(frames)
+                        df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                        pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
+                        df.to_parquet(pqoutname)
+                        logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")
+                except ImportError as ex:
+                    logger.error("Could not import pandas, no dataframes will be saved")
+            
+            #produce histograms "with datacard conventions"
+            if self.args.dataCards:
+                datacardPlots = [ap for ap in self.plotList if ap.name == "Empty_histo" or ap.name =="Inv_mass_gg" or ap.name =="Inv_mass_bb" or ap.name =="Inv_mass_HH" or (self.args.mvaEval and ap.name =="dnn_score")]
+                p_config, samples, plots_dc, systematics, legend = loadPlotIt(
+                    config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
+                    readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+                dcdir = os.path.join(workdir, "datacard_histograms")
+                import os
+                import numpy as np
+                os.makedirs(dcdir, exist_ok=True)
+                def _saveHist(obj, name, tdir=None):
+                    if tdir:
+                        tdir.cd()
+                    obj.Write(name)
+                from functools import partial
+                import plotit.systematics
+                from bamboo.root import gbl
+                
+                for era in (self.args.eras[1] or config["eras"].keys()):
+                    f_dch = gbl.TFile.Open(os.path.join(dcdir, f"histo_for_combine_{era}.root"), "RECREATE")
+                    saveHist = partial(_saveHist, tdir=f_dch)
+                    smp = next(smp for smp in samples if smp.cfg.type == "SIGNAL")
+                    plot =  next(plot for plot in plots_dc if plot.name == "Empty_histo")
+                    h = smp.getHist(plot, eras=era)
+                    saveHist(h.obj, f"data_obs")
+     
+                    for plot in plots_dc:   
+                        if plot.name != "Empty_histo":
+                           for smp in samples:
+                               smpName = smp.name
+                               if smpName.endswith(".root"):
+                                   smpName = smpName[:-5]
+                               h = smp.getHist(plot, eras=era)
+                               saveHist(h.obj, f"h_{plot.name}_{smpName}")
+                
+                f_dch.Close()

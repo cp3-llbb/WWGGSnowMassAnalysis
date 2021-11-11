@@ -222,7 +222,8 @@ plotIt:
     sort-by-yields: False 
     save-extensions: [pdf, png]
   legend:
-    position: [0.7, 0.62, 1.05, 0.92]
+    position: [0.5, 0.62, 0.95, 0.92]
+    columns: 2
   groups:
     WJets:
       legend: WJets
