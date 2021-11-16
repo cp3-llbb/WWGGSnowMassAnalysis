@@ -321,85 +321,92 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 "InvM_jets1": mJets,
                 "InvM_jets2": mJets_SL
                 }
+
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
             plots.append(Skim("allevts", mvaVariables, hasThreeJ))
 
         #evaluate dnn model on data
-        if self.args.mvaEval:
-           mvaVariables.pop("weight", None)
-           dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
-           plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasTwoPhTwoB,EqB(20, 1, 1.)))
+        #if self.args.mvaEval:
+        #   mvaVariables.pop("weight", None)
+        #   dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
+        #   plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasTwoPhTwoB,EqB(20, 1, 1.)))
         
         return plots
 
     def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
-            super(SnowmassExample, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
-            from bamboo.plots import Plot, DerivedPlot
-            plotList = [ ap for ap in self.plotList if ( isinstance(ap, Plot) or isinstance(ap, DerivedPlot) ) ]
+        super(SnowmassExample, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
+        from bamboo.plots import Plot, DerivedPlot
+        plotList = [ ap for ap in self.plotList if ( isinstance(ap, Plot) or isinstance(ap, DerivedPlot) ) ]
+        from bamboo.analysisutils import loadPlotIt
+        p_config, samples, plots, systematics, legend = loadPlotIt(config, plotList, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
+        
+        #mvaSkim 
+        import os.path 
+        from bamboo.plots import Skim
+        skims = [ap for ap in self.plotList if isinstance(ap, Skim)]
+        if self.args.mvaSkim and skims:
             from bamboo.analysisutils import loadPlotIt
-            p_config, samples, plots, systematics, legend = loadPlotIt(config, plotList, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
-          
-            #mvaSkim 
-            import os.path 
-            from bamboo.plots import Skim
-            skims = [ap for ap in self.plotList if isinstance(ap, Skim)]
-            if self.args.mvaSkim and skims:
-                from bamboo.analysisutils import loadPlotIt
-                p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
-                try:
-                    from bamboo.root import gbl
-                    import pandas as pd
-                    for skim in skims:
-                        frames = []
-                        for smp in samples:
-                            for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
-                                cols = gbl.ROOT.RDataFrame(cb.tFile.Get(skim.treeName)).AsNumpy()
-                                cols["weight"] *= cb.scale
-                                cols["process"] = [smp.name]*len(cols["weight"])
-                                frames.append(pd.DataFrame(cols))
-                        df = pd.concat(frames)
-                        df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
-                        pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
-                        df.to_parquet(pqoutname)
-                        logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")
-                except ImportError as ex:
-                    logger.error("Could not import pandas, no dataframes will be saved")
-            
-            #produce histograms "with datacard conventions"
-            if self.args.dataCards:
-                datacardPlots = [ap for ap in self.plotList if ap.name == "Empty_histo" or ap.name =="Inv_mass_gg" or ap.name =="Inv_mass_bb" or ap.name =="Inv_mass_HH" or (self.args.mvaEval and ap.name =="dnn_score")]
-                p_config, samples, plots_dc, systematics, legend = loadPlotIt(
-                    config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
-                    readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
-                dcdir = os.path.join(workdir, "datacard_histograms")
-                import os
-                import numpy as np
-                os.makedirs(dcdir, exist_ok=True)
-                def _saveHist(obj, name, tdir=None):
-                    if tdir:
-                        tdir.cd()
-                    obj.Write(name)
-                from functools import partial
-                import plotit.systematics
+            p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+            try:
                 from bamboo.root import gbl
-                
-                for era in (self.args.eras[1] or config["eras"].keys()):
-                    f_dch = gbl.TFile.Open(os.path.join(dcdir, f"histo_for_combine_{era}.root"), "RECREATE")
-                    saveHist = partial(_saveHist, tdir=f_dch)
-                    smp = next(smp for smp in samples if smp.cfg.type == "SIGNAL")
-                    plot =  next(plot for plot in plots_dc if plot.name == "Empty_histo")
-                    h = smp.getHist(plot, eras=era)
-                    saveHist(h.obj, f"data_obs")
-     
-                    for plot in plots_dc:   
-                        if plot.name != "Empty_histo":
-                           for smp in samples:
-                               smpName = smp.name
-                               if smpName.endswith(".root"):
-                                   smpName = smpName[:-5]
-                               h = smp.getHist(plot, eras=era)
-                               saveHist(h.obj, f"h_{plot.name}_{smpName}")
-                
-                f_dch.Close()
+                import pandas as pd
+                for skim in skims:
+                    frames = []
+                    for smp in samples:
+                        for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                            # Take specific columns
+                            tree = cb.tFile.Get(skim.treeName)
+                            if not tree:
+                                print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
+                            else:
+                                N = tree.GetEntries()
+                            cols = gbl.ROOT.RDataFrame(cb.tFile.Get(skim.treeName)).AsNumpy()
+                            cols["weight"] *= cb.scale
+                            cols["process"] = [smp.name]*len(cols["weight"])
+                            frames.append(pd.DataFrame(cols))
+                    df = pd.concat(frames)
+                    df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                    pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
+                    df.to_parquet(pqoutname)
+                    logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")
+            except ImportError as ex:
+                logger.error("Could not import pandas, no dataframes will be saved")
+        
+        #produce histograms "with datacard conventions"
+        if self.args.datacards:
+            datacardPlots = [ap for ap in self.plotList if ap.name == "Empty_histo" or ap.name =="Inv_mass_gg" or ap.name =="Inv_mass_bb" or ap.name =="Inv_mass_HH" or (self.args.mvaEval and ap.name =="dnn_score")]
+            p_config, samples, plots_dc, systematics, legend = loadPlotIt(
+                config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
+                readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+            dcdir = os.path.join(workdir, "datacard_histograms")
+            import os
+            import numpy as np
+            os.makedirs(dcdir, exist_ok=True)
+            def _saveHist(obj, name, tdir=None):
+                if tdir:
+                    tdir.cd()
+                obj.Write(name)
+            from functools import partial
+            import plotit.systematics
+            from bamboo.root import gbl
+            
+            for era in (self.args.eras[1] or config["eras"].keys()):
+                f_dch = gbl.TFile.Open(os.path.join(dcdir, f"histo_for_combine_{era}.root"), "RECREATE")
+                saveHist = partial(_saveHist, tdir=f_dch)
+                smp = next(smp for smp in samples if smp.cfg.type == "SIGNAL")
+                plot =  next(plot for plot in plots_dc if plot.name == "Empty_histo")
+                h = smp.getHist(plot, eras=era)
+                saveHist(h.obj, f"data_obs")
+        
+                for plot in plots_dc:   
+                    if plot.name != "Empty_histo":
+                       for smp in samples:
+                           smpName = smp.name
+                           if smpName.endswith(".root"):
+                               smpName = smpName[:-5]
+                           h = smp.getHist(plot, eras=era)
+                           saveHist(h.obj, f"h_{plot.name}_{smpName}")
+            
+            f_dch.Close()    
