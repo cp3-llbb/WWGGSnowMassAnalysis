@@ -325,7 +325,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("allevts", mvaVariables, hasThreeJ))
+            plots.append(Skim("allevts", mvaVariables,noSel))
 
         #evaluate dnn model on data
         #if self.args.mvaEval:
