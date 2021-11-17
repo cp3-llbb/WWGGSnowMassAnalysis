@@ -298,14 +298,14 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         mvaVariables = {
                 "weight": noSel.weight,
                 #"eta_Electron": idElectrons[0].eta,
-                #"Eta_ph1": idPhotons[0].eta
-                #"Phi_ph1": idPhotons[0].phi,
-                #"E_mGG_ph1": E_mGGL,
-                #"pT_mGG_ph1": pT_mGGL,
-                #"Eta_ph2": idPhotons[1].eta,
-                #"Phi_ph2": idPhotons[1].phi,
-                #"E_mGG_ph2": E_mGGSL,
-                #"pT_mGG_ph2": pT_mGGSL,
+                "Eta_ph1": idPhotons[0].eta,
+                "Phi_ph1": idPhotons[0].phi,
+                "E_mGG_ph1": E_mGGL,
+                "pT_mGG_ph1": pT_mGGL,
+                "Eta_ph2": idPhotons[1].eta,
+                "Phi_ph2": idPhotons[1].phi,
+                "E_mGG_ph2": E_mGGSL,
+                "pT_mGG_ph2": pT_mGGSL,
                 #"E_jet1": idJets[0].p4.E(),
                 #"pt_jet1": idJets[0].pt,
                 #"Eta_jet1": idJets[0].eta,
@@ -325,7 +325,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("allevts", mvaVariables,noSel))
+            plots.append(Skim("allevts", mvaVariables,hasOneL))
 
         #evaluate dnn model on data
         #if self.args.mvaEval:
@@ -353,9 +353,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 from bamboo.root import gbl
                 import pandas as pd
                 for skim in skims:
+                    print("first step")
                     frames = []
                     for smp in samples:
+                        print("second step")
                         for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                            print("third step")
                             # Take specific columns
                             tree = cb.tFile.Get(skim.treeName)
                             if not tree:
@@ -367,9 +370,13 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                             cols["process"] = [smp.name]*len(cols["weight"])
                             frames.append(pd.DataFrame(cols))
                     df = pd.concat(frames)
+                    print("fourth step")
                     df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                    print("fifth step")
                     pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
+                    print("sixth step")
                     df.to_parquet(pqoutname)
+                    print("seventh step")
                     logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")
             except ImportError as ex:
                 logger.error("Could not import pandas, no dataframes will be saved")
