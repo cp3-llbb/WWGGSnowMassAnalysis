@@ -185,7 +185,7 @@ samples:
     #legend: 'VBFH \rightarrow \gamma\gamma'
     #fill-color: "#00FF99"
     split: 40
-    etToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+  ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: SingleH
     era: HL-LHC
     type: mc

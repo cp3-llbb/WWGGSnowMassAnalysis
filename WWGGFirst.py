@@ -297,29 +297,29 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         mvaVariables = {
                 "weight": noSel.weight,
-                "njets": nJet,
-                "Eta_ph1": idPhotons[0].eta,
-                "Phi_ph1": idPhotons[0].phi,
-                "E_mGG_ph1": E_mGGL,
-                "pT_mGG_ph1": pT_mGGL,
-                "Eta_ph2": idPhotons[1].eta,
-                "Phi_ph2": idPhotons[1].phi,
-                "E_mGG_ph2": E_mGGSL,
-                "pT_mGG_ph2": pT_mGGSL,
-                "E_jet1": idJets[0].p4.E(),
-                "pt_jet1": idJets[0].pt,
-                "Eta_jet1": idJets[0].eta,
-                "Phi_jet1": idJets[0].phi,
-                "E_jet2": idJets[1].p4.E(),
-                "pt_jet2": idJets[1].pt,
-                "Eta_jet2": idJets[1].eta,
-                "Phi_jet2": idJets[1].phi,
+                #"eta_Electron": idElectrons[0].eta,
+                #"Eta_ph1": idPhotons[0].eta
+                #"Phi_ph1": idPhotons[0].phi,
+                #"E_mGG_ph1": E_mGGL,
+                #"pT_mGG_ph1": pT_mGGL,
+                #"Eta_ph2": idPhotons[1].eta,
+                #"Phi_ph2": idPhotons[1].phi,
+                #"E_mGG_ph2": E_mGGSL,
+                #"pT_mGG_ph2": pT_mGGSL,
+                #"E_jet1": idJets[0].p4.E(),
+                #"pt_jet1": idJets[0].pt,
+                #"Eta_jet1": idJets[0].eta,
+                #"Phi_jet1": idJets[0].phi,
+                #"E_jet2": idJets[1].p4.E(),
+                #"pt_jet2": idJets[1].pt,
+                #"Eta_jet2": idJets[1].eta,
+                #"Phi_jet2": idJets[1].phi,
                 #"Lepton_E": LeptonE,
                 #"Lepton_Phi": LeptonPhi,
                 #"Lepton_Eta": LeptonEta,
                 #"Lepton_pT": LeptonpT,
-                "InvM_jets1": mJets,
-                "InvM_jets2": mJets_SL
+               # "InvM_jets1": mJets,
+               # "InvM_jets2": mJets_SL
                 }
 
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
