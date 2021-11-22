@@ -297,7 +297,33 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         mvaPhVariables = {
                 "weight": noSel.weight,
-                "Eta_ph1": idPhotons[0].eta,                  
+                "Eta_ph1": idPhotons[0].eta,
+                "Phi_ph1": idPhotons[0].phi,
+                "E_mGG_ph1": E_mGGL,
+                "pT_mGG_ph1": pT_mGGL,
+                "Eta_ph2": idPhotons[1].eta,
+                "Phi_ph2": idPhotons[1].phi,
+                "E_mGG_ph2": E_mGGSL,
+                "pT_mGG_ph2": pT_mGGSL,
+                "Electron_E": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].p4.E()), 
+                "Electron_pT": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].pt),
+                "Electron_Eta": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].eta),
+                "Electron_Phi": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].phi),
+                "Muon_E": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].p4.E()), 
+                "Muon_pT": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].pt),
+                "Muon_Eta": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].eta),
+                "Muon_Phi": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].phi),
+                "nJets": nJet,
+                "E_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].p4.E()),   
+                "pT_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].pt),
+                "Eta_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].eta),
+                "Phi_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].phi), 
+                "E_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].p4.E()),   
+                "pT_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].pt),
+                "Eta_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].eta),
+                "Phi_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].phi),  
+                "InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
+                "InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL) 
                 } 
     
 
