@@ -8,7 +8,7 @@ samples:
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
-    cross-section: #nothingyet
+    cross-section: 0.03559656462 #fb #36.69 fb  *2 * BR (H --> GG) * BR (H --> W(QQ)W(lnu)) ( 2.137E-01 H->WW,  2.270E-03 H->GammaGamma)
     legend: 'HH \rightarrow WW\gamma\gamma '
     line-color: "#260AB3" #blue 
     split: 40
@@ -89,7 +89,7 @@ samples:
     type: mc
     files: GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 117500 #McM #not on the sheet
+    cross-section: 264.9 #McM #filtereff=0.00222 xsec=117500pb
     split: 40
   GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU:
     group: GJet
@@ -97,7 +97,7 @@ samples:
     type: mc
     files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 3901 #McM #sheet =3901*0.02146 = 83.71546 ??  
+    cross-section: 83.71546  #McM #sheet =3901*0.02146 = 83.71546 ??  
     split: 40
   QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: QCD
@@ -105,7 +105,7 @@ samples:
     type: mc
     files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 126100 #McM 141200 #sheet
+    cross-section: 249.2997 #McM 141200 #sheet 0.001977 #filtereff
     split: 40
   QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: QCD
@@ -113,7 +113,7 @@ samples:
     type: mc
     files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 295700 #McM / #sheeet 295700*0.001541 = 455.6737  
+    cross-section: 455.6737 #McM / #sheeet 295700*0.001541 = 455.6737   #filtereff=0.001541
     split: 40
   TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: topInduced
@@ -131,7 +131,7 @@ samples:
     type: mc
     files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Soumya
+    cross-section: 0.01864 
     #legend: 'ttGG'
     #fill-color: "#28E298" 
     split: 40
@@ -140,7 +140,7 @@ samples:
     type: mc
     files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Gamze
+    cross-section:  1.884
     legend: 'WGGJets'
     fill-color: "#008080"
     order: 6
@@ -150,7 +150,7 @@ samples:
     type: mc
     files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Gamze
+    cross-section: 6.032 
     legend: 'WGJJ'
     fill-color: "#28CCE2"
     order: 7
@@ -171,7 +171,7 @@ samples:
     type: mc
     files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Soumya
+    cross-section: 0.114798
     #legend: 'GGH \rightarrow \gamma\gamma'
     #fill-color: "#FFFF99"
     split: 40
@@ -181,7 +181,7 @@ samples:
     type: mc
     files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Soumya
+    cross-section: 0.00951216
     #legend: 'VBFH \rightarrow \gamma\gamma'
     #fill-color: "#00FF99"
     split: 40
@@ -191,7 +191,7 @@ samples:
     type: mc
     files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Soumya
+    cross-section: 0.001393764
     #legend: 'ttH \rightarrow \gamma\gamma'
     #fill-color: "#FFCC33" 
     split: 40
@@ -201,7 +201,7 @@ samples:
     type: mc
     files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: #NOWHERE YET ########################### Soumya or Nan??
+    cross-section: 0.00544326
     #legend: 'VH \rightarrow \gamma\gamma'
     #fill-color: "#008080" 
     split: 40
