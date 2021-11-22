@@ -369,6 +369,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             #try:
             from bamboo.root import gbl
             import pandas as pd
+            #except ImportError as ex:
+                #logger.error("Could not import pandas, no dataframes will be saved")
             for skim in skims:
                 frames = []
                 for smp in samples:
@@ -379,17 +381,15 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                             print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
                         else:
                             N = tree.GetEntries()
-                        cols = gbl.ROOT.RDataFrame(cb.tFile.Get(skim.treeName)).AsNumpy()
-                        cols["weight"] *= cb.scale
-                        cols["process"] = [smp.name]*len(cols["weight"])
-                        frames.append(pd.DataFrame(cols))
+                            cols = gbl.ROOT.RDataFrame(tree).AsNumpy()
+                            cols["weight"] *= cb.scale
+                            cols["process"] = [smp.name]*len(cols["weight"])
+                            frames.append(pd.DataFrame(cols))
                 df = pd.concat(frames)
                 df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
                 pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
                 df.to_parquet(pqoutname)
                 logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
-            #except ImportError as ex:
-                #logger.error("Could not import pandas, no dataframes will be saved")
         
         #produce histograms "with datacard conventions"
         if self.args.datacards:
