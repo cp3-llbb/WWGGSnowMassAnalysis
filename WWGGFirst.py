@@ -297,7 +297,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         mvaPhVariables = {
                 "weight": noSel.weight,
-                "nJets": nJet,
                 "Eta_ph1": idPhotons[0].eta,
                 "Phi_ph1": idPhotons[0].phi,
                 "E_mGG_ph1": E_mGGL,
@@ -306,50 +305,40 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 "Phi_ph2": idPhotons[1].phi,
                 "E_mGG_ph2": E_mGGSL,
                 "pT_mGG_ph2": pT_mGGSL,
-                #"E_jet1": idJets[0].p4.E(),
-                #"Electron_E": op.switch(op.rng_len(idElectrons)==0,idElectrons[0].p4.E(),op.c_float(0.)),  
-                "E_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].p4.E())                             
-                }
-        #mvaPhVariables2 = {
-         #       "weight": noSel.weight,
-                #"Eta_ph1": idPhotons[0].eta,
-                #"Phi_ph1": idPhotons[0].phi,
-                #"E_mGG_ph1": E_mGGL,
-                #"pT_mGG_ph1": pT_mGGL,
-                #"Eta_ph2": idPhotons[1].eta,
-                #"Phi_ph2": idPhotons[1].phi,
-                #"E_mGG_ph2": E_mGGSL,
-                #"pT_mGG_ph2": pT_mGGSL,
-          #      "E_jet1": idJets[0].p4.E(),
-           #     "pt_jet1": idJets[0].pt,
-            #    "Eta_jet1": idJets[0].eta,
-             #   "Phi_jet1": idJets[0].phi,
-              #  "E_jet2": idJets[1].p4.E(),
-               # "pt_jet2": idJets[1].pt,
-               # "Eta_jet2": idJets[1].eta,
-               # "Phi_jet2": idJets[1].phi,
-                #"Lepton_E": LeptonE,
-                #"Lepton_Phi": LeptonPhi,
-                #"Lepton_Eta": LeptonEta,
-                #"Lepton_pT": LeptonpT,
-                #"InvM_jets1": mJets,
-                #"InvM_jets2": mJets_SL
-                #}
+                "Electron_E": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].p4.E()), 
+                "Electron_pT": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].pt),
+                "Electron_Eta": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].eta),
+                "Electron_Phi": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].phi),
+                "Muon_E": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].p4.E()), 
+                "Muon_pT": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].pt),
+                "Muon_Eta": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].eta),
+                "Muon_Phi": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].phi),
+                "nJets": nJet,
+                "E_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].p4.E()),   
+                "pT_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].pt),
+                "Eta_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].eta),
+                "Phi_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].phi), 
+                "E_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].p4.E()),   
+                "pT_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].pt),
+                "Eta_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].eta),
+                "Phi_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].phi),  
+                "InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
+                "InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL)                      
+                } 
     
 
 
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("Photons", mvaPhVariables,hasOneL))
-            #plots.append(Skim("Jets", mvaPhVariables2,hasThreeJ))
+            plots.append(Skim("Skim", mvaPhVariables,hasOneL))
 
         #evaluate dnn model on data
         #if self.args.mvaEval:
         #   mvaVariables.pop("weight", None)
         #   dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
         #   plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasTwoPhTwoB,EqB(20, 1, 1.)))
-        
+    
         return plots
 
     def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
