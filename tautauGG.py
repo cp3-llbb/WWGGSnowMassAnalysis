@@ -32,13 +32,14 @@ class CMSPhase2SimRTBModule(AnalysisModule):
     def readCounters(self, resultsFile):
         return {"sumgenweight": resultsFile.Get("h_count_genweight").GetBinContent(1)}
 
-## BEGIN cutflow reports, adapted from bamboo.analysisutils
+# BEGIN cutflow reports, adapted from bamboo.analysisutils
+
 
 logger = logging.getLogger(__name__)
 
 _yieldsTexPreface = "\n".join(f"{ln}" for ln in
                               r"""\documentclass[12pt, landscape]{article}
-\usepackage[margin=0.5in]{geometry}
+\usepackage[margin=0.2in, a3paper]{geometry}
 \begin{document}
 """.split("\n"))
 
@@ -53,7 +54,7 @@ def _texProcName(procName):
     return procName
 
 
-def _makeYieldsTexTable(report, samples, entryPlots, stretch=1.5, orientation="v", align="c", yieldPrecision=1, ratioPrecision=2):
+def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orientation="v", align="c", yieldPrecision=1, ratioPrecision=2):
     if orientation not in ("v", "h"):
         raise RuntimeError(
             f"Unsupported table orientation: {orientation} (valid: 'h' and 'v')")
@@ -62,101 +63,196 @@ def _makeYieldsTexTable(report, samples, entryPlots, stretch=1.5, orientation="v
     import numpy as np
     from itertools import repeat, count
 
-    def colEntriesFromCFREntryHists(report, entryHists, precision=1):
-        stacks_t = [(entryHists[entries[0]] if len(entries) == 1 else
-                     Stack(entries=[entryHists[eName] for eName in entries]))
-                    for entries in report.titles.values()]
-        return stacks_t, ["& {0:.2e}".format(st_t.contents[1]) for st_t in stacks_t]
+    def getHist(smp, plot):
+        try:
+            h = smp.getHist(plot)
+            h.contents  # check
+            return h
+        except KeyError:
+            return None
 
-    def colEntriesFromCFREntryHists_forEff(report, entryHists, precision=1):
-        stacks_t = [(entryHists[entries[0]] if len(entries) == 1 else
-                     Stack(entries=[entryHists[eName] for eName in entries]))
-                    for entries in report.titles.values()]
-        return stacks_t, [" {0} ".format(st_t.contents[1]) for st_t in stacks_t]
+    def colEntriesFromCFREntryHists(report, entryHists, precision=1, showUncert=True):
+        stacks_t = []
+        colEntries = []
+        for entries in report.titles.values():
+            s_entries = []
+            for eName in entries:
+                eh = entryHists[eName]
+                if eh is not None:
+                    if (not isinstance(eh, Stack)) or eh.entries:
+                        s_entries.append(eh)
+            st_t = Stack(entries=s_entries)
+            if s_entries:
+                uncert = " \pm {{:.{}f}}".format(precision).format(
+                    np.sqrt(st_t.sumw2+st_t.syst2)[1]) if showUncert else ""
+                colEntries.append("${{0:.2e}}$".format(
+                    precision).format(st_t.contents[1]))
+                stacks_t.append(st_t)
+            else:
+                colEntries.append("---")
+                stacks_t.append(None)
+        return stacks_t, colEntries
+
+    def colEntriesFromCFREntryHists_forEff(report, entryHists, precision=1, showUncert=True):
+        stacks_t = []
+        colEntries = []
+        for entries in report.titles.values():  # selection names
+            s_entries = []
+            for eName in entries:
+                eh = entryHists[eName]
+                if eh is not None:
+                    if (not isinstance(eh, Stack)) or eh.entries:
+                        s_entries.append(eh)
+            st_t = Stack(entries=s_entries)
+            if s_entries:
+                uncert = " \pm {{:.{}f}}".format(precision).format(
+                    np.sqrt(st_t.sumw2+st_t.syst2)[1]) if showUncert else ""
+                colEntries.append("{{0}}".format(
+                    precision).format(st_t.contents[1]))
+                stacks_t.append(st_t)
+            else:
+                colEntries.append("---")
+                stacks_t.append(None)
+        return stacks_t, colEntries
+
     smp_signal = [smp for smp in samples if smp.cfg.type == "SIGNAL"]
     smp_mc = [smp for smp in samples if smp.cfg.type == "MC"]
     smp_data = [smp for smp in samples if smp.cfg.type == "DATA"]
-    sepStr_v = "|l|"
-    hdrs = ["Selection"]
-    entries_smp = [[_texProcName(tName) for tName in report.titles.keys()]]
-    stTotMC, stTotData = None, None
+    sepStr = "|l|"
+    smpHdrs = []
+    titles = list(report.titles.keys())  # titles are selections
+    entries_smp = []
+    stTotSig, stTotMC, stTotData = None, None, None
     if smp_signal:
-        sepStr_v += "|"
+        sepStr += "|"
+        sel_list = []
         for sigSmp in smp_signal:
             _, colEntries = colEntriesFromCFREntryHists(report,
-                                                        {eName: sigSmp.getHist(p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
-            sepStr_v += f"{align}|"
-            hdrs.append(
-                f"{_texProcName(sigSmp.cfg.yields_group)} {sigSmp.cfg.cross_section:f}pb")
-            entries_smp.append(colEntries)
-    if smp_mc:
-        sepStr_v += "|"
-        sel_list = []
-        for mcSmp in smp_mc:
-            _, colEntries = colEntriesFromCFREntryHists(report,
-                                                        {eName: mcSmp.getHist(p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
-            sepStr_v += f"{align}|"
-            if isinstance(mcSmp, plotit.plotit.Group):
-                hdrs.append(_texProcName(mcSmp.name))
-            else:
-                hdrs.append(_texProcName(mcSmp.cfg.yields_group))
-            entries_smp.append(_texProcName(colEntries))
-            _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report,
-                                                                      {eName: mcSmp.getHist(p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+                                                        {eName: getHist(sigSmp, p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            sepStr += f"{align}|"
+            smpHdrs.append(
+                f"${_texProcName(sigSmp.cfg.yields_group)}$")  # sigSmp.cfg.yields_group is the name in the legend
+            _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: sigSmp.getHist(
+                p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             colEntries_matrix = np.array(colEntries_forEff)
             sel_eff = np.array([100])
             for i in range(1, len(report.titles)):
                 sel_eff = np.append(sel_eff, [float(
-                    colEntries_matrix[i]) / float(colEntries_matrix[i-1]) * 100]).tolist()
+                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
                 sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
-            entries_smp.append(sel_eff)
-            sel_list.append(colEntries_forEff)
+            colEntries_withEff = []
+            for i, entry in enumerate(colEntries):
+                colEntries_withEff.append("{0} {1} {2}".format(
+                    entry, sel_eff[i], MCevents[sigSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+            entries_smp.append(colEntries_withEff)
+        if len(smp_signal) > 1:
+            sepStr += f"|{align}|"
+            smpHdrs.append("Signal")
+            stTotSig, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
+                smp, p) for smp in smp_signal) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            entries_smp.append(colEntries)
+    if smp_mc:
+        sepStr += "|"
+        for mcSmp in smp_mc:
+            stTotMC, colEntries = colEntriesFromCFREntryHists(report,
+                                                              {eName: getHist(mcSmp, p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            sepStr += f"{align}|"
+            if isinstance(mcSmp, plotit.plotit.Group):
+                smpHdrs.append(_texProcName(mcSmp.name))
+            else:
+                smpHdrs.append(f"${_texProcName(mcSmp.cfg.yields_group)}$")
+            _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: mcSmp.getHist(
+                p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            colEntries_matrix = np.array(colEntries_forEff)
+            sel_eff = np.array([100])
+            for i in range(1, len(report.titles)):
+                sel_eff = np.append(sel_eff, [float(
+                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+            for i in range(len(report.titles)):
+                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+            colEntries_withEff = []
+            for i, entry in enumerate(colEntries):
+                colEntries_withEff.append("{0} {1}".format(entry, sel_eff[i]))
+            entries_smp.append(colEntries_withEff)
+        if len(smp_mc) > 1:
+            sepStr += f"|{align}|"
+            smpHdrs.append("Background")
+            stTotMC, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
+                smp, p) for smp in smp_mc) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            entries_smp.append(colEntries)
     if smp_data:
-        sepStr_v += f"|{align}|"
-        hdrs.append("Data")
-        stTotData, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[smp.getHist(
-            p) for smp in smp_data]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+        sepStr += f"|{align}|"
+        smpHdrs.append("Data")
+        stTotData, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
+            smp, p) for smp in smp_data) if h]) for eName, p in entryPlots.items()}, precision=0, showUncert=False)
         entries_smp.append(colEntries)
     if smp_data and smp_mc:
-        sepStr_v += f"|{align}|"
-        hdrs.append("Data/MC")
+        sepStr += f"|{align}|"
+        smpHdrs.append("Data/MC")
         colEntries = []
+        import numpy.ma as ma
         for stData, stMC in zip(stTotData, stTotMC):
-            dtCont = stData.contents
-            mcCont = stMC.contents
-            ratio = np.where(mcCont != 0., dtCont/mcCont,
-                             np.zeros(dtCont.shape))
-            ratioErr = np.where(mcCont != 0., np.sqrt(
-                mcCont**2*stData.sumw2 + dtCont**2*(stMC.sumw2+stMC.syst2))/mcCont**2, np.zeros(dtCont.shape))
-            colEntries.append("${{0:.{0}f}} \pm {{1:.{0}f}}$".format(
-                ratioPrecision).format(ratio[1], ratioErr[1]))
+            if stData is not None and stMC is not None:
+                dtCont = stData.contents
+                mcCont = ma.array(stMC.contents)
+                ratio = dtCont/mcCont
+                ratioErr = np.sqrt(mcCont**2*stData.sumw2 +
+                                   dtCont**2*(stMC.sumw2+stMC.syst2))/mcCont**2
+                if mcCont[1] != 0.:
+                    colEntries.append("${{0:.{0}f}}$".format(
+                        ratioPrecision).format(ratio[1]))
+                else:
+                    colEntries.append("---")
+            else:
+                colEntries.append("---")
         entries_smp.append(colEntries)
-    if len(colEntries) < 2:
-        logger.warning("No samples, so no yields.tex")
-    return "\n".join(([
-        f"\\begin{{tabular}}{{ {sepStr_v} }}",
-        "    \\hline",
-        "    {0} \\\\".format(" & ".join(hdrs)),
-        "    \\hline"]+[
-            "    {0} \\\\".format(
-                " ".join(smpEntries[i] for smpEntries in entries_smp))
-            for i in range(len(report.titles))])+[
-        "    \\hline",
-        "\\end{tabular}",
-        "\\end{document}"
-    ])
+    c_bySmp = entries_smp
+    c_byHdr = [[smpEntries[i] for smpEntries in entries_smp]
+               for i in range(len(titles))]
+    if orientation == "v":
+        rowHdrs = titles  # selections
+        colHdrs = ["Selections"]+smpHdrs  # samples
+        c_byRow = c_byHdr
+        c_byCol = c_bySmp
+    else:  # horizontal
+        sepStr = "|l|{0}|".format("|".join(repeat(align, len(titles))))
+        rowHdrs = smpHdrs  # samples
+        colHdrs = ["Samples"]+titles  # selections
+        c_byRow = c_bySmp
+        c_byCol = c_byHdr
+    if entries_smp:
+        colWidths = [max(len(rh) for rh in rowHdrs)+1]+[max(len(hdr), max(len(c)
+                                                                          for c in col))+1 for hdr, col in zip(colHdrs[1:], c_byCol)]
+        return "\n".join([
+            f"\\renewcommand{{\\arraystretch}}{{{stretch}}}",
+            f"\\begin{{tabular}}{{ {sepStr} }}",
+            "    \\hline",
+            "    {0} \\\\".format(" & ".join(h.ljust(cw)
+                                  for cw, h in zip(colWidths, colHdrs))),
+            "    \\hline"]+[
+                "    {0} \\\\".format(" & ".join(en.rjust(cw)
+                                      for cw, en in zip(colWidths, [rh]+rowEntries)))
+                for rh, rowEntries in zip(rowHdrs, c_byRow)
+        ]+[
+            "    \\hline",
+            "\\end{tabular}"
+            "\\end{document}"
+        ])
 
 
-def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", readCounters=lambda f: -1., eras=("all", None), verbose=False):
+def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=None, readCounters=lambda f: -1., eras=("all", None), verbose=False):
     """
     Print yields to the log file, and write a LaTeX yields table for each
+
     Samples can be grouped (only for the LaTeX table) by specifying the
     ``yields-group`` key (overriding the regular ``groups`` used for plots).
     The sample (or group) name to use in this table should be specified
     through the ``yields-title`` sample key.
+
     In addition, the following options in the ``plotIt`` section of
     the YAML configuration file influence the layout of the LaTeX yields table:
+
     - ``yields-table-stretch``: ``\\arraystretch`` value, 1.15 by default
     - ``yields-table-align``: orientation, ``h`` (default), samples in rows, or ``v``, samples in columns
     - ``yields-table-text-align``: alignment of text in table cells (default: ``c``)
@@ -169,20 +265,30 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", readCou
     ## helper: print one bamboo.plots.CutFlowReport.Entry
 
     def printEntry(entry, printFun=logger.info, recursive=True, genEvents=None):
-        effMsg = ""
-        if entry.parent:
-            sumPass = entry.nominal.GetBinContent(1)
-            sumTotal = entry.parent.nominal.GetBinContent(1)
-            if sumTotal != 0.:
-                effMsg = f", Eff={sumPass/sumTotal:.2%}"
-                if genEvents:
-                    effMsg += f", TotalEff={sumPass/genEvents:.2%}"
-        printFun(
-            f"Selection {entry.name}: N={entry.nominal.GetEntries()}, SumW={entry.nominal.GetBinContent(1)}{effMsg}")
+        if entry.nominal is not None:
+            effMsg = ""
+            if entry.parent:
+                sumPass = entry.nominal.GetBinContent(1)
+                sumTotal = (entry.parent.nominal.GetBinContent(
+                    1) if entry.parent.nominal is not None else 0.)
+                if sumTotal != 0.:
+                    effMsg = f", Eff={sumPass/sumTotal:.2%}"
+                    if genEvents:
+                        effMsg += f", TotalEff={sumPass/genEvents:.2%}"
+            printFun(
+                f"Selection {entry.name}: N={entry.nominal.GetEntries()}), SumW={entry.nominal.GetBinContent(1)}{effMsg}")
+            printFun(f"Selection {entry.name}: N={entry.nominal.GetEntries()}")
         if recursive:
             for c in entry.children:
                 printEntry(c, printFun=printFun,
                            recursive=recursive, genEvents=genEvents)
+
+    def unwMCevents(entry, smp, mcevents, genEvents=None):
+        mcevents.append(entry.nominal.GetEntries())
+        for c in entry.children:
+            unwMCevents(c, smp, mcevents, genEvents=genEvents)
+        return mcevents
+
     ## retrieve results files, get generated events for each sample
     from bamboo.root import gbl
     resultsFiles = dict()
@@ -216,11 +322,16 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", readCou
         smpReports = {smp: report.readFromResults(
             resF) for smp, resF in resultsFiles.items()}
         ## debug print
+        MCevents = {}
         for smp, smpRep in smpReports.items():
-            if smpRep.printInLog:
-                logger.info(f"Cutflow report {report.name} for sample {smp}")
-                for root in smpRep.rootEntries():
-                    printEntry(root, genEvents=generated_events[smp])
+            #if smpRep.printInLog:
+            logger.info(f"Cutflow report {report.name} for sample {smp}")
+            MCevents[smp] = []
+            for root in smpRep.rootEntries():
+                printEntry(root, genEvents=generated_events[smp])
+                mcevents = []
+                MCevents[smp].append(unwMCevents(
+                    root, smp, mcevents, genEvents=generated_events[smp]))
         ## save yields.tex (if needed)
         if any(len(cb) > 1 or tt != cb[0] for tt, cb in report.titles.items()):
             if not has_plotit:
@@ -231,14 +342,22 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", readCou
                                for tEntries in report.titles.values() for eName in tEntries]
                 out_eras = []
                 if len(eras) > 1 and eraMode in ("all", "combined"):
-                    out_eras.append((f"{report.name}.tex", eras))
+                    nParts = [report.name]
+                    if suffix:
+                        nParts.append(suffix)
+                    out_eras.append(("{0}.tex".format("_".join(nParts)), eras))
                 if len(eras) == 1 or eraMode in ("split", "all"):
                     for era in eras:
-                        out_eras.append((f"{report.name}_{era}.tex", [era]))
+                        nParts = [report.name]
+                        if suffix:
+                            nParts.append(suffix)
+                        nParts.append(era)
+                        out_eras.append(
+                            ("{0}.tex".format("_".join(nParts)), [era]))
                 for outName, iEras in out_eras:
                     pConfig, samples, plots, _, _ = loadPlotIt(
                         config, yield_plots, eras=iEras, workdir=workdir, resultsdir=resultsdir, readCounters=readCounters)
-                    tabBlock = _makeYieldsTexTable(report, samples,
+                    tabBlock = _makeYieldsTexTable(MCevents, report, samples,
                                                    {p.name[len(
                                                        report.name)+1:]: p for p in plots},
                                                    stretch=pConfig.yields_table_stretch,
@@ -246,12 +365,16 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", readCou
                                                    align=pConfig.yields_table_text_align,
                                                    yieldPrecision=pConfig.yields_table_numerical_precision_yields,
                                                    ratioPrecision=pConfig.yields_table_numerical_precision_ratio)
-                    with open(os.path.join(workdir, outName), "w") as ytf:
-                        ytf.write("\n".join((_yieldsTexPreface, tabBlock)))
-                    logger.info("Yields table for era(s) {0} was written to {1}".format(
-                        ",".join(eras), os.path.join(workdir, outName)))
+                    if tabBlock:
+                        with open(os.path.join(workdir, outName), "w") as ytf:
+                            ytf.write("\n".join((_yieldsTexPreface, tabBlock)))
+                        logger.info("Yields table for era(s) {0} was written to {1}".format(
+                            ",".join(iEras), os.path.join(workdir, outName)))
+                    else:
+                        logger.warning(
+                            f"No samples for era(s) {','.join(iEras)}, so no yields.tex")
 
-## END cutflow reports, adapted from bamboo.analysisutils
+# END cutflow reports, adapted from bamboo.analysisutils
 
 
 class CMSPhase2SimHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
@@ -294,126 +417,169 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         from bamboo.plots import EquidistantBinning as EqB
         from bamboo import treefunctions as op
 
-        #count no of events here
+        # count no of events here
 
-        noSel = noSel.refine("withgenweight", weight=t.genweight)
+        genweightsel = noSel.refine("withgenweight", weight=t.genweight)
 
         plots = []
 
-        #H->gg
+        # select photons
+        photons = op.select(t.gamma, lambda ph: op.AND(op.abs(ph.eta) < 3, op.NOT(
+            op.in_range(1.442, op.abs(ph.eta), 1.566)), ph.pt > 25))
 
-        #selection of photons with eta in the detector acceptance
-        photons = op.select(t.gamma, lambda ph: op.AND(
-            op.abs(ph.eta) < 3, ph.pt > 25.))
-        #selection of photons with loose ID
-        cleanedPhotons = op.select(photons, lambda ph: ph.idpass & (1 << 0))
+        # select loose ID photon
+        looseIDPhotons = op.select(
+            photons, lambda ph: ph.idpass & (1 << 0))  # looseID
 
-        #sort photons by pT
-        sort_ph = op.sort(photons, lambda ph: -ph.pt)
+        # sortIDphotons
+        sortedIDphotons = op.sort(looseIDPhotons, lambda ph: -ph.pt)
 
-        #sortcleanphotons
-        sorted_ph = op.sort(cleanedPhotons, lambda ph: -ph.pt)
+        mgg = op.invariant_mass(sortedIDphotons[0].p4, sortedIDphotons[1].p4)
 
-        #selection: 2 photons (at least) in an event with invariant mass within [100,150]
-        hasTwoPh = noSel.refine("hasMassPhPh", cut=op.AND(
-            (op.rng_len(sort_ph) >= 2),
-            (op.in_range(100, op.invariant_mass(
-                sort_ph[0].p4, sort_ph[1].p4), 180))
-        ))
+        # selection: at least 2 photons
+        twoPhotonsSel = noSel.refine(
+            "hasInvMassPhPh", cut=op.AND(op.rng_len(sortedIDphotons) >= 2, sortedIDphotons[0].pt > 35, sortedIDphotons[1].pt > 25))  # sel1
 
-        mGG = op.invariant_mass(sorted_ph[0].p4, sorted_ph[1].p4)
-        hGG = op.sum(sorted_ph[0].p4, sorted_ph[1].p4)
-        
-        # objects
+        # pT/InvM(gg) > 0.33 selection for leading photon
+        pTmggRatio_sel = twoPhotonsSel.refine(
+            "ptMggLeading", cut=(op.AND(op.product(sortedIDphotons[0].pt, op.pow(mgg, -1)) > 0.33), op.product(sortedIDphotons[1].pt, op.pow(mgg, -1)) > 0.25))
+        # pTmggRatio_sel = pTmggRatioLeading_sel.refine(
+        #     "ptMggLead_Subleading", cut=op.product(sortedIDphotons[1].pt, op.pow(mgg, -1)) > 0.25)  # sel2
 
-        electrons = op.select(t.elec, lambda el: op.AND(
-            el.pt > 10., op.abs(el.eta) < 3
-        ))
+        mgg_sel = pTmggRatio_sel.refine("mgg_sel", cut=[mgg > 100])  # sel3
+
+        # electrons
+
+        electrons = op.select(t.elec, lambda el: op.AND(op.abs(el.eta) < 3, op.NOT(
+            op.in_range(1.442, op.abs(el.eta), 1.566)), el.pt > 10.))
+
+        isolatedElectrons = op.select(
+            electrons, lambda el: el.isopass & (1 << 2))
+
+        IDelectrons = op.select(
+            isolatedElectrons, lambda el: el.idpass & (1 << 0))  # loose ID
+
+        cleanedElectrons = op.select(IDelectrons, lambda el: op.NOT(
+            op.rng_any(sortedIDphotons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.2)))
+
+        # muons
 
         muons = op.select(t.muon, lambda mu: op.AND(
-            mu.pt > 10., op.abs(mu.eta) < 3
+            mu.pt > 10., op.abs(mu.eta) < 3))
+
+        isolatedMuons = op.select(muons, lambda mu: mu.isopass & (1 << 2))
+
+        IDmuons = op.select(
+            isolatedMuons, lambda mu: mu.idpass & (1 << 0))  # loose ID
+
+        cleanedMuons = op.select(IDmuons, lambda mu: op.NOT(
+            op.rng_any(sortedIDphotons, lambda ph: op.deltaR(mu.p4, ph.p4) < 0.2)))
+
+        # taus
+
+        taus = op.select(t.tau, lambda tau: op.AND(
+            tau.pt > 20., op.abs(tau.eta) < 3))
+
+        isolatedTaus = op.select(taus, lambda tau: tau.isopass & (1 << 2))
+
+        cleanedTaus = op.select(isolatedTaus, lambda tau: op.AND(
+            op.NOT(op.rng_any(sortedIDphotons,
+                   lambda ph: op.deltaR(tau.p4, ph.p4) < 0.2)),
+            op.NOT(op.rng_any(cleanedElectrons,
+                   lambda el: op.deltaR(tau.p4, el.p4) < 0.2)),
+            op.NOT(op.rng_any(cleanedMuons,
+                   lambda mu: op.deltaR(tau.p4, mu.p4) < 0.2))
         ))
 
-        taus = op.select(t.tau, lambda ta: op.AND(
-            ta.pt > 20., op.abs(ta.eta) < 3
-        ))
+        twoTausSel = mgg_sel.refine(
+            "twotausel", cut=[op.rng_len(cleanedTaus) >= 2])  # sel4
 
-        identifiedElectrons = op.select(
-            electrons, lambda el: el.idpass & (1 << 0))  # loose ID
-        cleanedElectrons = op.select(identifiedElectrons, lambda el: op.NOT(
-            op.rng_any(photons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.4)))  # dR
+        # def nDaughters(gen):
+        #     """Return the number of daughters of a given object. """
+        #     return gen.d2() - gen.d1()
 
-        isolatedMuons = op.select(
-            muons, lambda mu: mu.isopass & (1 << 2))  # tight ID & ISO
-        identifiedMuons = op.select(
-            isolatedMuons, lambda mu: mu.idpass & (1 << 2))
-        cleanedMuons = op.select(identifiedMuons, lambda mu: op.NOT(
-            op.rng_any(photons, lambda ph: op.deltaR(mu.p4, ph.p4) < 0.4)))
+        # genTaus = op.select(t.genpart, lambda g: op.abs(g.pid) == 15)
 
-        isolatedTaus = op.select(taus, lambda ta: ta.isopass & (1 << 2))
-        cleanedTaus = op.select(isolatedTaus, lambda ta: op.NOT(
-            op.rng_any(photons, lambda ph: op.deltaR(ta.p4, ph.p4) < 0.4)))
+        # oneGenTauSel = mgg_sel.refine("onegentau", cut = [op.rng_len(genTaus) >= 1])
 
-        #select jets with pt>25 GeV end eta in the detector acceptance
+        # jets
+
         jets = op.select(t.jetpuppi, lambda jet: op.AND(
-            jet.pt > 30., op.abs(jet.eta) < 2.5))
+            jet.pt > 30., op.abs(jet.eta) < 3))
 
-        identifiedJets = op.select(jets, lambda j: j.idpass & (1 << 2))
-        cleanedJets = op.select(identifiedJets, lambda j: op.AND(
-            op.NOT(op.rng_any(identifiedElectrons, lambda el: op.deltaR(
-                el.p4, j.p4) < 0.4)),  # identified or cleaned mu/e ?
-            op.NOT(op.rng_any(identifiedMuons,
-                   lambda mu: op.deltaR(mu.p4, j.p4) < 0.4))
+        IDJets = op.select(jets, lambda j: j.idpass & (1 << 2))  # tight ID
+
+        cleanedJets = op.select(IDJets, lambda j: op.AND(
+            op.NOT(op.rng_any(cleanedElectrons,
+                   lambda el: op.deltaR(j.p4, el.p4) < 0.4)),
+            op.NOT(op.rng_any(cleanedMuons, lambda mu: op.deltaR(j.p4, mu.p4) < 0.4)),
+            op.NOT(op.rng_any(cleanedTaus, lambda tau: op.deltaR(j.p4, tau.p4) < 0.4)),
+            op.NOT(op.rng_any(sortedIDphotons,
+                   lambda ph: op.deltaR(j.p4, ph.p4) < 0.4))
         ))
 
-        mJets = op.invariant_mass(cleanedJets[0].p4, cleanedJets[1].p4)
-        hJets = op.sum(cleanedJets[0].p4, cleanedJets[1].p4)
+        btaggedJets = op.select(
+            cleanedJets, lambda j: j.btag & (1 << 1))  # medium  WP
 
-        met = op.select(t.metpuppi)
-        
-        mTauTau = op.invariant_mass(cleanedTaus[0].p4, cleanedTaus[1].p4)
+        # mJets = op.invariant_mass(cleanedJets[0].p4, cleanedJets[1].p4)
+        # hJets = op.sum(cleanedJets[0].p4, cleanedJets[1].p4)
 
-      #selections
+        # met = op.select(t.metpuppi)
 
-        sel1 = noSel.refine("DiPhoton", cut=op.AND(
-            (op.rng_len(sorted_ph) >= 2), (sorted_ph[0].pt > 35.)))
+      # selections
 
-        sel2 = sel1.refine("TwoPhTwoTau", cut=op.rng_len(cleanedTaus) >= 2)
+        # sel1 = noSel.refine("DiPhoton", cut=op.AND(
+        # (op.rng_len(looseIDPhotons) >= 2), (looseIDPhotons[0].pt > 35.)))
 
-       #plots
+        OneJetSel = twoTausSel.refine(
+            "twojetsel", cut=op.rng_len(cleanedJets) >= 1)
 
-       #noSel
+        btaggedJetSel = OneJetSel.refine(
+            "btaggedjet", cut=op.rng_len(btaggedJets) >= 1)
 
-       #sel1
-        plots.append(Plot.make1D("LeadingPhotonPTSel1", sorted_ph[0].pt, sel1, EqB(
+       # plots
+
+       # sel1: twoPhotonsSel
+       # sel2: pTmggRatio_sel
+       # sel3: mgg_sel
+       # sel4: twoTausSel
+
+        plots.append(Plot.make1D("LeadingPhotonPTSel1", sortedIDphotons[0].pt, twoPhotonsSel, EqB(
+            30, 0., 250.), title="Leading Photon pT"))
+        plots.append(Plot.make1D("LeadingPhotonPTSel2", sortedIDphotons[0].pt, pTmggRatio_sel, EqB(
+            30, 0., 250.), title="Leading Photon pT"))
+        plots.append(Plot.make1D("LeadingPhotonPTSel3", sortedIDphotons[0].pt, mgg_sel, EqB(
+            30, 0., 250.), title="Leading Photon pT"))
+        plots.append(Plot.make1D("LeadingPhotonPTSel4", sortedIDphotons[0].pt, twoTausSel, EqB(
             30, 0., 250.), title="Leading Photon pT"))
 
-        plots.append(Plot.make1D("SubLeadingPhotonPTSel1", sorted_ph[1].pt, sel1, EqB(
-            30, 0., 250.), title="SubLeading Photon pT"))
-        
-        plots.append(Plot.make1D("Inv_mass_ggSel1", mGG, sel1,
-                     EqB(50, 0., 400.), title="m_{\gamma\gamma}"))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel1", sortedIDphotons[1].pt, twoPhotonsSel, EqB(
+            30, 0., 250.), title="Sub-Leading Photon pT"))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel2", sortedIDphotons[1].pt, pTmggRatio_sel, EqB(
+            30, 0., 250.), title="Sub-Leading Photon pT"))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel3", sortedIDphotons[1].pt, mgg_sel, EqB(
+            30, 0., 250.), title="Sub-Leading Photon pT"))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel4", sortedIDphotons[1].pt, twoTausSel, EqB(
+            30, 0., 250.), title="Sub-Leading Photon pT"))
 
-       #sel2
+        plots.append(Plot.make1D("leadingTau_ptSel4", cleanedTaus[0].pt, twoTausSel, EqB(
+            30, 0., 250.), title="Leading Tau p_{T}"))
 
-        plots.append(Plot.make1D("LeadingPhotonPTSel2", sorted_ph[0].pt, sel2, EqB(
-            30, 0., 250.), title="Leading Photon pT"))
+        plots.append(Plot.make1D("MggSel1", mgg, twoPhotonsSel, EqB(
+            30, 100., 180.), title="M_{\gamma\gamma}"))
+        plots.append(Plot.make1D("MggSel2", mgg, pTmggRatio_sel, EqB(
+            30, 100., 180.), title="M_{\gamma\gamma}"))
+        plots.append(Plot.make1D("MggSel3", mgg, mgg_sel, EqB(
+            30, 100., 180.), title="M_{\gamma\gamma}"))
+        plots.append(Plot.make1D("MggSel4", mgg, twoTausSel, EqB(
+            30, 100., 180.), title="M_{\gamma\gamma}"))
 
-        plots.append(Plot.make1D("SubLeadingPhotonPTSel2", sorted_ph[1].pt, sel2, EqB(
-            30, 0., 250.), title="SubLeading Photon pT"))
-
-        plots.append(Plot.make1D("Inv_mass_ggSel2", mGG, sel2,
-                     EqB(50, 100., 150.), title="m_{\gamma\gamma}"))
-
-        
-
-       #yields
-        cfr = CutFlowReport("yields")
-        
-        cfr.add(noSel, "Sel0: No selection")
-        cfr.add(sel1, "Sel1: Two Photons")
-        cfr.add(sel2, "Sel2: Two Taus")
-        
+        cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
+        cfr.add(noSel, "No selection")
+        cfr.add(twoPhotonsSel, "Two Photons")
+        cfr.add(pTmggRatio_sel, "pT/mgg Ratio")
+        cfr.add(mgg_sel, "Inv(M) Sel")
+        cfr.add(twoTausSel, "Two Taus")
 
         return plots
