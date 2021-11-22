@@ -8,7 +8,7 @@ samples:
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
-    cross-section: 0.03559656462 #fb #36.69 fb  *2 * BR (H --> GG) * BR (H --> W(QQ)W(lnu)) ( 2.137E-01 H->WW,  2.270E-03 H->GammaGamma)
+    cross-section: 0.00001563556176 #pb #36.69 fb  *2 * BR (H --> GG) * BR (H --> W(QQ)W(lnu)) ( 2.137E-01 H->WW,  2.270E-03 H->GammaGamma) {x (2 BR (W->QQ)=0.6741 x BR (W->lnu)=0.1086 (x3 for three flavors))=0.21962178}
     legend: 'HH \rightarrow WW\gamma\gamma '
     line-color: "#260AB3" #blue 
     split: 40

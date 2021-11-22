@@ -50,8 +50,8 @@ samples:
     files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 7825.1 #13TeV
-    legend: 'W1Jets \rightarrow L#nu'
-    fill-color: "#40D51A"
+    #legend: 'W1Jets \rightarrow L#nu'
+    #fill-color: "#40D51A"
     split: 40
   W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
