@@ -225,7 +225,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("SubLeadingPhotonpT_mGGLhasOneL", pT_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon p_{T}/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("LeadingPhotonE_mGGLhasOneL", E_mGGL, hasOneL,EqB(100, 0., 5.) ,title = "Leading Photon E/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("SubLeadingPhotonE_mGGLhasOneL", E_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon E/m_{\gamma\gamma}")) 
-        plots.append(Plot.make1D("MET", met, hasOneL,EqB(100, 0., 50.) ,title="MET"))
+        #plots.append(Plot.make1D("MET", met.p4.pt(), hasOneL,EqB(100, 0., 50.) ,title="MET"))
         
         #Lepton Plots
         ElectronpT = Plot.make1D("ElectronpT", idElectrons[0].pt, hasOneEl, EqB(30, 0., 300.), title = 'Leading Electron pT')
@@ -295,9 +295,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #hasThreeJ
         plots.append(Plot.make1D("Inv_mass_jjThreeJ",mJets_SL,hasThreeJ,EqB(80, 100.,180.), title = "m_{jets}"))
 
-        mvaVariables = {
+        mvaPhVariables = {
                 "weight": noSel.weight,
-                #"eta_Electron": idElectrons[0].eta,
+                "nJets": nJet,
                 "Eta_ph1": idPhotons[0].eta,
                 "Phi_ph1": idPhotons[0].phi,
                 "E_mGG_ph1": E_mGGL,
@@ -307,25 +307,42 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 "E_mGG_ph2": E_mGGSL,
                 "pT_mGG_ph2": pT_mGGSL,
                 #"E_jet1": idJets[0].p4.E(),
-                #"pt_jet1": idJets[0].pt,
-                #"Eta_jet1": idJets[0].eta,
-                #"Phi_jet1": idJets[0].phi,
-                #"E_jet2": idJets[1].p4.E(),
-                #"pt_jet2": idJets[1].pt,
-                #"Eta_jet2": idJets[1].eta,
-                #"Phi_jet2": idJets[1].phi,
+                #"Electron_E": op.switch(op.rng_len(idElectrons)==0,idElectrons[0].p4.E(),op.c_float(0.)),  
+                "E_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].p4.E())                             
+                }
+        #mvaPhVariables2 = {
+         #       "weight": noSel.weight,
+                #"Eta_ph1": idPhotons[0].eta,
+                #"Phi_ph1": idPhotons[0].phi,
+                #"E_mGG_ph1": E_mGGL,
+                #"pT_mGG_ph1": pT_mGGL,
+                #"Eta_ph2": idPhotons[1].eta,
+                #"Phi_ph2": idPhotons[1].phi,
+                #"E_mGG_ph2": E_mGGSL,
+                #"pT_mGG_ph2": pT_mGGSL,
+          #      "E_jet1": idJets[0].p4.E(),
+           #     "pt_jet1": idJets[0].pt,
+            #    "Eta_jet1": idJets[0].eta,
+             #   "Phi_jet1": idJets[0].phi,
+              #  "E_jet2": idJets[1].p4.E(),
+               # "pt_jet2": idJets[1].pt,
+               # "Eta_jet2": idJets[1].eta,
+               # "Phi_jet2": idJets[1].phi,
                 #"Lepton_E": LeptonE,
                 #"Lepton_Phi": LeptonPhi,
                 #"Lepton_Eta": LeptonEta,
                 #"Lepton_pT": LeptonpT,
-               # "InvM_jets1": mJets,
-               # "InvM_jets2": mJets_SL
-                }
+                #"InvM_jets1": mJets,
+                #"InvM_jets2": mJets_SL
+                #}
+    
+
 
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("allevts", mvaVariables,hasOneL))
+            plots.append(Skim("Photons", mvaPhVariables,hasOneL))
+            #plots.append(Skim("Jets", mvaPhVariables2,hasThreeJ))
 
         #evaluate dnn model on data
         #if self.args.mvaEval:
@@ -349,37 +366,30 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         if self.args.mvaSkim and skims:
             from bamboo.analysisutils import loadPlotIt
             p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
-            try:
-                from bamboo.root import gbl
-                import pandas as pd
-                for skim in skims:
-                    print("first step")
-                    frames = []
-                    for smp in samples:
-                        print("second step")
-                        for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
-                            print("third step")
-                            # Take specific columns
-                            tree = cb.tFile.Get(skim.treeName)
-                            if not tree:
-                                print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
-                            else:
-                                N = tree.GetEntries()
-                            cols = gbl.ROOT.RDataFrame(cb.tFile.Get(skim.treeName)).AsNumpy()
-                            cols["weight"] *= cb.scale
-                            cols["process"] = [smp.name]*len(cols["weight"])
-                            frames.append(pd.DataFrame(cols))
-                    df = pd.concat(frames)
-                    print("fourth step")
-                    df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
-                    print("fifth step")
-                    pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
-                    print("sixth step")
-                    df.to_parquet(pqoutname)
-                    print("seventh step")
-                    logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")
-            except ImportError as ex:
-                logger.error("Could not import pandas, no dataframes will be saved")
+            #try:
+            from bamboo.root import gbl
+            import pandas as pd
+            for skim in skims:
+                frames = []
+                for smp in samples:
+                    for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                        # Take specific columns
+                        tree = cb.tFile.Get(skim.treeName)
+                        if not tree:
+                            print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
+                        else:
+                            N = tree.GetEntries()
+                        cols = gbl.ROOT.RDataFrame(cb.tFile.Get(skim.treeName)).AsNumpy()
+                        cols["weight"] *= cb.scale
+                        cols["process"] = [smp.name]*len(cols["weight"])
+                        frames.append(pd.DataFrame(cols))
+                df = pd.concat(frames)
+                df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
+                df.to_parquet(pqoutname)
+                logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
+            #except ImportError as ex:
+                #logger.error("Could not import pandas, no dataframes will be saved")
         
         #produce histograms "with datacard conventions"
         if self.args.datacards:
