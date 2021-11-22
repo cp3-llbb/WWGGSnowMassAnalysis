@@ -28,7 +28,7 @@ samples:
     type: mc
     files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt   
     generated-events: sumgenweight
-    cross-section: 998.1 #McM 1038 #sheet
+    cross-section: 49.944924 #998.1 x 0.05004#McM 1038 #sheet
     #legend: 'G+jets'
     #fill-color: "#FFFF00"
     split: 40
