@@ -44,16 +44,6 @@ _yieldsTexPreface = "\n".join(f"{ln}" for ln in
 """.split("\n"))
 
 
-def _texProcName(procName):
-    if ">" in procName:
-        procName = procName.replace(">", "$ > $")
-    if "=" in procName:
-        procName = procName.replace("=", "$ = $")
-    if "_" in procName:
-        procName = procName.replace("_", "\_")
-    return procName
-
-
 def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orientation="v", align="c", yieldPrecision=1, ratioPrecision=2):
     if orientation not in ("v", "h"):
         raise RuntimeError(
@@ -131,7 +121,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                                                         {eName: getHist(sigSmp, p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             sepStr += f"{align}|"
             smpHdrs.append(
-                f"${_texProcName(sigSmp.cfg.yields_group)}$")  # sigSmp.cfg.yields_group is the name in the legend
+                f"${sigSmp.cfg.yields_group}$")  # sigSmp.cfg.yields_group is the name in the legend
             _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: sigSmp.getHist(
                 p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             colEntries_matrix = np.array(colEntries_forEff)
@@ -148,7 +138,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             entries_smp.append(colEntries_withEff)
         if len(smp_signal) > 1:
             sepStr += f"|{align}|"
-            smpHdrs.append("Signal")
+            smpHdrs.append("\\textbf{Signal}")
             stTotSig, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
                 smp, p) for smp in smp_signal) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             entries_smp.append(colEntries)
@@ -159,9 +149,9 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                                                               {eName: getHist(mcSmp, p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             sepStr += f"{align}|"
             if isinstance(mcSmp, plotit.plotit.Group):
-                smpHdrs.append(_texProcName(mcSmp.name))
+                smpHdrs.append(f"${mcSmp.name}$")
             else:
-                smpHdrs.append(f"${_texProcName(mcSmp.cfg.yields_group)}$")
+                smpHdrs.append(f"${mcSmp.cfg.yields_group}$")
             _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: mcSmp.getHist(
                 p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             colEntries_matrix = np.array(colEntries_forEff)
@@ -173,11 +163,12 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
-                colEntries_withEff.append("{0} {1}".format(entry, sel_eff[i]))
+                colEntries_withEff.append("{0} {1} {2}".format(
+                    entry, sel_eff[i], MCevents[mcSmp.cfg.pretty_name.rstrip(".root")][0][i]))
             entries_smp.append(colEntries_withEff)
         if len(smp_mc) > 1:
             sepStr += f"|{align}|"
-            smpHdrs.append("Background")
+            smpHdrs.append("\\textbf{Background}")
             stTotMC, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
                 smp, p) for smp in smp_mc) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             entries_smp.append(colEntries)
@@ -262,7 +253,7 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
     eraMode, eras = eras
     if not eras:  # from config if not specified
         eras = list(config["eras"].keys())
-    ## helper: print one bamboo.plots.CutFlowReport.Entry
+    # helper: print one bamboo.plots.CutFlowReport.Entry
 
     def printEntry(entry, printFun=logger.info, recursive=True, genEvents=None):
         if entry.nominal is not None:
@@ -276,7 +267,7 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
                     if genEvents:
                         effMsg += f", TotalEff={sumPass/genEvents:.2%}"
             printFun(
-                f"Selection {entry.name}: N={entry.nominal.GetEntries()}), SumW={entry.nominal.GetBinContent(1)}{effMsg}")
+                f"Selection {entry.name}: N={entry.nominal.GetEntries()}, SumW={entry.nominal.GetBinContent(1)}{effMsg}")
             printFun(f"Selection {entry.name}: N={entry.nominal.GetEntries()}")
         if recursive:
             for c in entry.children:
@@ -284,12 +275,13 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
                            recursive=recursive, genEvents=genEvents)
 
     def unwMCevents(entry, smp, mcevents, genEvents=None):
-        mcevents.append(entry.nominal.GetEntries())
+        if entry.nominal is not None:
+            mcevents.append(entry.nominal.GetEntries())
         for c in entry.children:
             unwMCevents(c, smp, mcevents, genEvents=genEvents)
         return mcevents
 
-    ## retrieve results files, get generated events for each sample
+    # retrieve results files, get generated events for each sample
     from bamboo.root import gbl
     resultsFiles = dict()
     generated_events = dict()
@@ -321,10 +313,10 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
     for report in reportList:
         smpReports = {smp: report.readFromResults(
             resF) for smp, resF in resultsFiles.items()}
-        ## debug print
+        # debug print
         MCevents = {}
         for smp, smpRep in smpReports.items():
-            #if smpRep.printInLog:
+            # if smpRep.printInLog:
             logger.info(f"Cutflow report {report.name} for sample {smp}")
             MCevents[smp] = []
             for root in smpRep.rootEntries():
@@ -332,7 +324,7 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
                 mcevents = []
                 MCevents[smp].append(unwMCevents(
                     root, smp, mcevents, genEvents=generated_events[smp]))
-        ## save yields.tex (if needed)
+        # save yields.tex (if needed)
         if any(len(cb) > 1 or tt != cb[0] for tt, cb in report.titles.items()):
             if not has_plotit:
                 logger.error(
@@ -419,61 +411,74 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         # count no of events here
 
-        genweightsel = noSel.refine("withgenweight", weight=t.genweight)
+        # genweightsel = noSel.refine("withgenweight", weight=t.genweight)
 
         plots = []
 
         # select photons
         photons = op.select(t.gamma, lambda ph: op.AND(op.abs(ph.eta) < 3, op.NOT(
-            op.in_range(1.442, op.abs(ph.eta), 1.566)), ph.pt > 25))
+            op.in_range(1.442, op.abs(ph.eta), 1.566)), ph.pt > 10))
 
         # select loose ID photon
-        looseIDPhotons = op.select(
-            photons, lambda ph: ph.idpass & (1 << 0))  # looseID
+        ISOphotons = op.select(photons, lambda ph: ph.isopass & (1 << 0))
 
-        # sortIDphotons
-        sortedIDphotons = op.sort(looseIDPhotons, lambda ph: -ph.pt)
+        IDphotons = op.select(
+            ISOphotons, lambda ph: ph.idpass & (1 << 0))  # looseID
 
-        mgg = op.invariant_mass(sortedIDphotons[0].p4, sortedIDphotons[1].p4)
+        # ph selection for eff
+        # hasOnePh = noSel.refine("hasOnePh", cut=op.rng_len(photons) >= 1)
+        # hasOneIDPh = noSel.refine("hasOneIDPh", cut=op.rng_len(IDphotons) >= 1)
+
+        mgg = op.invariant_mass(IDphotons[0].p4, IDphotons[1].p4)
 
         # selection: at least 2 photons
         twoPhotonsSel = noSel.refine(
-            "hasInvMassPhPh", cut=op.AND(op.rng_len(sortedIDphotons) >= 2, sortedIDphotons[0].pt > 35, sortedIDphotons[1].pt > 25))  # sel1
+            "hasInvMassPhPh", cut=[op.AND(op.rng_len(IDphotons) >= 2, IDphotons[0].pt > 35, IDphotons[1].pt > 25)])  # sel1
 
         # pT/InvM(gg) > 0.33 selection for leading photon
         pTmggRatio_sel = twoPhotonsSel.refine(
-            "ptMggLeading", cut=(op.AND(op.product(sortedIDphotons[0].pt, op.pow(mgg, -1)) > 0.33), op.product(sortedIDphotons[1].pt, op.pow(mgg, -1)) > 0.25))
-        # pTmggRatio_sel = pTmggRatioLeading_sel.refine(
-        #     "ptMggLead_Subleading", cut=op.product(sortedIDphotons[1].pt, op.pow(mgg, -1)) > 0.25)  # sel2
+            "ptMggLeading", cut=[(op.AND(op.product(IDphotons[0].pt, op.pow(mgg, -1)) > 0.33), op.product(IDphotons[1].pt, op.pow(mgg, -1)) > 0.25)])
 
-        mgg_sel = pTmggRatio_sel.refine("mgg_sel", cut=[mgg > 100])  # sel3
+        mgg_sel = pTmggRatio_sel.refine(
+            "mgg_sel", cut=[op.in_range(100, mgg, 180)])  # sel3
 
         # electrons
 
         electrons = op.select(t.elec, lambda el: op.AND(op.abs(el.eta) < 3, op.NOT(
             op.in_range(1.442, op.abs(el.eta), 1.566)), el.pt > 10.))
 
-        isolatedElectrons = op.select(
-            electrons, lambda el: el.isopass & (1 << 2))
+        ISOelectrons = op.select(electrons, lambda el: el.isopass & (1 << 0))
 
         IDelectrons = op.select(
-            isolatedElectrons, lambda el: el.idpass & (1 << 0))  # loose ID
+            ISOelectrons, lambda el: el.idpass & (1 << 0))  # loose ID
 
         cleanedElectrons = op.select(IDelectrons, lambda el: op.NOT(
-            op.rng_any(sortedIDphotons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.2)))
+            op.rng_any(IDphotons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.2)))
+
+        # e selection for eff
+        # hasOneEl = noSel.refine(
+        #     "hasOneElec", cut=[op.rng_len(electrons) >= 1])
+        # hasOneIDel = hasOneEl.refine(
+        #     "hasOneIDelec", cut=[op.rng_len(IDelectrons) >= 1])
 
         # muons
 
         muons = op.select(t.muon, lambda mu: op.AND(
-            mu.pt > 10., op.abs(mu.eta) < 3))
+            mu.pt > 10., op.abs(mu.eta) < 2.8))
 
-        isolatedMuons = op.select(muons, lambda mu: mu.isopass & (1 << 2))
+        ISOmuons = op.select(muons, lambda mu: mu.isopass & (1 << 0))
 
         IDmuons = op.select(
-            isolatedMuons, lambda mu: mu.idpass & (1 << 0))  # loose ID
+            ISOmuons, lambda mu: mu.idpass & (1 << 0))  # loose ID
 
         cleanedMuons = op.select(IDmuons, lambda mu: op.NOT(
-            op.rng_any(sortedIDphotons, lambda ph: op.deltaR(mu.p4, ph.p4) < 0.2)))
+            op.rng_any(IDphotons, lambda ph: op.deltaR(mu.p4, ph.p4) < 0.2)))
+
+        # mu selection for eff
+        # hasOneMu = noSel.refine(
+        #     "hasOneMuon", cut=[op.rng_len(muons) >= 1])
+        # hasOneIDmu = hasOneMu.refine(
+        #     "hasOneIDmuon", cut=[op.rng_len(IDmuons) >= 1])
 
         # taus
 
@@ -483,7 +488,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         isolatedTaus = op.select(taus, lambda tau: tau.isopass & (1 << 2))
 
         cleanedTaus = op.select(isolatedTaus, lambda tau: op.AND(
-            op.NOT(op.rng_any(sortedIDphotons,
+            op.NOT(op.rng_any(IDphotons,
                    lambda ph: op.deltaR(tau.p4, ph.p4) < 0.2)),
             op.NOT(op.rng_any(cleanedElectrons,
                    lambda el: op.deltaR(tau.p4, el.p4) < 0.2)),
@@ -504,22 +509,22 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         # jets
 
-        jets = op.select(t.jetpuppi, lambda jet: op.AND(
-            jet.pt > 30., op.abs(jet.eta) < 3))
+        # jets = op.select(t.jetpuppi, lambda jet: op.AND(
+        #     jet.pt > 30., op.abs(jet.eta) < 3))
 
-        IDJets = op.select(jets, lambda j: j.idpass & (1 << 2))  # tight ID
+        # IDJets = op.select(jets, lambda j: j.idpass & (1 << 2))  # tight ID
 
-        cleanedJets = op.select(IDJets, lambda j: op.AND(
-            op.NOT(op.rng_any(cleanedElectrons,
-                   lambda el: op.deltaR(j.p4, el.p4) < 0.4)),
-            op.NOT(op.rng_any(cleanedMuons, lambda mu: op.deltaR(j.p4, mu.p4) < 0.4)),
-            op.NOT(op.rng_any(cleanedTaus, lambda tau: op.deltaR(j.p4, tau.p4) < 0.4)),
-            op.NOT(op.rng_any(sortedIDphotons,
-                   lambda ph: op.deltaR(j.p4, ph.p4) < 0.4))
-        ))
+        # cleanedJets = op.select(IDJets, lambda j: op.AND(
+        #     op.NOT(op.rng_any(cleanedElectrons,
+        #            lambda el: op.deltaR(j.p4, el.p4) < 0.4)),
+        #     op.NOT(op.rng_any(cleanedMuons, lambda mu: op.deltaR(j.p4, mu.p4) < 0.4)),
+        #     op.NOT(op.rng_any(cleanedTaus, lambda tau: op.deltaR(j.p4, tau.p4) < 0.4)),
+        #     op.NOT(op.rng_any(IDphotons,
+        #            lambda ph: op.deltaR(j.p4, ph.p4) < 0.4))
+        # ))
 
-        btaggedJets = op.select(
-            cleanedJets, lambda j: j.btag & (1 << 1))  # medium  WP
+        # btaggedJets = op.select(
+        #     cleanedJets, lambda j: j.btag & (1 << 1))  # medium  WP
 
         # mJets = op.invariant_mass(cleanedJets[0].p4, cleanedJets[1].p4)
         # hJets = op.sum(cleanedJets[0].p4, cleanedJets[1].p4)
@@ -529,13 +534,13 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
       # selections
 
         # sel1 = noSel.refine("DiPhoton", cut=op.AND(
-        # (op.rng_len(looseIDPhotons) >= 2), (looseIDPhotons[0].pt > 35.)))
+        # (op.rng_len(IDphotons) >= 2), (IDphotons[0].pt > 35.)))
 
-        OneJetSel = twoTausSel.refine(
-            "twojetsel", cut=op.rng_len(cleanedJets) >= 1)
+        # OneJetSel = twoTausSel.refine(
+        #     "twojetsel", cut=op.rng_len(cleanedJets) >= 1)
 
-        btaggedJetSel = OneJetSel.refine(
-            "btaggedjet", cut=op.rng_len(btaggedJets) >= 1)
+        # btaggedJetSel = OneJetSel.refine(
+        #     "btaggedjet", cut=op.rng_len(btaggedJets) >= 1)
 
        # plots
 
@@ -544,35 +549,52 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
        # sel3: mgg_sel
        # sel4: twoTausSel
 
-        plots.append(Plot.make1D("LeadingPhotonPTSel1", sortedIDphotons[0].pt, twoPhotonsSel, EqB(
-            30, 0., 250.), title="Leading Photon pT"))
-        plots.append(Plot.make1D("LeadingPhotonPTSel2", sortedIDphotons[0].pt, pTmggRatio_sel, EqB(
-            30, 0., 250.), title="Leading Photon pT"))
-        plots.append(Plot.make1D("LeadingPhotonPTSel3", sortedIDphotons[0].pt, mgg_sel, EqB(
-            30, 0., 250.), title="Leading Photon pT"))
-        plots.append(Plot.make1D("LeadingPhotonPTSel4", sortedIDphotons[0].pt, twoTausSel, EqB(
-            30, 0., 250.), title="Leading Photon pT"))
+        # plots.append(Plot.make1D("LeadingPhotonPTnonID", photons[0].pt, hasOnePh, EqB(
+        #     50, 0., 250.), title="Leading Photon p_{T} [GeV]"))
+        # plots.append(Plot.make1D("LeadingPhotonPtID_Eff", IDphotons[0].pt, hasOneIDPh, EqB(
+        #     50, 0., 250.), title="Leading Photon p_{T} [GeV]"))
 
-        plots.append(Plot.make1D("SubLeadingPhotonPTSel1", sortedIDphotons[1].pt, twoPhotonsSel, EqB(
-            30, 0., 250.), title="Sub-Leading Photon pT"))
-        plots.append(Plot.make1D("SubLeadingPhotonPTSel2", sortedIDphotons[1].pt, pTmggRatio_sel, EqB(
-            30, 0., 250.), title="Sub-Leading Photon pT"))
-        plots.append(Plot.make1D("SubLeadingPhotonPTSel3", sortedIDphotons[1].pt, mgg_sel, EqB(
-            30, 0., 250.), title="Sub-Leading Photon pT"))
-        plots.append(Plot.make1D("SubLeadingPhotonPTSel4", sortedIDphotons[1].pt, twoTausSel, EqB(
-            30, 0., 250.), title="Sub-Leading Photon pT"))
+        # plots.append(Plot.make1D("LeadingElectronPTnonID", electrons[0].pt, hasOneEl, EqB(
+        #     50, 0., 250.), title="Leading Electron p_{T} [GeV]"))
+        # plots.append(Plot.make1D("LeadingElectronPtID_Eff", IDelectrons[0].pt, hasOneIDel, EqB(
+        #     50, 0., 250.), title="Leading Electron p_{T} [GeV]"))
+
+        # plots.append(Plot.make1D("LeadingMuonPTnonID", muons[0].pt, hasOneMu, EqB(
+        #     50, 0., 250.), title="Leading Muon p_{T} [GeV]"))
+        # plots.append(Plot.make1D("LeadingMuonPtID_Eff", IDmuons[0].pt, hasOneIDmu, EqB(
+        #     50, 0., 250.), title="Leading Muon p_{T} [GeV]"))
+
+        plots.append(Plot.make1D("LeadingPhotonPTSel1", IDphotons[0].pt, twoPhotonsSel, EqB(
+            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("LeadingPhotonPTSel2", IDphotons[0].pt, pTmggRatio_sel, EqB(
+            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("LeadingPhotonPTSel3", IDphotons[0].pt, mgg_sel, EqB(
+            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("LeadingPhotonPTSel4", IDphotons[0].pt, twoTausSel, EqB(
+            20, 30., 500.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel1", IDphotons[1].pt, twoPhotonsSel, EqB(
+            20, 20., 700.), title="Sub-Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel2", IDphotons[1].pt, pTmggRatio_sel, EqB(
+            20, 20., 700.), title="Sub-Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel3", IDphotons[1].pt, mgg_sel, EqB(
+            20, 20., 700.), title="Sub-Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("SubLeadingPhotonPTSel4", IDphotons[1].pt, twoTausSel, EqB(
+            15, 20., 400.), title="Sub-Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
 
         plots.append(Plot.make1D("leadingTau_ptSel4", cleanedTaus[0].pt, twoTausSel, EqB(
-            30, 0., 250.), title="Leading Tau p_{T}"))
+            20, 0., 400.), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("SubleadingTau_ptSel4", cleanedTaus[1].pt, twoTausSel, EqB(
+            20, 0., 400.), title="Subleading Tau p_{T} [GeV]", plotopts={"log-y": True}))
 
         plots.append(Plot.make1D("MggSel1", mgg, twoPhotonsSel, EqB(
-            30, 100., 180.), title="M_{\gamma\gamma}"))
+            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("MggSel2", mgg, pTmggRatio_sel, EqB(
-            30, 100., 180.), title="M_{\gamma\gamma}"))
+            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("MggSel3", mgg, mgg_sel, EqB(
-            30, 100., 180.), title="M_{\gamma\gamma}"))
+            30, 95., 185.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("MggSel4", mgg, twoTausSel, EqB(
-            30, 100., 180.), title="M_{\gamma\gamma}"))
+            30, 95, 185.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
