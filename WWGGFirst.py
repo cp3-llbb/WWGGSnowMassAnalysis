@@ -226,6 +226,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("LeadingPhotonE_mGGLhasOneL", E_mGGL, hasOneL,EqB(100, 0., 5.) ,title = "Leading Photon E/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("SubLeadingPhotonE_mGGLhasOneL", E_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon E/m_{\gamma\gamma}")) 
         #plots.append(Plot.make1D("MET", met.p4.pt(), hasOneL,EqB(100, 0., 50.) ,title="MET"))
+
         
         #Lepton Plots
         ElectronpT = Plot.make1D("ElectronpT", idElectrons[0].pt, hasOneEl, EqB(30, 0., 300.), title = 'Leading Electron pT')
@@ -284,7 +285,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("nJetsOneTwoJ", nJet, hasTwoJ, EqB(10, 0., 10.), title="Number of Jets"))
         plots.append(Plot.make1D("LeadingJetPthasTwoJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
         plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
-        plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 100.,180.), title = "m_{jets}"))
+        plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 20.,200.), title = "m_{jets}"))
         plots.append(Plot.make1D("LeadingJetEtaTwoJ", idJets[0].eta, hasTwoJ, EqB(80, -4., 4.), title="Leading Jet eta"))
         plots.append(Plot.make1D("SubLeadingJetEtaTwoJ", idJets[1].eta, hasTwoJ, EqB(80, -4., 4.), title="SubLeading Jet eta"))
         plots.append(Plot.make1D("LeadingJetPhiTwoJ", idJets[0].phi, hasTwoJ, EqB(100, -3.5, 3.5), title="Leading Jet phi"))
@@ -295,7 +296,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #hasThreeJ
         plots.append(Plot.make1D("Inv_mass_jjThreeJ",mJets_SL,hasThreeJ,EqB(80, 100.,180.), title = "m_{jets}"))
 
-        mvaPhVariables = {
+        mvaVariables = {
                 "weight": noSel.weight,
                 "Eta_ph1": idPhotons[0].eta,
                 "Phi_ph1": idPhotons[0].phi,
@@ -325,19 +326,20 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 "InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
                 "InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL) 
                 } 
-    
 
 
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("Skim", mvaPhVariables,hasOneL))
+            plots.append(Skim("Skim", mvaVariables,hasOneL))
 
         #evaluate dnn model on data
-        #if self.args.mvaEval:
-        #   mvaVariables.pop("weight", None)
-        #   dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
-        #   plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasTwoPhTwoB,EqB(20, 1, 1.)))
+        if self.args.mvaEval:
+           mvaVariables.pop("weight", None)
+           dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
+           plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasOneL,EqB(50, -0.1, 1.)))
+           #hasDNNscore = hasOneL.refine("hasDNNscore", cut = dnn(*mvaVariables.values()) > 0.6)
+           #plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
     
         return plots
 
