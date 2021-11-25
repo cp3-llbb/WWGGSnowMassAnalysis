@@ -1,14 +1,14 @@
 tree: myana/mytree
 eras:
   HL-LHC:
-    luminosity: 41.5 # 1/fb
+    luminosity: 41500 # 1/pb
 samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL-LHC
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
-    cross-section: 0.01328   #13 TeV  0.01328454187
+    cross-section: 0.00001328    #13 TeV  0.01328454187
     legend: 'HH \rightarrow WW\gamma\gamma '
     line-color: "#260AB3" #blue 
     split: 40
