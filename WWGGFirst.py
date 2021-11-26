@@ -64,7 +64,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sort_ph = op.sort(photons, lambda ph : -ph.pt)
 
         #selection of photons with loose ID        
-        idPhotons = op.select(sort_ph, lambda ph : ph.idpass & (1<<0))
+        idPhotons = op.select(sort_ph, lambda ph : ph.idpass & (1<<2)) #switched to tight ID on 26/11
         #H->WW->2q1l1nu
        
         electrons = op.select(t.elec, lambda el : op.AND(
@@ -343,7 +343,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             inputs = op.array('float',*[op.static_cast('float',val) for val in mvaVariables.values()])
             output = dnn(inputs)
            
-            plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, -0.1, 1.)))
+            plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
             hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] > 0.6)
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("DNN_output",op.rng_len(output), hasDNNscore, EqB(20,0,10), title = "dnn_output"))
