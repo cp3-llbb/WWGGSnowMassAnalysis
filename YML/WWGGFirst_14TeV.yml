@@ -8,8 +8,8 @@ samples:
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
-    cross-section: 0.00001563556176 #pb #36.69 fb  *2 * BR (H --> GG) * BR (H --> W(QQ)W(lnu)) ( 2.137E-01 H->WW,  2.270E-03 H->GammaGamma) {x (2 BR (W->QQ)=0.6741 x BR (W->lnu)=0.1086 (x3 for three flavors))=0.21962178}
-    legend: 'HH \rightarrow WW\gamma\gamma  '
+    cross-section: 0.01563556176 #pb #36.69 fb  *2 * BR (H --> GG) * BR (H --> W(QQ)W(lnu)) ( 2.137E-01 H->WW,  2.270E-03 H->GammaGamma) {x (2 BR (W->QQ)=0.6741 x BR (W->lnu)=0.1086 (x3 for three flavors))=0.21962178}
+    legend: 'HH \rightarrow WW\gamma\gamma x 10^{3}'
     line-color: "#260AB3" #blue 
     split: 40
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
@@ -151,7 +151,7 @@ samples:
     generated-events: sumgenweight
     cross-section:  1.884
     legend: 'WGGJets'
-    fill-color: "#40D51A" 
+    fill-color: "#40D51A" #'#008080'  
     order: 6
     split: 40
   WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU:
@@ -161,7 +161,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 6.032 
     legend: 'WGJJ'
-    fill-color: "#28CCE2"
+    fill-color: "#28CCE2" #'#28CCE2'
     order: 7
     split: 40
   ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
@@ -181,7 +181,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 70.44 #McM 
     legend: 'WW(inclusive)'
-    fill-color: "#40D51A"  
+    fill-color: "#D489FF" #'#1AD5B0' 
     order: 9
     split: 40  
   GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
@@ -238,36 +238,36 @@ plotIt:
     #error-marker-style: ?
   plotdefaults:
     log-y: True
-    sort-by-yields: False 
+    sort-by-yields: True
     save-extensions: [pdf, png]
-    y-axis-range: [0.1,1000000000]
+    y-axis-range: [0.001,1000000000]
   legend:
     position: [0.55, 0.72, 0.85, 0.92]
     columns: 3
   groups:
     WJets:
       legend: WJets
-      fill-color: "#FFCC33" #"#0066CC"
+      fill-color: "#FFCC33" #'#cc7a16'
       order: 3
     GJet:
       legend: GJet
-      fill-color: "#1AD5B0"  
+      fill-color: "#1AD5B0" #'#FFFF00'   
       order: 4
     QCD:
       legend: QCD
-      fill-color: "#008080" #"#40D51A" fresh green
+      fill-color: "#008080" #'#E2283B' 
       order: 10
     SingleH:
       legend: Single H
-      fill-color: "#FFFFCC" #E2283B-vivid red
+      fill-color: "#FFFFCC" #'#FFCC33'
       order: 1
     topInduced:
       legend: Top Induced
-      fill-color: "#E2283B" #"#FFFF99" #"#D489FF"
+      fill-color: "#E2283B" #'#D489FF' 
       order: 2
     DiPhoton:
       legend: \gamma\gamma + jets
-      fill-color: "#FF6600" 
+      fill-color: "#FF6600" #'#40D51A'
       order: 5 
 
 
