@@ -1,6 +1,7 @@
 from bamboo.analysismodules import AnalysisModule, HistogramsModule
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 class CMSPhase2SimRTBModule(AnalysisModule):
@@ -225,7 +226,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("SubLeadingPhotonpT_mGGLhasOneL", pT_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon p_{T}/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("LeadingPhotonE_mGGLhasOneL", E_mGGL, hasOneL,EqB(100, 0., 5.) ,title = "Leading Photon E/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("SubLeadingPhotonE_mGGLhasOneL", E_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon E/m_{\gamma\gamma}")) 
-        #plots.append(Plot.make1D("MET", met.p4.pt(), hasOneL,EqB(100, 0., 50.) ,title="MET"))
+        #plots.append(Plot.make1D("MET", met, hasOneL,EqB(100, 0., 70.) ,title="MET"))
 
         
         #Lepton Plots
@@ -285,7 +286,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("nJetsOneTwoJ", nJet, hasTwoJ, EqB(10, 0., 10.), title="Number of Jets"))
         plots.append(Plot.make1D("LeadingJetPthasTwoJ", idJets[0].pt, hasTwoJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
         plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
-        plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 20.,200.), title = "m_{jets}"))
+        plots.append(Plot.make1D("Inv_mass_jjTwoJ",mJets,hasTwoJ,EqB(80, 20.,220.), title = "m_{jets}"))
         plots.append(Plot.make1D("LeadingJetEtaTwoJ", idJets[0].eta, hasTwoJ, EqB(80, -4., 4.), title="Leading Jet eta"))
         plots.append(Plot.make1D("SubLeadingJetEtaTwoJ", idJets[1].eta, hasTwoJ, EqB(80, -4., 4.), title="SubLeading Jet eta"))
         plots.append(Plot.make1D("LeadingJetPhiTwoJ", idJets[0].phi, hasTwoJ, EqB(100, -3.5, 3.5), title="Leading Jet phi"))
@@ -335,11 +336,18 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #evaluate dnn model on data
         if self.args.mvaEval:
-           mvaVariables.pop("weight", None)
-           dnn = op.mvaEvaluator("./model.onnx", mvaType = "ONNXRuntime", otherArgs = "predictions")
-           plots.append(Plot.make1D("dnn_score", dnn(*mvaVariables.values()),hasOneL,EqB(50, -0.1, 1.)))
-           #hasDNNscore = hasOneL.refine("hasDNNscore", cut = dnn(*mvaVariables.values()) > 0.6)
-           #plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            from IPython import embed
+            DNNmodel_path  = "/home/ucl/cp3/sdonerta/bamboodev/WWGG/model.onnx" 
+            mvaVariables.pop("weight", None)
+            dnn = op.mvaEvaluator(DNNmodel_path, mvaType = "ONNXRuntime", otherArgs = "predictions")
+            inputs = op.array('float',*[op.static_cast('float',val) for val in mvaVariables.values()])
+            output = dnn(inputs)
+           
+            plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, -0.1, 1.)))
+            hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] > 0.6)
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("DNN_output",op.rng_len(output), hasDNNscore, EqB(20,0,10), title = "dnn_output"))
+            #embed()       
     
         return plots
 
