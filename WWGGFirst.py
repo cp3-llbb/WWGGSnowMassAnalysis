@@ -1,8 +1,8 @@
 from bamboo.analysismodules import AnalysisModule, HistogramsModule
 import logging
+from bamboo.analysisutils import loadPlotIt
+import os.path
 
-
-logger = logging.getLogger(__name__)
 
 class CMSPhase2SimRTBModule(AnalysisModule):
     """ Base module for processing Phase2 flat trees """
@@ -27,10 +27,454 @@ class CMSPhase2SimRTBModule(AnalysisModule):
     def readCounters(self, resultsFile):
         return {"sumgenweight": resultsFile.Get("h_count_genweight").GetBinContent(1)}
 
+# BEGIN cutflow reports, adapted from bamboo.analysisutils
+
+
+logger = logging.getLogger(__name__)
+
+_yieldsTexPreface = "\n".join(f"{ln}" for ln in
+                              r"""\documentclass[12pt, landscape]{article}
+\usepackage[margin=0.2in, a3paper]{geometry}
+\begin{document}
+""".split("\n"))
+
+
+def _texProcName(procName):
+    if ">" in procName:
+        procName = procName.replace(">", "$ > $")
+    if "=" in procName:
+        procName = procName.replace("=", "$ = $")
+    if "_" in procName:
+        procName = procName.replace("_", "\_")
+    return procName
+
+
+def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orientation="v", align="c", yieldPrecision=1, ratioPrecision=2):
+    if orientation not in ("v", "h"):
+        raise RuntimeError(
+            f"Unsupported table orientation: {orientation} (valid: 'h' and 'v')")
+    import plotit.plotit
+    from plotit.plotit import Stack
+    import numpy as np
+    from itertools import repeat, count
+
+    def getHist(smp, plot):
+        try:
+            h = smp.getHist(plot)
+            h.contents  # check
+            return h
+        except KeyError:
+            return None
+
+    def colEntriesFromCFREntryHists(report, entryHists, precision=1, showUncert=True):
+        stacks_t = []
+        colEntries = []
+        for entries in report.titles.values():
+            s_entries = []
+            for eName in entries:
+                eh = entryHists[eName]
+                if eh is not None:
+                    if (not isinstance(eh, Stack)) or eh.entries:
+                        s_entries.append(eh)
+            st_t = Stack(entries=s_entries)
+            if s_entries:
+                uncert = " \pm {{:.{}f}}".format(precision).format(
+                    np.sqrt(st_t.sumw2+st_t.syst2)[1]) if showUncert else ""
+                colEntries.append("${{0:.2e}}$".format(
+                    precision).format(st_t.contents[1]))
+                stacks_t.append(st_t)
+            else:
+                colEntries.append("---")
+                stacks_t.append(None)
+        return stacks_t, colEntries
+
+    def colEntriesFromCFREntryHists_forEff(report, entryHists, precision=1, showUncert=True):
+        stacks_t = []
+        colEntries = []
+        for entries in report.titles.values():  # selection names
+            s_entries = []
+            for eName in entries:
+                eh = entryHists[eName]
+                if eh is not None:
+                    if (not isinstance(eh, Stack)) or eh.entries:
+                        s_entries.append(eh)
+            st_t = Stack(entries=s_entries)
+            if s_entries:
+                uncert = " \pm {{:.{}f}}".format(precision).format(
+                    np.sqrt(st_t.sumw2+st_t.syst2)[1]) if showUncert else ""
+                colEntries.append("{{0}}".format(
+                    precision).format(st_t.contents[1]))
+                stacks_t.append(st_t)
+            else:
+                colEntries.append("---")
+                stacks_t.append(None)
+        return stacks_t, colEntries
+
+    smp_signal = [smp for smp in samples if smp.cfg.type == "SIGNAL"]
+    smp_mc = [smp for smp in samples if smp.cfg.type == "MC"]
+    smp_data = [smp for smp in samples if smp.cfg.type == "DATA"]
+    sepStr = "|l|"
+    smpHdrs = []
+    titles = list(report.titles.keys())  # titles are selections
+    entries_smp = []
+    stTotSig, stTotMC, stTotData = None, None, None
+    if smp_signal:
+        sepStr += "|"
+        sel_list = []
+        for sigSmp in smp_signal:
+            _, colEntries = colEntriesFromCFREntryHists(report,
+                                                        {eName: getHist(sigSmp, p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            sepStr += f"{align}|"
+            smpHdrs.append(
+                f"${_texProcName(sigSmp.cfg.yields_group)}$")  # sigSmp.cfg.yields_group is the name in the legend
+            _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: sigSmp.getHist(
+                p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            colEntries_matrix = np.array(colEntries_forEff)
+            sel_eff = np.array([100])
+            for i in range(1, len(report.titles)):
+                sel_eff = np.append(sel_eff, [float(
+                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+            for i in range(len(report.titles)):
+                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+            colEntries_withEff = []
+            for i, entry in enumerate(colEntries):
+                colEntries_withEff.append("{0} {1} {2}".format(
+                    entry, sel_eff[i], MCevents[sigSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+            entries_smp.append(colEntries_withEff)
+        if len(smp_signal) > 1:
+            sepStr += f"|{align}|"
+            smpHdrs.append("Signal")
+            stTotSig, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
+                smp, p) for smp in smp_signal) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            entries_smp.append(colEntries)
+    if smp_mc:
+        sepStr += "|"
+        for mcSmp in smp_mc:
+            stTotMC, colEntries = colEntriesFromCFREntryHists(report,
+                                                              {eName: getHist(mcSmp, p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            sepStr += f"{align}|"
+            if isinstance(mcSmp, plotit.plotit.Group):
+                smpHdrs.append(f"${_texProcName(mcSmp.name)}$")
+            else:
+                smpHdrs.append(f"${_texProcName(mcSmp.cfg.yields_group)}$")
+            _, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: mcSmp.getHist(
+                p) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            colEntries_matrix = np.array(colEntries_forEff)
+            sel_eff = np.array([100])
+            for i in range(1, len(report.titles)):
+                sel_eff = np.append(sel_eff, [float(
+                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+            for i in range(len(report.titles)):
+                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+            colEntries_withEff = []
+            for i, entry in enumerate(colEntries):
+                colEntries_withEff.append("{0} {1} {2}".format(
+                    entry, sel_eff[i], MCevents[mcSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+            entries_smp.append(colEntries_withEff)
+        if len(smp_mc) > 1:
+            sepStr += f"|{align}|"
+            smpHdrs.append("Background")
+            stTotMC, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
+                smp, p) for smp in smp_mc) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
+            entries_smp.append(colEntries)
+    if smp_data:
+        sepStr += f"|{align}|"
+        smpHdrs.append("Data")
+        stTotData, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
+            smp, p) for smp in smp_data) if h]) for eName, p in entryPlots.items()}, precision=0, showUncert=False)
+        entries_smp.append(colEntries)
+    if smp_data and smp_mc:
+        sepStr += f"|{align}|"
+        smpHdrs.append("Data/MC")
+        colEntries = []
+        import numpy.ma as ma
+        for stData, stMC in zip(stTotData, stTotMC):
+            if stData is not None and stMC is not None:
+                dtCont = stData.contents
+                mcCont = ma.array(stMC.contents)
+                ratio = dtCont/mcCont
+                ratioErr = np.sqrt(mcCont**2*stData.sumw2 +
+                                   dtCont**2*(stMC.sumw2+stMC.syst2))/mcCont**2
+                if mcCont[1] != 0.:
+                    colEntries.append("${{0:.{0}f}}$".format(
+                        ratioPrecision).format(ratio[1]))
+                else:
+                    colEntries.append("---")
+            else:
+                colEntries.append("---")
+        entries_smp.append(colEntries)
+    c_bySmp = entries_smp
+    c_byHdr = [[smpEntries[i] for smpEntries in entries_smp]
+               for i in range(len(titles))]
+    if orientation == "v":
+        rowHdrs = titles  # selections
+        colHdrs = ["Selections"]+smpHdrs  # samples
+        c_byRow = c_byHdr
+        c_byCol = c_bySmp
+    else:  # horizontal
+        sepStr = "|l|{0}|".format("|".join(repeat(align, len(titles))))
+        rowHdrs = smpHdrs  # samples
+        colHdrs = ["Samples"]+titles  # selections
+        c_byRow = c_bySmp
+        c_byCol = c_byHdr
+    if entries_smp:
+        colWidths = [max(len(rh) for rh in rowHdrs)+1]+[max(len(hdr), max(len(c)
+                                                                          for c in col))+1 for hdr, col in zip(colHdrs[1:], c_byCol)]
+        return "\n".join([
+            f"\\renewcommand{{\\arraystretch}}{{{stretch}}}",
+            f"\\begin{{tabular}}{{ {sepStr} }}",
+            "    \\hline",
+            "    {0} \\\\".format(" & ".join(h.ljust(cw)
+                                  for cw, h in zip(colWidths, colHdrs))),
+            "    \\hline"]+[
+                "    {0} \\\\".format(" & ".join(en.rjust(cw)
+                                      for cw, en in zip(colWidths, [rh]+rowEntries)))
+                for rh, rowEntries in zip(rowHdrs, c_byRow)
+        ]+[
+            "    \\hline",
+            "\\end{tabular}"
+            "\\end{document}"
+        ])
+
+
+def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=None, readCounters=lambda f: -1., eras=("all", None), verbose=False):
+    """
+    Print yields to the log file, and write a LaTeX yields table for each
+
+    Samples can be grouped (only for the LaTeX table) by specifying the
+    ``yields-group`` key (overriding the regular ``groups`` used for plots).
+    The sample (or group) name to use in this table should be specified
+    through the ``yields-title`` sample key.
+
+    In addition, the following options in the ``plotIt`` section of
+    the YAML configuration file influence the layout of the LaTeX yields table:
+
+    - ``yields-table-stretch``: ``\\arraystretch`` value, 1.15 by default
+    - ``yields-table-align``: orientation, ``h`` (default), samples in rows, or ``v``, samples in columns
+    - ``yields-table-text-align``: alignment of text in table cells (default: ``c``)
+    - ``yields-table-numerical-precision-yields``: number of digits after the decimal point for yields (default: 1)
+    - ``yields-table-numerical-precision-ratio``: number of digits after the decimal point for ratios (default: 2)
+    """
+    eraMode, eras = eras
+    if not eras:  # from config if not specified
+        eras = list(config["eras"].keys())
+    # helper: print one bamboo.plots.CutFlowReport.Entry
+
+    def printEntry(entry, printFun=logger.info, recursive=True, genEvents=None):
+        if entry.nominal is not None:
+            effMsg = ""
+            if entry.parent:
+                sumPass = entry.nominal.GetBinContent(1)
+                sumTotal = (entry.parent.nominal.GetBinContent(
+                    1) if entry.parent.nominal is not None else 0.)
+                if sumTotal != 0.:
+                    effMsg = f", Eff={sumPass/sumTotal:.2%}"
+                    if genEvents:
+                        effMsg += f", TotalEff={sumPass/genEvents:.2%}"
+            printFun(
+                f"Selection {entry.name}: N={entry.nominal.GetEntries()}, SumW={entry.nominal.GetBinContent(1)}{effMsg}")
+            # printFun(f"Selection {entry.name}: N={entry.nominal.GetEntries()}")
+        if recursive:
+            for c in entry.children:
+                printEntry(c, printFun=printFun,
+                           recursive=recursive, genEvents=genEvents)
+
+    def unwMCevents(entry, smp, mcevents, genEvents=None):
+        if entry.nominal is not None:
+            mcevents.append(entry.nominal.GetEntries())
+        for c in entry.children:
+            unwMCevents(c, smp, mcevents, genEvents=genEvents)
+        return mcevents
+
+    # retrieve results files, get generated events for each sample
+    from bamboo.root import gbl
+    resultsFiles = dict()
+    generated_events = dict()
+    for smp, smpCfg in config["samples"].items():
+        if "era" not in smpCfg or smpCfg["era"] in eras:
+            resF = gbl.TFile.Open(os.path.join(resultsdir, f"{smp}.root"))
+            resultsFiles[smp] = resF
+            genEvts = None
+            if "generated-events" in smpCfg:
+                if isinstance(smpCfg["generated-events"], str):
+                    genEvts = readCounters(resF)[smpCfg["generated-events"]]
+                else:
+                    genEvts = smpCfg["generated-events"]
+            generated_events[smp] = genEvts
+    has_plotit = None
+    try:
+        import plotit.plotit
+        has_plotit = True
+    except ImportError:
+        has_plotit = False
+    from bamboo.plots import EquidistantBinning as EqB
+
+    class YieldPlot:
+        def __init__(self, name):
+            self.name = name
+            self.plotopts = dict()
+            self.axisTitles = ("Yield",)
+            self.binnings = [EqB(1, 0., 1.)]
+    for report in reportList:
+        smpReports = {smp: report.readFromResults(
+            resF) for smp, resF in resultsFiles.items()}
+        # debug print
+        MCevents = {}
+        for smp, smpRep in smpReports.items():
+            # if smpRep.printInLog:
+            logger.info(f"Cutflow report {report.name} for sample {smp}")
+            MCevents[smp] = []
+            for root in smpRep.rootEntries():
+                printEntry(root, genEvents=generated_events[smp])
+                mcevents = []
+                MCevents[smp].append(unwMCevents(
+                    root, smp, mcevents, genEvents=generated_events[smp]))
+        # save yields.tex (if needed)
+        if any(len(cb) > 1 or tt != cb[0] for tt, cb in report.titles.items()):
+            if not has_plotit:
+                logger.error(
+                    f"Could not load plotit python library, no TeX yields tables for {report.name}")
+            else:
+                yield_plots = [YieldPlot(f"{report.name}_{eName}")
+                               for tEntries in report.titles.values() for eName in tEntries]
+                out_eras = []
+                if len(eras) > 1 and eraMode in ("all", "combined"):
+                    nParts = [report.name]
+                    if suffix:
+                        nParts.append(suffix)
+                    out_eras.append(("{0}.tex".format("_".join(nParts)), eras))
+                if len(eras) == 1 or eraMode in ("split", "all"):
+                    for era in eras:
+                        nParts = [report.name]
+                        if suffix:
+                            nParts.append(suffix)
+                        nParts.append(era)
+                        out_eras.append(
+                            ("{0}.tex".format("_".join(nParts)), [era]))
+                for outName, iEras in out_eras:
+                    pConfig, samples, plots, _, _ = loadPlotIt(
+                        config, yield_plots, eras=iEras, workdir=workdir, resultsdir=resultsdir, readCounters=readCounters)
+                    tabBlock = _makeYieldsTexTable(MCevents, report, samples,
+                                                   {p.name[len(
+                                                       report.name)+1:]: p for p in plots},
+                                                   stretch=pConfig.yields_table_stretch,
+                                                   orientation=pConfig.yields_table_align,
+                                                   align=pConfig.yields_table_text_align,
+                                                   yieldPrecision=pConfig.yields_table_numerical_precision_yields,
+                                                   ratioPrecision=pConfig.yields_table_numerical_precision_ratio)
+                    if tabBlock:
+                        with open(os.path.join(workdir, outName), "w") as ytf:
+                            ytf.write("\n".join((_yieldsTexPreface, tabBlock)))
+                        logger.info("Yields table for era(s) {0} was written to {1}".format(
+                            ",".join(iEras), os.path.join(workdir, outName)))
+                    else:
+                        logger.warning(
+                            f"No samples for era(s) {','.join(iEras)}, so no yields.tex")
+
+# END cutflow reports, adapted from bamboo.analysisutils
+
+
 class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     """ Base module for producing plots from Phase2 flat trees """
     def __init__(self, args):
         super(CMSPhase2SimRTBHistoModule, self).__init__(args)
+    
+    def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
+        super(CMSPhase2SimRTBHistoModule, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
+        """ Customised cutflow reports and plots """
+        if not self.plotList:
+            self.plotList = self.getPlotList(resultsdir=resultsdir)
+        from bamboo.plots import Plot, DerivedPlot, CutFlowReport
+        plotList_cutflowreport = [
+            ap for ap in self.plotList if isinstance(ap, CutFlowReport)]
+        plotList_plotIt = [ap for ap in self.plotList if (isinstance(
+            ap, Plot) or isinstance(ap, DerivedPlot)) and len(ap.binnings) == 1]
+        eraMode, eras = self.args.eras
+        if eras is None:
+            eras = list(config["eras"].keys())
+        if plotList_cutflowreport:
+            printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
+                                readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
+        if plotList_plotIt:
+            from bamboo.analysisutils import writePlotIt, runPlotIt
+            import os.path
+            cfgName = os.path.join(workdir, "plots.yml")
+            writePlotIt(config, plotList_plotIt, cfgName, eras=eras, workdir=workdir, resultsdir=resultsdir,
+                        readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
+            runPlotIt(cfgName, workdir=workdir, plotIt=self.args.plotIt,
+                      eras=(eraMode, eras), verbose=self.args.verbose)
+
+
+                
+        #mvaSkim 
+        #import os.path 
+        from bamboo.plots import Skim
+        skims = [ap for ap in self.plotList if isinstance(ap, Skim)]
+        if self.args.mvaSkim and skims:
+            from bamboo.analysisutils import loadPlotIt
+            p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+            #try:
+            from bamboo.root import gbl
+            import pandas as pd
+            #except ImportError as ex:
+                #logger.error("Could not import pandas, no dataframes will be saved")
+            for skim in skims:
+                frames = []
+                for smp in samples:
+                    for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                        # Take specific columns
+                        tree = cb.tFile.Get(skim.treeName)
+                        if not tree:
+                            print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
+                        else:
+                            N = tree.GetEntries()
+                            cols = gbl.ROOT.RDataFrame(tree).AsNumpy()
+                            cols["weight"] *= cb.scale
+                            cols["process"] = [smp.name]*len(cols["weight"])
+                            frames.append(pd.DataFrame(cols))
+                df = pd.concat(frames)
+                df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
+                df.to_parquet(pqoutname)
+                logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
+        
+        #produce histograms "with datacard conventions"
+        if self.args.datacards:
+            datacardPlots = [ap for ap in self.plotList if ap.name == "Empty_histo" or ap.name =="Inv_mass_gg" or ap.name =="Inv_mass_bb" or ap.name =="Inv_mass_HH" or (self.args.mvaEval and ap.name =="dnn_score")]
+            p_config, samples, plots_dc, systematics, legend = loadPlotIt(
+                config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
+                readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
+            dcdir = os.path.join(workdir, "datacard_histograms")
+            import os
+            import numpy as np
+            os.makedirs(dcdir, exist_ok=True)
+            def _saveHist(obj, name, tdir=None):
+                if tdir:
+                    tdir.cd()
+                obj.Write(name)
+            from functools import partial
+            import plotit.systematics
+            from bamboo.root import gbl
+            
+            for era in (self.args.eras[1] or config["eras"].keys()):
+                f_dch = gbl.TFile.Open(os.path.join(dcdir, f"histo_for_combine_{era}.root"), "RECREATE")
+                saveHist = partial(_saveHist, tdir=f_dch)
+                smp = next(smp for smp in samples if smp.cfg.type == "SIGNAL")
+                plot =  next(plot for plot in plots_dc if plot.name == "Empty_histo")
+                h = smp.getHist(plot, eras=era)
+                saveHist(h.obj, f"data_obs")
+        
+                for plot in plots_dc:   
+                    if plot.name != "Empty_histo":
+                       for smp in samples:
+                           smpName = smp.name
+                           if smpName.endswith(".root"):
+                               smpName = smpName[:-5]
+                           h = smp.getHist(plot, eras=era)
+                           saveHist(h.obj, f"h_{plot.name}_{smpName}")
+            
+            f_dch.Close()    
+
 
 ################################
 ## An analysis module example ##
@@ -336,7 +780,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #evaluate dnn model on data
         if self.args.mvaEval:
-            from IPython import embed
+            #from IPython import embed
             DNNmodel_path  = "/home/ucl/cp3/sdonerta/bamboodev/WWGG/model.onnx" 
             mvaVariables.pop("weight", None)
             dnn = op.mvaEvaluator(DNNmodel_path, mvaType = "ONNXRuntime", otherArgs = "predictions")
@@ -351,78 +795,4 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
     
         return plots
 
-    def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
-        super(SnowmassExample, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
-        from bamboo.plots import Plot, DerivedPlot
-        plotList = [ ap for ap in self.plotList if ( isinstance(ap, Plot) or isinstance(ap, DerivedPlot) ) ]
-        from bamboo.analysisutils import loadPlotIt
-        p_config, samples, plots, systematics, legend = loadPlotIt(config, plotList, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
-        
-        #mvaSkim 
-        import os.path 
-        from bamboo.plots import Skim
-        skims = [ap for ap in self.plotList if isinstance(ap, Skim)]
-        if self.args.mvaSkim and skims:
-            from bamboo.analysisutils import loadPlotIt
-            p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
-            #try:
-            from bamboo.root import gbl
-            import pandas as pd
-            #except ImportError as ex:
-                #logger.error("Could not import pandas, no dataframes will be saved")
-            for skim in skims:
-                frames = []
-                for smp in samples:
-                    for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
-                        # Take specific columns
-                        tree = cb.tFile.Get(skim.treeName)
-                        if not tree:
-                            print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
-                        else:
-                            N = tree.GetEntries()
-                            cols = gbl.ROOT.RDataFrame(tree).AsNumpy()
-                            cols["weight"] *= cb.scale
-                            cols["process"] = [smp.name]*len(cols["weight"])
-                            frames.append(pd.DataFrame(cols))
-                df = pd.concat(frames)
-                df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
-                pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
-                df.to_parquet(pqoutname)
-                logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
-        
-        #produce histograms "with datacard conventions"
-        if self.args.datacards:
-            datacardPlots = [ap for ap in self.plotList if ap.name == "Empty_histo" or ap.name =="Inv_mass_gg" or ap.name =="Inv_mass_bb" or ap.name =="Inv_mass_HH" or (self.args.mvaEval and ap.name =="dnn_score")]
-            p_config, samples, plots_dc, systematics, legend = loadPlotIt(
-                config, datacardPlots, eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir,
-                readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
-            dcdir = os.path.join(workdir, "datacard_histograms")
-            import os
-            import numpy as np
-            os.makedirs(dcdir, exist_ok=True)
-            def _saveHist(obj, name, tdir=None):
-                if tdir:
-                    tdir.cd()
-                obj.Write(name)
-            from functools import partial
-            import plotit.systematics
-            from bamboo.root import gbl
-            
-            for era in (self.args.eras[1] or config["eras"].keys()):
-                f_dch = gbl.TFile.Open(os.path.join(dcdir, f"histo_for_combine_{era}.root"), "RECREATE")
-                saveHist = partial(_saveHist, tdir=f_dch)
-                smp = next(smp for smp in samples if smp.cfg.type == "SIGNAL")
-                plot =  next(plot for plot in plots_dc if plot.name == "Empty_histo")
-                h = smp.getHist(plot, eras=era)
-                saveHist(h.obj, f"data_obs")
-        
-                for plot in plots_dc:   
-                    if plot.name != "Empty_histo":
-                       for smp in samples:
-                           smpName = smp.name
-                           if smpName.endswith(".root"):
-                               smpName = smpName[:-5]
-                           h = smp.getHist(plot, eras=era)
-                           saveHist(h.obj, f"h_{plot.name}_{smpName}")
-            
-            f_dch.Close()    
+    
