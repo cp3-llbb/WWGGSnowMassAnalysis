@@ -550,7 +550,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         hJets = op.sum(idJets[0].p4, idJets[1].p4)
        
         #missing transverse energy
-        met = op.select(t.metpuppi)      
+        met = op.select(t.metpuppi) 
+        metPt = met[0].pt     
 
         #define more variables for ease of use
         nElec = op.rng_len(idElectrons)
@@ -670,7 +671,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("SubLeadingPhotonpT_mGGLhasOneL", pT_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon p_{T}/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("LeadingPhotonE_mGGLhasOneL", E_mGGL, hasOneL,EqB(100, 0., 5.) ,title = "Leading Photon E/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("SubLeadingPhotonE_mGGLhasOneL", E_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon E/m_{\gamma\gamma}")) 
-        #plots.append(Plot.make1D("MET", met, hasOneL,EqB(100, 0., 70.) ,title="MET"))
+        plots.append(Plot.make1D("MET", metPt, hasOneL,EqB(80, 0., 800.) ,title="MET"))
 
         
         #Lepton Plots
@@ -789,6 +790,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
            
             plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
             hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] > 0.6)
+            yields.add(hasDNNscore, title='hasDNNscore')
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 110.,160.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("DNN_output",op.rng_len(output), hasDNNscore, EqB(20,0,10), title = "dnn_output"))
             #embed()       
