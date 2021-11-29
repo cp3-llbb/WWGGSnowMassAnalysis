@@ -789,7 +789,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
            
             plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
             hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] > 0.6)
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 110.,160.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("DNN_output",op.rng_len(output), hasDNNscore, EqB(20,0,10), title = "dnn_output"))
             #embed()       
     
