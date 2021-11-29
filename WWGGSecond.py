@@ -509,20 +509,18 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #selection of photons with loose ID        
         idPhotons = op.select(sort_ph, lambda ph : ph.idpass & (1<<2)) #switched to tight ID on 26/11
+        
         #H->WW->2q1l1nu
        
         electrons = op.select(t.elec, lambda el : op.AND(
         el.pt > 10., op.abs(el.eta) < 2.5
         ))
-        
-        #select jets with pt>25 GeV end eta in the detector acceptance
-        jets = op.select(t.jetpuppi, lambda jet : op.AND(jet.pt > 30., op.abs(jet.eta) < 2.5))
 
         clElectrons = op.select(electrons, lambda el : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4 )),
             op.NOT(op.rng_any(jets, lambda j : op.deltaR(el.p4, j.p4) < 0.4 ))))
         sort_el = op.sort(clElectrons, lambda el : -el.pt)        
-        idElectrons = op.select(sort_el, lambda el : el.idpass & (1<<2))  #apply tight ID   
+        idElectrons = op.select(sort_el, lambda el : el.idpass & (1<<0))  #apply tight ID   
         slElectrons = op.select(idElectrons, lambda el : op.NOT(op.in_range(86.187, op.rng_any(idPhotons,lambda ph:op.invariant_mass(el.p4, ph.p4)), 90.187000))) #apply the removal of rmZee peak   
 
         muons = op.select(t.muon, lambda mu : op.AND(
@@ -535,6 +533,11 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sort_mu = op.sort(clMuons, lambda mu : -mu.pt)
         idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply tight ID  
         isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
+        
+        
+        #select jets with pt>25 GeV end eta in the detector acceptance
+        jets = op.select(t.jetpuppi, lambda jet : op.AND(jet.pt > 30., op.abs(jet.eta) < 2.5))
+        
         clJets = op.select(jets, lambda j : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(ph.p4, j.p4) < 0.4) ),
             op.NOT(op.rng_any(slElectrons, lambda el : op.deltaR(el.p4, j.p4) < 0.4) ),  
@@ -779,7 +782,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
            
             plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
             hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] > 0.6)
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            yields.add(hasDNNscore, title='hasDNNscore')
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 110.,160.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("DNN_output",op.rng_len(output), hasDNNscore, EqB(20,0,10), title = "dnn_output"))
             #embed()       
     
