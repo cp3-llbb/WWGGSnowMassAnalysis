@@ -515,6 +515,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         electrons = op.select(t.elec, lambda el : op.AND(
         el.pt > 10., op.abs(el.eta) < 2.5
         ))
+        
+        #select jets with pt>25 GeV end eta in the detector acceptance
+        jets = op.select(t.jetpuppi, lambda jet : op.AND(jet.pt > 30., op.abs(jet.eta) < 2.5))
 
         clElectrons = op.select(electrons, lambda el : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4 )),
@@ -534,10 +537,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply tight ID  
         isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
         
-        
-        #select jets with pt>25 GeV end eta in the detector acceptance
-        jets = op.select(t.jetpuppi, lambda jet : op.AND(jet.pt > 30., op.abs(jet.eta) < 2.5))
-        
+
         clJets = op.select(jets, lambda j : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(ph.p4, j.p4) < 0.4) ),
             op.NOT(op.rng_any(slElectrons, lambda el : op.deltaR(el.p4, j.p4) < 0.4) ),  
