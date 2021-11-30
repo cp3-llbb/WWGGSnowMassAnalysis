@@ -172,6 +172,30 @@ samples:
     legend: GJet \; p_{T} > 20 \; GeV
     order: 14
     split: 40
+  QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+    group: QCD
+    era: HL-LHC
+    type: mc
+    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 141200000 # McM 141200 fb
+    split: 40
+  QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+    group: QCD
+    era: HL-LHC
+    type: mc
+    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 295700000 
+    split: 40
+  QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+    group: QCD
+    era: HL-LHC
+    type: mc
+    files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 16510000
+    split: 40
   WGToLNuG_PtG-40_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     era: HL-LHC
     type: mc
@@ -182,16 +206,16 @@ samples:
     fill-color: "#1AD5B0"
     order: 15
     split: 40
-  # ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
-  #   era: HL-LHC
-  #   type: mc
-  #   files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
-  #   generated-events: sumgenweight
-  #   cross-section: 145200 # from McM 145.2 pb
-  #   legend: ZG \rightarrow 2l \gamma
-  #   fill-color: "#990066" 
-  #   order: 16
-  #   split: 40
+  ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 145200 # from McM 145.2 pb
+    legend: ZG \rightarrow 2l \gamma
+    fill-color: "#990066" 
+    order: 16
+    split: 40
 plotIt:
   configuration:
     width: 700
