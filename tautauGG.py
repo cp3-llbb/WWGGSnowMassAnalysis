@@ -546,13 +546,13 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # Categories
         
         hasOneTauOneElectron = pTmggRatio_sel.refine(
-            "hasOneTauOneElectron", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 1, cleanedTaus[0].charge != cleanedElectrons[0].charge))
+            "hasOneTauOneElectron", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 1, op.rng_len(cleanedMuons) == 0, cleanedTaus[0].charge != cleanedElectrons[0].charge))
         
         hasOneTauOneMuon = pTmggRatio_sel.refine(
-            "hasOneTauOneMuon", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedMuons) == 1, cleanedTaus[0].charge != cleanedMuons[0].charge))
+            "hasOneTauOneMuon", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedMuons) == 1, op.rng_len(cleanedElectrons) == 0, cleanedTaus[0].charge != cleanedMuons[0].charge))
         
         hasTwoTaus = pTmggRatio_sel.refine(
-            "hasTwoTaus", cut = op.AND(op.rng_len(cleanedTaus) == 2, cleanedTaus[0].charge != cleanedTaus[1].charge)) # chose the pair having InvM close to 125 GeV
+            "hasTwoTaus", cut = op.AND(op.rng_len(cleanedTaus) == 2, op.rng_len(cleanedElectrons) == 0, op.rng_len(cleanedMuons) == 0, cleanedTaus[0].charge != cleanedTaus[1].charge)) # will chose the pair having InvM closer to 125 GeV
         
         hasOneTauNoLept = pTmggRatio_sel.refine(
             "hasOneTauNoLept", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 0, op.rng_len(cleanedMuons) == 0))
@@ -563,7 +563,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         
         mTauTau = op.invariant_mass(cleanedTaus[0].p4, cleanedTaus[1].p4)
         
-        hasOneTauOneElectron_Zveto = hasOneTauOneElectron.refine("hasOneTauOneElectron_Zveto", cut = op.NOT(op.in_range(80, mTauElec, 100)))
+        hasOneTauOneElec_Zveto = hasOneTauOneElectron.refine("hasOneTauOneElec_Zveto", cut = op.NOT(op.in_range(80, mTauElec, 100)))
 
         hasOneTauOneMuon_Zveto = hasOneTauOneMuon.refine("hasOneTauOneMuon_Zveto", cut = op.NOT(op.in_range(80, mTauMuon, 100)))
         
@@ -598,8 +598,26 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         
         plots.append(Plot.make1D("MttSel3", mTauTau, hasTwoTaus, EqB(
             30, 0, 200.), title="M_{\tau\tau}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("MttSel4", mTauTau, hasTwoTaus_Zveto, EqB(
+        
+        plots.append(Plot.make1D("Inv_mass_hasTwoTaus", mTauTau, hasTwoTaus_Zveto, EqB(
             30, 0, 200.), title="M_{\tau\tau}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("Inv_mass_hasOneElecOneTau", mTauElec, hasOneTauOneElec_Zveto, EqB(
+            30, 0, 200.), title="M_{\tau e}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("Inv_mass_hasOneMuonOneTau", mTauMuon, hasOneTauOneMuon_Zveto, EqB(
+            30, 0, 200.), title="M_{\tau\mu}", plotopts={"log-y": True}))
+        
+        ## combine distributions ##
+        
+        plots.append(Plot.make1D("Inv_massGG_hasTwoTaus", mgg, hasTwoTaus_Zveto, EqB(
+            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("Inv_massGG_hasOneTauOneElec", mgg, hasOneTauOneElec_Zveto, EqB(
+            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("Inv_massGG_hasOneTauOneMuon", mgg, hasOneTauOneMuon_Zveto, EqB(
+            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("Inv_massGG_hasOneTauNoLept", mgg, hasOneTauNoLept, EqB(
+            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        
+        ## end of combine distributions ##
 
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
@@ -608,6 +626,6 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         cfr.add(hasOneTauNoLept, "One Tau No Lept")
         cfr.add(hasOneTauOneMuon_Zveto, "One Tau One Muon")
         cfr.add(hasTwoTaus_Zveto, "Two Taus")
-        cfr.add(hasOneTauOneElectron_Zveto, "One Tau One Electron")
+        cfr.add(hasOneTauOneElec_Zveto, "One Tau One Electron")
 
         return plots
