@@ -88,6 +88,46 @@ samples:
     fill-color: "#D489FF" 
     order: 7
     split: 40
+  TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+    era: HL-LHC
+    #group: topInduced
+    type: mc
+    files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.6231 # from McM 0.6231 pb
+    legend: 'TTGamma_Dilept'
+    split: 40
+    order: 25
+  TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+    era: HL-LHC
+    #group: topInduced
+    type: mc
+    files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.799  # from McM 0.799 pb
+    legend: 'TTGamma_Hadronic'
+    split: 40
+    order: 26
+  TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+    era: HL-LHC
+    #group: topInduced
+    type: mc
+    files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.7709 # from McM 0.7709 pb
+    legend: 'TTGamma_SingleLeptFromT'
+    split: 40
+    order: 27
+  TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
+    era: HL-LHC
+    #group: topInduced
+    type: mc
+    files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.769 # from McM 0.769 pb
+    legend: 'TTGamma_SingleLeptFromTbar'
+    split: 40
+    order: 28
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     #group: WJets
     era: HL-LHC
@@ -249,6 +289,25 @@ samples:
     fill-color: "#40D56A"  
     order: 22
     split: 40  
+  THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU:
+    #group: SingleH
+    era: HL-LHC
+    type: mc
+    files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.000205428 #McM /
+    legend: 'THQ'
+    split: 40  
+    order: 23
+  DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 5711 #McM /
+    legend: 'DYJets'
+    fill-color: "#cc7a16"
+    order: 24
 plotIt:
   configuration:
     width: 700
