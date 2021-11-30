@@ -523,7 +523,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4 )),
             op.NOT(op.rng_any(jets, lambda j : op.deltaR(el.p4, j.p4) < 0.4 ))))
         sort_el = op.sort(clElectrons, lambda el : -el.pt)        
-        idElectrons = op.select(sort_el, lambda el : el.idpass & (1<<0))  #apply tight ID   
+        idElectrons = op.select(sort_el, lambda el : el.idpass & (1<<0))     
         slElectrons = op.select(idElectrons, lambda el : op.NOT(op.in_range(86.187, op.rng_any(idPhotons,lambda ph:op.invariant_mass(el.p4, ph.p4)), 90.187000))) #apply the removal of rmZee peak   
 
         muons = op.select(t.muon, lambda mu : op.AND(

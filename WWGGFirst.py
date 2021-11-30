@@ -518,7 +518,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         clElectrons = op.select(electrons, lambda el : op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4))) #apply a deltaR 
         sort_el = op.sort(clElectrons, lambda el : -el.pt)        
         idElectrons = op.select(sort_el, lambda el : el.idpass & (1<<0))  #apply loose ID   
-           
+        slElectrons = op.select(idElectrons, lambda el : op.NOT(op.in_range(86.187, op.rng_any(idPhotons,lambda ph:op.invariant_mass(el.p4, ph.p4)), 90.187000))) #apply the removal of rmZee peak   
+
 
         muons = op.select(t.muon, lambda mu : op.AND(
         mu.pt > 10., op.abs(mu.eta) < 2.5
@@ -527,7 +528,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         clMuons = op.select(muons, lambda mu : op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(mu.p4, ph.p4) < 0.4 )))
         sort_mu = op.sort(clMuons, lambda mu : -mu.pt)
         idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply loose ID  
-        #isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
+        isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
      
         #combine leptons
         #lepton = op.combine((idElectrons,idMuons))
@@ -537,8 +538,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
          
         clJets = op.select(jets, lambda j : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(ph.p4, j.p4) < 0.4) ),
-            op.NOT(op.rng_any(idElectrons, lambda el : op.deltaR(el.p4, j.p4) < 0.4) ),  
-            op.NOT(op.rng_any(idMuons, lambda mu : op.deltaR(mu.p4, j.p4) < 0.4) )
+            op.NOT(op.rng_any(slElectrons, lambda el : op.deltaR(el.p4, j.p4) < 0.4) ),  
+            op.NOT(op.rng_any(isoMuons, lambda mu : op.deltaR(mu.p4, j.p4) < 0.4) )
         ))
         sort_jets = op.sort(clJets, lambda jet : -jet.pt)  
         idJets = op.select(sort_jets, lambda j : j.idpass & (1<<2))
@@ -554,7 +555,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         metPt = met[0].pt     
 
         #define more variables for ease of use
-        nElec = op.rng_len(idElectrons)
+        nElec = op.rng_len(slElectrons)
         nMuon = op.rng_len(idMuons)
         nJet = op.rng_len(idJets)
         nPhoton = op.rng_len(idPhotons)
@@ -579,6 +580,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sel1_m = noSel.refine("OneM", cut = op.rng_len(sort_mu) >= 1)
         
         sel2_m = sel1_m.refine("idMuon", cut = op.rng_len(idMuons) >= 1)
+        sel3_m = sel2_m.refine("isoMuon", cut = op.AND(op.rng_len(isoMuons) >= 1))
          
         #sel4 = sel3.refine("TwoPhLNuTwoJ", cut = op.AND((op.rng_len(cleanedJets) >= 2),(met[0].pt > 30)))
 
@@ -635,7 +637,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #sel2_m
         plots.append(Plot.make1D("LeadingMuonID", idMuons[0].pt, sel2_m, EqB(30, 0., 300.), title="Leading Muon pT"))
         #sel3_m
-        #plots.append(Plot.make1D("LeadingMuonIso", isoMuons[0].pt, sel3_m, EqB(30, 0., 300.), title="Leading Muon pT"))
+        plots.append(Plot.make1D("LeadingMuonIso", isoMuons[0].pt, sel3_m, EqB(30, 0., 300.), title="Leading Muon pT"))
 
         #hasTwoPh
         plots.append(Plot.make1D("LeadingPhotonPtTwoPh", idPhotons[0].pt, hasTwoPh, EqB(30, 0., 300.), title="Leading Photon pT"))
@@ -770,7 +772,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 "Eta_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].eta),
                 "Phi_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].phi),  
                 "InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
-                "InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL) 
+                "InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL),
+                "met":metPt
                 } 
 
 
