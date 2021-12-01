@@ -308,6 +308,7 @@ samples:
     legend: 'DYJets'
     fill-color: "#cc7a16"
     order: 24
+    split: 60
 plotIt:
   configuration:
     width: 700
