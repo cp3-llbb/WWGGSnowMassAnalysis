@@ -1,5 +1,5 @@
-from bamboo.analysismodules import AnalysisModule, HistogramsModule
-import logging
+Bfrom bamboo.analysismodules import AnalysisModule, HistogramsModule
+i65;6003;1cmport logging
 from bamboo.analysisutils import loadPlotIt
 import os.path
 
@@ -618,12 +618,15 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #plots
         
         #sel1_p
-        plots.append(Plot.make1D("LeadingPhotonPTNoID", sort_ph[0].pt, sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))        
-        plots.append(Plot.make1D("SubLeadingPhotonPTNoID", sort_ph[1].pt, sel1_p, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+        #plots.append(Plot.make1D("LeadingPhotonPTNoID", sort_ph[0].pt, sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))        
+        #plots.append(Plot.make1D("SubLeadingPhotonPTNoID", sort_ph[1].pt, sel1_p, EqB(30, 0., 300.), title="SubLeading Photon pT"))
+        plots.append(Plot.make1D("AllPhotonPt", op.map(sort_ph,lambda p : p.pt), sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))        
+
        
         #sel2_p  
-        plots.append(Plot.make1D("LeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))    
-        plots.append(Plot.make1D("SubLeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="SubLeading Photon pT")) 
+        plots.append(Plot.make1D("AllPhotonPt", op.map(idPhotons,lambda p : p.pt), sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))        
+        #plots.append(Plot.make1D("LeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))    
+        #plots.append(Plot.make1D("SubLeadingPhotonPTID", idPhotons[0].pt, sel2_p, EqB(30, 0., 300.), title="SubLeading Photon pT")) 
        
         #sel1_e
         plots.append(Plot.make1D("LeadingElectronNoID", sort_el[0].pt, sel1_e, EqB(30, 0., 300.), title="Leading Electron pT"))
