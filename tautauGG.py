@@ -456,6 +456,9 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # Photon selection 2: pT/mgg > 0.33 for leading photon and 0.25 for sub-leading photon
         pTmggRatio_sel = twoPhotonsSel.refine(
             "ptMggRatio", cut = op.AND(IDphotons[0].pt / mgg > 0.33, IDphotons[1].pt / mgg > 0.25))
+        
+        # Invariant mass cut
+        mgg_sel = pTmggRatio_sel.refine("mgg", cut = op.in_range(100, mgg, 180))
 
         # Electrons
         electrons = op.select(t.elec, lambda el: op.AND(op.abs(el.eta) < 3, el.pt > 30.))
@@ -545,16 +548,16 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         # Categories
         
-        hasOneTauOneElectron = pTmggRatio_sel.refine(
+        hasOneTauOneElectron = mgg_sel.refine(
             "hasOneTauOneElectron", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 1, op.rng_len(cleanedMuons) == 0, cleanedTaus[0].charge != cleanedElectrons[0].charge))
         
-        hasOneTauOneMuon = pTmggRatio_sel.refine(
+        hasOneTauOneMuon = mgg_sel.refine(
             "hasOneTauOneMuon", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedMuons) == 1, op.rng_len(cleanedElectrons) == 0, cleanedTaus[0].charge != cleanedMuons[0].charge))
         
-        hasTwoTaus = pTmggRatio_sel.refine(
+        hasTwoTaus = mgg_sel.refine(
             "hasTwoTaus", cut = op.AND(op.rng_len(cleanedTaus) == 2, op.rng_len(cleanedElectrons) == 0, op.rng_len(cleanedMuons) == 0, cleanedTaus[0].charge != cleanedTaus[1].charge)) # will chose the pair having InvM closer to 125 GeV
         
-        hasOneTauNoLept = pTmggRatio_sel.refine(
+        hasOneTauNoLept = mgg_sel.refine(
             "hasOneTauNoLept", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 0, op.rng_len(cleanedMuons) == 0))
         
         mTauElec = op.invariant_mass(cleanedTaus[0].p4, cleanedElectrons[0].p4)
@@ -609,13 +612,13 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         ## combine distributions ##
         
         plots.append(Plot.make1D("Inv_massGG_hasTwoTaus", mgg, hasTwoTaus_Zveto, EqB(
-            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            30, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Inv_massGG_hasOneTauOneElec", mgg, hasOneTauOneElec_Zveto, EqB(
-            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            30, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Inv_massGG_hasOneTauOneMuon", mgg, hasOneTauOneMuon_Zveto, EqB(
-            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            30, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Inv_massGG_hasOneTauNoLept", mgg, hasOneTauNoLept, EqB(
-            30, 0, 200.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            30, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         
         ## end of combine distributions ##
 
