@@ -12,12 +12,12 @@ echo -e "source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc10-opt/se
 source /cvmfs/sft.cern.ch/lcg/views/LCG_101/x86_64-centos7-gcc10-opt/setup.sh
 
 echo -e "python -m venv python3"
-python -m venv python3
+python -m venv python3 # execute this at first trial and remove
 
 echo - e "source python3/bin/activate"
 source python3/bin/activate
 
-# pip install enlighten # if needed
+pip install enlighten # execute this at first trial and remove
 
 path=/afs/cern.ch/work/a/aguzel/private/bamboodev/output-tautaugg_withcategories6-2/
 
