@@ -1,0 +1,109 @@
+path: 
+    - {path}
+
+outputDir: '{path}forcombine_{category}'
+
+use_syst: True
+
+normSyst:
+  lepEff:
+    - val: 0.02
+  trig:
+    - val: 0.01
+  lumi:
+    -val: 0.01
+
+yamlName: plots.yml
+
+produce_plots: True
+
+era: 
+  - HL-LHC
+
+combineConfigs: # <to_replace>
+
+legend:
+  position:
+  - 0.2
+  - 0.7
+  - 0.9
+  - 0.9
+  columns: 3
+
+histConverter: 
+  Inv_massGG:   # You could use any name as key (will be the category for the root file name and for combine)
+    - Inv_massGG_{category}
+    # Absolutely needs to be a list here
+  
+groups:
+  Signal:
+    fill-color: '#260AB3' #or whatever color 
+    legend: 'WW\gamma\gamma \tau\tau\gamma\gamma'
+    order: 1
+    type: signal
+    group: HH
+    files:
+      - GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.root
+      - GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.root
+      - GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.root
+  SingleH:
+    fill-color: '#FFCC33'
+    legend: 'Single H'
+    order: 2
+    type: mc
+    group: SingleH
+    files:
+      - GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.root
+      - VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.root
+      - VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.root
+      - ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.root
+  top_VG:
+    fill-color: '#D489FF' #or whatever color 
+    legend: 'Other bkgs'
+    order: 4
+    type: mc
+    group: TT
+    files:
+      - TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.root
+      - TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.root
+      - TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.root
+      - TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.root
+      - TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.root
+      - TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.root
+      - WGToLNuG_PtG-40_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.root
+      - ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU.root
+  other:
+    fill-color: '#40D51A'
+    legend: '\gamma\gamma Jets'
+    order: 3
+    type: mc
+    group: GGjets
+    files:
+      - DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.root
+      - GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU.root
+      - GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.root
+      - GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.root
+      - QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.root
+      - QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.root
+      - QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.root
+
+plotIt: 
+ legend:
+  position:
+   - 0.2
+   - 0.7
+   - 0.9
+   - 0.9
+  columns: 3
+
+# rebin:
+#  Inv_massGG:
+#    method: boundary
+#    params: [[100,110,160,180]]
+#   #  params: [[100,114,116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148,180]]
+# combineConfigs:
+#   pulls_impacts:
+#     mode: "pulls_impacts"
+#     command: "combine -M MultiDimFit -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal 1 --algo grid --setParameterRanges r=-1,3 --saveNLL"
+#     bins:
+#       - Inv_massGG

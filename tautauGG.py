@@ -234,8 +234,6 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 dtCont = stSig.contents
                 mcCont = ma.array(stMC.contents)
                 ratio = dtCont/np.sqrt(mcCont)
-                ratioErr = np.sqrt(mcCont**2*stSig.sumw2 +
-                                   dtCont**2*(stMC.sumw2+stMC.syst2))/mcCont**2
                 if mcCont[1] != 0.:
                     colEntries.append("${0:.5f}$".format(ratio[1]))
                 else:
@@ -454,33 +452,36 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         from bamboo.plots import EquidistantBinning as EqB
         from bamboo import treefunctions as op
 
-
         plots = []
 
         # Photons
-        photons = op.select(t.gamma, lambda ph: op.abs(ph.eta) < 3)
 
-        ISOphotons = op.select(photons, lambda ph: ph.isopass & (1 << 0)) # loose working point
+        photons = op.sort(
+            op.select(t.gamma, lambda ph: op.abs(ph.eta) < 3), lambda ph: -ph.pt)
 
-        IDphotons = op.select(
-            ISOphotons, lambda ph: ph.idpass & (1 << 0))
+        ISOphotons = op.select(photons, lambda ph: ph.isopass & (
+            1 << 0))  # loose working point
+
+        IDphotons = op.select(ISOphotons, lambda ph: ph.idpass & (1 << 0))
 
         # di-Photon mass
         mgg = op.invariant_mass(IDphotons[0].p4, IDphotons[1].p4)
 
         # di-Photon preselection 1: at least 2 photons with leading photon p_T > 35 and sub-leading photon p_T > 25
         twoPhotonsSel = noSel.refine(
-            "twoPhotons", cut = op.AND(op.rng_len(IDphotons) >= 2, IDphotons[0].pt > 35, IDphotons[1].pt > 25))
+            "twoPhotons", cut=op.AND(op.rng_len(IDphotons) >= 2, IDphotons[0].pt > 35, IDphotons[1].pt > 25))
 
         # di-Photon preselection 2: pT/mgg > 0.33 for leading photon and 0.25 for sub-leading photon
         pTmggRatio_sel = twoPhotonsSel.refine(
-            "ptMggRatio", cut = op.AND(IDphotons[0].pt / mgg > 0.33, IDphotons[1].pt / mgg > 0.25))
-        
+            "ptMggRatio", cut=op.AND(IDphotons[0].pt / mgg > 0.33, IDphotons[1].pt / mgg > 0.25))
+
         # di-Photon preselection 3: Invarient mass cut
-        mgg_sel = pTmggRatio_sel.refine("mgg", cut = op.in_range(100, mgg, 180))
+        mgg_sel = pTmggRatio_sel.refine("mgg", cut=op.in_range(100, mgg, 180))
 
         # Electrons
-        electrons = op.select(t.elec, lambda el: op.AND(op.abs(el.eta) < 3, el.pt > 30.))
+
+        electrons = op.sort(op.select(t.elec, lambda el: op.AND(
+            op.abs(el.eta) < 3, el.pt > 30)), lambda el: -el.pt)
 
         ISOelectrons = op.select(electrons, lambda el: el.isopass & (1 << 0))
 
@@ -491,8 +492,9 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             op.rng_any(IDphotons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.2)))
 
         # Muons
-        muons = op.select(t.muon, lambda mu: op.AND(
-            mu.pt > 30., op.abs(mu.eta) < 2.8))
+
+        muons = op.sort(op.select(t.muon, lambda mu: op.AND(
+            op.abs(mu.eta) < 2.8, mu.pt > 30)), lambda mu: -mu.pt)
 
         ISOmuons = op.select(muons, lambda mu: mu.isopass & (1 << 0))
 
@@ -504,8 +506,8 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         # taus
 
-        taus = op.select(t.tau, lambda tau: op.AND(
-            tau.pt > 20., op.abs(tau.eta) < 3))
+        taus = op.sort(op.select(t.tau, lambda tau: op.AND(
+            tau.pt > 20., op.abs(tau.eta) < 3)), lambda tau: -tau.pt)
 
         isolatedTaus = op.select(taus, lambda tau: tau.isopass & (1 << 0))
 
@@ -517,85 +519,160 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             op.NOT(op.rng_any(cleanedMuons,
                    lambda mu: op.deltaR(tau.p4, mu.p4) < 0.2))
         ))
-        
-        # diTaus = op.combine(cleanedTaus, N=2, pred=lambda tau1, tau2: tau1.charge != tau2.charge)
-        
-        # diTauMass = op.invariant_mass(diTaus[0][0].p4, diTaus[0][1].p4)
+
+        # Higgs mass
+        mH = 125
+
+        allTauPairs = op.combine(
+            cleanedTaus, N=2, pred=lambda t1, t2: t1.charge != t2.charge)  # all tau pairs
+
+        # Best tau pair with invariant mass closest to Higgs mass
+        bestTauPair = op.rng_min_element_by(
+            allTauPairs, lambda tt: op.abs(op.invariant_mass(tt[0].p4, tt[1].p4)-mH))
 
         # jets
 
-        # jets = op.select(t.jetpuppi, lambda jet: op.AND(
-        #     jet.pt > 25., op.abs(jet.eta) < 3))
+        jets = op.sort(op.select(t.jetpuppi, lambda j: op.AND(
+            j.pt > 25, op.abs(j.eta) < 3)), lambda j: -j.pt)
 
-        # cleanedJets = op.select(jets, lambda j: op.AND(
-        #     op.NOT(op.rng_any(cleanedElectrons,
-        #            lambda el: op.deltaR(j.p4, el.p4) < 0.4)),
-        #     op.NOT(op.rng_any(cleanedMuons, lambda mu: op.deltaR(j.p4, mu.p4) < 0.4)),
-        #     op.NOT(op.rng_any(cleanedTaus, lambda tau: op.deltaR(j.p4, tau.p4) < 0.4)),
-        #     op.NOT(op.rng_any(IDphotons,
-        #            lambda ph: op.deltaR(j.p4, ph.p4) < 0.4))
-        # ))
+        IDJets = op.select(jets, lambda j: j.idpass & (1 << 2))
 
-        # IDJets = op.select(cleanedJets, lambda j: j.idpass & (1 << 2))
+        cleanedJets = op.select(IDJets, lambda j: op.AND(
+            op.NOT(op.rng_any(cleanedElectrons, lambda el: op.deltaR(j.p4, el.p4) < 0.4)),
+            op.NOT(op.rng_any(cleanedMuons, lambda mu: op.deltaR(j.p4, mu.p4) < 0.4)),
+            op.NOT(op.rng_any(cleanedTaus, lambda tau: op.deltaR(j.p4, tau.p4) < 0.4)),
+            op.NOT(op.rng_any(IDphotons, lambda ph: op.deltaR(j.p4, ph.p4) < 0.4))
+        ))
 
-        # btaggedJets = op.select(
-        #     IDJets, lambda j: j.btag & (1 << 1))  # medium working point
+        bJets = op.select(
+            cleanedJets, lambda j: j.btag & (1 << 1))  # medium working point
 
+        # missing transverse energy
+        met = op.select(t.metpuppi)
+        
         # hJets = op.sum(cleanedJets[0].p4, cleanedJets[1].p4)
-
-
 
         # hGG = op.sum(IDphotons[0].p4, IDphotons[1].p4)
         # mJets= op.invariant_mass(IDJets[0].p4, IDJets[1].p4)
         # mJets_SL= op.invariant_mass(IDJets[1].p4, IDJets[2].p4)
         # hJets = op.sum(IDJets[0].p4, IDJets[1].p4)
-       
-        # #missing transverse energy
-        # met = op.select(t.metpuppi)      
 
-        # #define more variables for ease of use
-        # nElec = op.rng_len(cleanedElectrons)
-        # nMuon = op.rng_len(cleanedMuons)
-        # nJet = op.rng_len(IDJets)
-        # nPhoton = op.rng_len(IDphotons)
+        ## Variables for DNN ##
         
-        # # varibles for DNN
+        # Event level variables
+        nTaus = op.rng_len(cleanedTaus)
+        nElecs = op.rng_len(cleanedElectrons)
+        nMuons = op.rng_len(cleanedMuons)
+        nJets = op.rng_len(cleanedJets)
+        nBJets = op.rng_len(bJets)
+        MET_pt = met.pt
+        
+        # Photon and di-Photon variables
+        PtMggLg = IDphotons[0].pt / mgg # pt / mgg of the leading photon
+        PtMggSLg = IDphotons[1].pt / mgg # pt / mgg of the sub-leading photon
+        etaLg = IDphotons[0].eta # eta of the leading photon
+        etaSLg = IDphotons[1].eta # eta of the sub-leading photon
+        ggPtMgg = (IDphotons[0].pt + IDphotons[1].pt) / mgg # pt / mgg of the di-photon
+        ggDR = op.deltaR(IDphotons[0].p4, IDphotons[1].p4) # deltaR of the di-photon
+        ggPhi = op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4) # deltaPhi of the di-photon
+        
+        # Lepton, tau and jet variables
+        
+        
+        ## End of DNN variables ##
+
         # pT_mGGL = IDphotons[0].pt/ mgg
         # pT_mGGSL = IDphotons[1].pt/ mgg
         # E_mGGL = IDphotons[0].p4.energy() / mgg
         # E_mGGSL = IDphotons[1].p4.energy() / mgg
 
-        ## Categories ##
-        
-        hasOneTauOneElectron = mgg_sel.refine(
-            "hasOneTauOneElectron", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 1, op.rng_len(cleanedMuons) == 0, cleanedTaus[0].charge != cleanedElectrons[0].charge))
-        
-        hasOneTauOneMuon = mgg_sel.refine(
-            "hasOneTauOneMuon", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedMuons) == 1, op.rng_len(cleanedElectrons) == 0, cleanedTaus[0].charge != cleanedMuons[0].charge))
-        
-        hasTwoTaus = mgg_sel.refine(
-            "hasTwoTaus", cut = op.AND(op.rng_len(cleanedTaus) == 2, op.rng_len(cleanedElectrons) == 0, op.rng_len(cleanedMuons) == 0, cleanedTaus[0].charge != cleanedTaus[1].charge)) # will chose the pair having InvM closer to 125 GeV
-        
-        hasOneTauNoLept = mgg_sel.refine(
-            "hasOneTauNoLept", cut = op.AND(op.rng_len(cleanedTaus) == 1, op.rng_len(cleanedElectrons) == 0, op.rng_len(cleanedMuons) == 0))
-        
-        ## End of Categories ##
-        
-        ## Z veto ##
-        mTauElec = op.invariant_mass(cleanedTaus[0].p4, cleanedElectrons[0].p4)
-        
-        mTauMuon = op.invariant_mass(cleanedTaus[0].p4, cleanedMuons[0].p4)
-        
-        mTauTau = op.invariant_mass(cleanedTaus[0].p4, cleanedTaus[1].p4)
-        
-        hasOneTauOneElec_Zveto = hasOneTauOneElectron.refine("hasOneTauOneElec_Zveto", cut = op.NOT(op.in_range(80, mTauElec, 100)))
+        sel1_p = noSel.refine("2Photon", cut=op.AND(
+            (op.rng_len(photons) >= 2), (photons[0].pt > 35.)))
 
-        hasOneTauOneMuon_Zveto = hasOneTauOneMuon.refine("hasOneTauOneMuon_Zveto", cut = op.NOT(op.in_range(80, mTauMuon, 100)))
-        
-        hasTwoTaus_Zveto = hasTwoTaus.refine("hasTwoTaus_Zveto", cut = op.NOT(op.in_range(80, mTauTau, 100)))
-        
+        sel2_p = sel1_p.refine("idPhoton", cut=op.AND(
+            (op.rng_len(IDphotons) >= 2), (IDphotons[0].pt > 35.)))
+
+        sel1_e = noSel.refine("OneE", cut=op.rng_len(ISOelectrons) >= 1)
+
+        sel2_e = sel1_e.refine("idElectron", cut=op.rng_len(IDelectrons) >= 1)
+
+        sel1_m = noSel.refine("OneM", cut=op.rng_len(ISOmuons) >= 1)
+
+        sel2_m = sel1_m.refine("idMuon", cut=op.rng_len(IDmuons) >= 1)
+
+        plots.append(Plot.make1D("LeadingPhotonNoID", op.map(
+            ISOphotons, lambda p: p.pt), sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))
+
+        plots.append(Plot.make1D("LeadingPhotonID", op.map(
+            IDphotons, lambda p: p.pt), sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))
+
+        plots.append(Plot.make1D("LeadingElectronNoID", ISOelectrons[0].pt, sel1_e, EqB(
+            30, 0., 300.), title="Leading Electron pT"))
+
+        plots.append(Plot.make1D("LeadingElectronID", IDelectrons[0].pt, sel2_e, EqB(
+            30, 0., 300.), title="Leading Electron pT"))
+
+        plots.append(Plot.make1D("LeadingMuonNoID", ISOmuons[0].pt, sel1_m, EqB(
+            30, 0., 300.), title="Leading Muon pT"))
+
+        plots.append(Plot.make1D("LeadingMuonID", IDmuons[0].pt, sel2_m, EqB(
+            30, 0., 300.), title="Leading Muon pT"))
+
+        ## Categories ##
+
+        hasOneTauOneElectron = mgg_sel.refine("hasOneTauOneElectron", cut=op.AND(
+            op.rng_len(cleanedTaus) == 1,
+            op.rng_len(cleanedElectrons) == 1,
+            op.rng_len(cleanedMuons) == 0,
+            cleanedTaus[0].charge != cleanedElectrons[0].charge
+        ))
+
+        hasOneTauOneMuon = mgg_sel.refine("hasOneTauOneMuon", cut=op.AND(
+            op.rng_len(cleanedTaus) == 1,
+            op.rng_len(cleanedMuons) == 1,
+            op.rng_len(cleanedElectrons) == 0,
+            cleanedTaus[0].charge != cleanedMuons[0].charge
+        ))
+
+        hasTwoTaus = mgg_sel.refine("hasTwoTaus", cut=op.AND(
+            op.rng_len(cleanedTaus) == 2,
+            op.rng_len(cleanedElectrons) == 0,
+            op.rng_len(cleanedMuons) == 0,
+            cleanedTaus[0].charge != cleanedTaus[1].charge
+        ))
+
+        hasOneTauNoLept = mgg_sel.refine("hasOneTauNoLept", cut=op.AND(
+            op.rng_len(cleanedTaus) == 1,
+            op.rng_len(cleanedElectrons) == 0,
+            op.rng_len(cleanedMuons) == 0
+        ))
+
+        # mggbin_list = ["hasTwoTaus"+str(i) for i in range(100, 181)]
+
+        # mggbin_dict = {}
+        # for i in range(len(mggbin_list)):
+        #     mggbin_dict[mggbin_list[i]] = mgg_sel.refine(mggbin_list[i], cut = op.in_range(mgg, i+100, i+101))
+
+        ## End of Categories ##
+
+        ## Z veto ##
+
+        mTauElec = op.invariant_mass(cleanedTaus[0].p4, cleanedElectrons[0].p4)
+
+        mTauMuon = op.invariant_mass(cleanedTaus[0].p4, cleanedMuons[0].p4)
+
+        mTauTau = op.invariant_mass(cleanedTaus[0].p4, cleanedTaus[1].p4)
+
+        hasOneTauOneElec_Zveto = hasOneTauOneElectron.refine(
+            "hasOneTauOneElec_Zveto", cut=op.NOT(op.in_range(80, mTauElec, 100)))
+
+        hasOneTauOneMuon_Zveto = hasOneTauOneMuon.refine(
+            "hasOneTauOneMuon_Zveto", cut=op.NOT(op.in_range(80, mTauMuon, 100)))
+
+        hasTwoTaus_Zveto = hasTwoTaus.refine(
+            "hasTwoTaus_Zveto", cut=op.NOT(op.in_range(80, mTauTau, 100)))
+
         ## End of Z veto ##
-        
 
         # plots
 
@@ -620,7 +697,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             20, 0., 500.), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("leadingTau_ptSel4", cleanedTaus[0].pt, hasTwoTaus_Zveto, EqB(
             20, 0., 500.), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
-        
+
         # Sub-leading Tau p_T plots
         plots.append(Plot.make1D("SubleadingTau_ptSel3", cleanedTaus[1].pt, hasTwoTaus, EqB(
             20, 0., 500.), title="Subleading Tau p_{T} [GeV]", plotopts={"log-y": True}))
@@ -632,7 +709,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("MggSel2", mgg, pTmggRatio_sel, EqB(
             30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        
+
         # Lepton invariant mass plots
         plots.append(Plot.make1D("MttSel3", mTauTau, hasTwoTaus_Zveto, EqB(
             30, 0, 200.), title="M_{\tau\tau}", plotopts={"log-y": True}))
@@ -642,9 +719,9 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             30, 0, 200.), title="M_{\tau e}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Inv_mass_hasOneMuonOneTau", mTauMuon, hasOneTauOneMuon_Zveto, EqB(
             30, 0, 200.), title="M_{\tau\mu}", plotopts={"log-y": True}))
-        
+
         ## combine distributions ##
-        
+
         # di-Photon mass plots
         plots.append(Plot.make1D("Inv_massGG_hasTwoTaus", mgg, hasTwoTaus_Zveto, EqB(
             80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
@@ -654,16 +731,18 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Inv_massGG_hasOneTauNoLept", mgg, hasOneTauNoLept, EqB(
             80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        
+
         ## end of combine distributions ##
 
         # Cutflow report
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
+        # for mgg_bin in mggbin_dict:
+        #     cfr.add(mggbin_dict[mgg_bin], "mgg_bin")
         cfr.add(noSel, "No selection")
         cfr.add(hasOneTauOneElec_Zveto, "One Tau One Electron")
         cfr.add(hasOneTauOneMuon_Zveto, "One Tau One Muon")
         cfr.add(hasTwoTaus_Zveto, "Two Taus")
         cfr.add(hasOneTauNoLept, "One Tau No Lept")
-        
+
         return plots
