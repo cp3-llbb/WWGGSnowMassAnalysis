@@ -11,7 +11,7 @@ normSyst:
   trig:
     - val: 0.01
   lumi:
-    -val: 0.01
+    - val: 0.01
 
 yamlName: plots.yml
 
