@@ -403,8 +403,6 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
                         readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
             runPlotIt(cfgName, workdir=workdir, plotIt=self.args.plotIt,
                       eras=(eraMode, eras), verbose=self.args.verbose)
-
-
                 
         #mvaSkim 
         #import os.path 
@@ -513,7 +511,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #H->WW->2q1l1nu
        
         electrons = op.select(t.elec, lambda el : op.AND(
-        el.pt > 10., op.abs(el.eta) < 2.5
+        el.pt > 20., op.abs(el.eta) < 2.5
         ))
         
         #select jets with pt>25 GeV end eta in the detector acceptance
@@ -521,7 +519,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         clElectrons = op.select(electrons, lambda el : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(el.p4, ph.p4) < 0.4 )),
-            op.NOT(op.rng_any(jets, lambda j : op.deltaR(el.p4, j.p4) < 0.4 ))))
+            #op.NOT(op.rng_any(jets, lambda j : op.deltaR(el.p4, j.p4) < 0.4 )))
+            ))
         sort_el = op.sort(clElectrons, lambda el : -el.pt)        
         idElectrons = op.select(sort_el, lambda el : el.idpass & (1<<0))     
         slElectrons = op.select(idElectrons, lambda el : op.NOT(op.in_range(86.187, op.rng_any(idPhotons,lambda ph:op.invariant_mass(el.p4, ph.p4)), 90.187000))) #apply the removal of rmZee peak   
@@ -743,10 +742,10 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "Phi_ph2": idPhotons[1].phi,
             "E_mGG_ph2": E_mGGSL,
             "pT_mGG_ph2": pT_mGGSL,
-            "Electron_E": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].p4.E()), 
-            "Electron_pT": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].pt),
-            "Electron_Eta": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].eta),
-            "Electron_Phi": op.switch(op.rng_len(idElectrons)==0,op.c_float(0.),idElectrons[0].phi),
+            "Electron_E": op.switch(op.rng_len(slElectrons)==0,op.c_float(0.),slElectrons[0].p4.E()), 
+            "Electron_pT": op.switch(op.rng_len(slElectrons)==0,op.c_float(0.),slElectrons[0].pt),
+            "Electron_Eta": op.switch(op.rng_len(slElectrons)==0,op.c_float(0.),slElectrons[0].eta),
+            "Electron_Phi": op.switch(op.rng_len(slElectrons)==0,op.c_float(0.),slElectrons[0].phi),
             "Muon_E": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].p4.E()), 
             "Muon_pT": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].pt),
             "Muon_Eta": op.switch(op.rng_len(idMuons)==0,op.c_float(0.),idMuons[0].eta),
@@ -774,7 +773,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #evaluate dnn model on data
         if self.args.mvaEval:
             #from IPython import embed
-            DNNmodel_path  = "/home/ucl/cp3/sjain/bamboodev/WWGG/model.onnx" 
+            DNNmodel_path  = "/home/ucl/cp3/sdonerta/bamboodev/WWGG/model_oldeta.onnx" 
             mvaVariables.pop("weight", None)
             dnn = op.mvaEvaluator(DNNmodel_path, mvaType = "ONNXRuntime", otherArgs = "predictions")
             inputs = op.array('float',*[op.static_cast('float',val) for val in mvaVariables.values()])

@@ -12,6 +12,24 @@ samples:
     legend: 'HH \rightarrow WW\gamma\gamma  '
     line-color: "#260AB3" #blue 
     split: 40
+  #GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
+   # era: HL-LHC
+    #type: signal
+    #files: GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
+    #generated-events: sumgenweight
+    #cross-section: 0.0000037234 # 36.69 fb * 2* BR (H --> GG) * BR (H --> WW) * BR (W --> lnu) - from Soumya
+    #legend: 'HH \rightarrow WW\gamma\gamma'
+    #line-color: "#ff0000" # red
+    #split: 40
+  #GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
+   # era: HL-LHC
+   # type: signal
+   # files: GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
+   # generated-events: sumgenweight
+   # cross-section: 0.00000104441 # 36.69 fb * 2 * BR (H --> GG) * BR (H --> tautau) - from Soumya
+   # line-color: "#0000ff" # blue
+   # legend: 'HH \rightarrow \tau\tau\gamma\gamma'
+   # split: 40
   GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
     era: HL-LHC
     type: mc
