@@ -225,25 +225,6 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             else:
                 colEntries.append("---")
         entries_smp.append(colEntries)
-    if smp_signal and smp_mc:
-        sepStr += f"|{align}|"
-        smpHdrs.append("$S/\sqrt{B}$")
-        colEntries = []
-        import numpy.ma as ma
-        for stSig, stMC in zip(stTotSig, stTotMC):
-            if stSig is not None and stMC is not None:
-                dtCont = stSig.contents
-                mcCont = ma.array(stMC.contents)
-                ratio = dtCont/np.sqrt(mcCont)
-                ratioErr = np.sqrt(mcCont**2*stSig.sumw2 +
-                                   dtCont**2*(stMC.sumw2+stMC.syst2))/mcCont**2
-                if mcCont[1] != 0.:
-                    colEntries.append("${0:.5f}$".format(ratio[1]))
-                else:
-                    colEntries.append("---")
-            else:
-                colEntries.append("---")
-        entries_smp.append(colEntries)
     c_bySmp = entries_smp
     c_byHdr = [[smpEntries[i] for smpEntries in entries_smp]
                for i in range(len(titles))]
@@ -262,8 +243,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
         colWidths = [max(len(rh) for rh in rowHdrs)+1]+[max(len(hdr), max(len(c)
                                                                           for c in col))+1 for hdr, col in zip(colHdrs[1:], c_byCol)]
         return "\n".join([
-            f"\\resizebox{{\\textwidth}}{{!}}{{"
-            f"\\renewcommand{{\\arraystretch}}{{{stretch}}}",
+            f"\\resizebox{{\\textwidth}}{{!}}{{",
             f"\\begin{{tabular}}{{ {sepStr} }}",
             "    \\hline",
             "    {0} \\\\".format(" & ".join(h.ljust(cw)
@@ -413,6 +393,8 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
 
 # END cutflow reports, adapted from bamboo.analysisutils
 
+# END cutflow reports, adapted from bamboo.analysisutils
+
 
 class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     """ Base module for producing plots from Phase2 flat trees """
@@ -421,8 +403,30 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     
     def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
         super(CMSPhase2SimRTBHistoModule, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
-        """ Customised cutflow reports and plots """
-       
+        """ Customised cutflow reports and plots """       
+        if not self.plotList:
+            self.plotList = self.getPlotList(resultsdir=resultsdir)
+        from bamboo.plots import Plot, DerivedPlot, CutFlowReport
+        plotList_cutflowreport = [
+            ap for ap in self.plotList if isinstance(ap, CutFlowReport)]
+        plotList_plotIt = [ap for ap in self.plotList if (isinstance(
+            ap, Plot) or isinstance(ap, DerivedPlot)) and len(ap.binnings) == 1]
+        eraMode, eras = self.args.eras
+        if eras is None:
+            eras = list(config["eras"].keys())
+        if plotList_cutflowreport:
+            printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
+                                readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
+        if plotList_plotIt:
+            from bamboo.analysisutils import writePlotIt, runPlotIt
+            import os.path
+            cfgName = os.path.join(workdir, "plots.yml")
+            writePlotIt(config, plotList_plotIt, cfgName, eras=eras, workdir=workdir, resultsdir=resultsdir,
+                        readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
+            runPlotIt(cfgName, workdir=workdir, plotIt=self.args.plotIt,
+                      eras=(eraMode, eras), verbose=self.args.verbose)
+
+   
         #mvaSkim 
         #import os.path 
         from bamboo.plots import Skim
@@ -526,8 +530,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sort_ph = op.sort(photons, lambda ph : -ph.pt)
 
         #selection of photons with loose ID        
-        isoPhotons = op.select(sort_ph, lambda ph : ph.isopass & (1<<2)) #switched to tight ID on 26/11
-        idPhotons = op.select(isoPhotons, lambda ph : ph.idpass & (1<<0))
+        isoPhotons = op.select(sort_ph, lambda ph : ph.isopass & (1<<0)) #switched to tight ID on 26/11
+        idPhotons = op.select(isoPhotons, lambda ph : ph.idpass & (1<<2))
         #H->WW->2q1l1nu
        
         electrons = op.select(t.elec, lambda el : op.AND(
@@ -560,8 +564,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<0)) #apply tight ID  
         isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<0)) #apply tight isolation 
         
-        taus = op.select(t.tau, lambda tau: op.AND(
-            tau.pt > 20., op.abs(tau.eta) < 3))
+        taus = op.sort(op.select(t.tau, lambda tau: op.AND(
+            tau.pt > 20., op.abs(tau.eta) < 3)), lambda tau: -tau.pt)
 
         isolatedTaus = op.select(taus, lambda tau: tau.isopass & (1 << 2)) # tight working point
 
@@ -577,7 +581,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         clJets = op.select(jets, lambda j : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(ph.p4, j.p4) < 0.4) ),
             op.NOT(op.rng_any(idElectrons, lambda el : op.deltaR(el.p4, j.p4) < 0.4) ),  
-            op.NOT(op.rng_any(isoMuons, lambda mu : op.deltaR(mu.p4, j.p4) < 0.4) )
+            op.NOT(op.rng_any(isoMuons, lambda mu : op.deltaR(mu.p4, j.p4) < 0.4) ),
+            op.NOT(op.rng_any(cleanedTaus, lambda tau: op.deltaR(j.p4, tau.p4) < 0.4))
         ))
         sort_jets = op.sort(clJets, lambda jet : -jet.pt)  
         idJets = op.select(sort_jets, lambda j : j.idpass & (1<<2))
@@ -602,12 +607,20 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         nJet = op.rng_len(idJets)
         nPhoton = op.rng_len(idPhotons)
         nTau = op.rng_len(cleanedTaus) 
+        
         #defining more DNN variables
         pT_mGGL = op.product(idPhotons[0].pt, op.pow(mGG, -1)) 
         pT_mGGSL = op.product(idPhotons[1].pt, op.pow(mGG, -1)) 
         E_mGGL = op.product(idPhotons[0].p4.energy(), op.pow(mGG, -1))
         E_mGGSL = op.product(idPhotons[1].p4.energy(), op.pow(mGG, -1))
 
+        #FH DNN variables
+        w1 = op.sum(idJets[0].p4, idJets[1].p4)
+        w1_invmass = op.invariant_mass(idJets[0].p4, idJets[1].p4)
+        w2 = op.sum(idJets[2].p4, idJets[3].p4)
+        w2_invmass = op.invariant_mass(idJets[2].p4, idJets[3].p4)
+        ww = op.sum(idJets[0].p4, idJets[1].p4,idJets[2].p4, idJets[3].p4)
+        ww_invmass = op.invariant_mass(idJets[0].p4, idJets[1].p4,idJets[2].p4, idJets[3].p4)
 
         #selections for efficiency check
 
@@ -824,6 +837,47 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "met":metPt
         } 
         
+        mvaVariables_FH = {
+            "weight": noSel.weight,
+            "Eta_ph1": idPhotons[0].eta,
+            "Phi_ph1": idPhotons[0].phi,
+            #"E_mGG_ph1": E_mGGL,
+            "pT_mGG_ph1": pT_mGGL,
+            "Eta_ph2": idPhotons[1].eta,
+            "Phi_ph2": idPhotons[1].phi,
+            #"E_mGG_ph2": E_mGGSL,
+            "pT_mGG_ph2": pT_mGGSL,
+            "deltaPhi_DiPh": op.deltaPhi(idPhotons[0].p4, idPhotons[1].p4),
+            "deltaR_DiPh": op.deltaR(idPhotons[0].p4, idPhotons[1].p4),
+            "nJets": nJet,
+            "E_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].p4.E()),   
+            "pT_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].pt),
+            "Eta_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].eta),
+            "Phi_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].phi), 
+            "E_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].p4.E()),   
+            "pT_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].pt),
+            "Eta_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].eta),
+            "Phi_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].phi),  
+            "E_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].p4.E()),   
+            "pT_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].pt),
+            "Eta_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].eta),
+            "Phi_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].phi),
+            "E_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].p4.E()),   
+            "pT_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].pt),
+            "Eta_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].eta),
+            "Phi_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].phi),
+            #"InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
+            #"InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL),
+            "w1_pT": w1.pt,
+            "w1_eta": w1.eta,
+            "w1_mass": w1_invmass,
+            "w2_pT": w2.pt,
+            "w2_eta": w2.eta,
+            "w2_mass": w2_invmass,
+            "ww_pT": ww.pt,
+            "ww_eta": ww.eta,
+            "ww_mass": ww_invmass
+        } 
 
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
