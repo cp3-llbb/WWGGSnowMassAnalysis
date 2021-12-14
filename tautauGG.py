@@ -443,9 +443,10 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             op.select(t.gamma, lambda ph: op.abs(ph.eta) < 3), lambda ph: -ph.pt)
 
         ISOphotons = op.select(photons, lambda ph: ph.isopass & (
-            1 << 0))  # loose working point
+            1 << 0))
 
-        IDphotons = op.select(ISOphotons, lambda ph: ph.idpass & (1 << 2)) # tight working point
+        IDphotons = op.select(ISOphotons, lambda ph: ph.idpass & (
+            1 << 2))
 
         # di-Photon mass
         mgg = op.invariant_mass(IDphotons[0].p4, IDphotons[1].p4)
@@ -490,7 +491,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # taus
 
         taus = op.sort(op.select(t.tau, lambda tau: op.AND(
-            tau.pt > 20., op.abs(tau.eta) < 3)), lambda tau: -tau.pt)
+            tau.pt > 20, op.abs(tau.eta) < 3)), lambda tau: -tau.pt)
 
         isolatedTaus = op.select(taus, lambda tau: tau.isopass & (1 << 0))
 
@@ -519,10 +520,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         jets = op.sort(op.select(t.jetpuppi, lambda j: op.AND(
             j.pt > 25, op.abs(j.eta) < 5)), lambda j: -j.pt)
 
-        IDJets = op.select(jets, lambda j: j.idpass &
-                           (1 << 2))  # tight working point
-
-        cleanedJets = op.select(IDJets, lambda j: op.AND(
+        cleanedJets = op.select(jets, lambda j: op.AND(
             op.NOT(op.rng_any(cleanedElectrons,
                    lambda el: op.deltaR(j.p4, el.p4) < 0.4)),
             op.NOT(op.rng_any(cleanedMuons, lambda mu: op.deltaR(j.p4, mu.p4) < 0.4)),
@@ -530,8 +528,11 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             op.NOT(op.rng_any(IDphotons, lambda ph: op.deltaR(j.p4, ph.p4) < 0.4))
         ))
 
+        IDJets = op.select(cleanedJets, lambda j: j.idpass &
+                           (1 << 2))  # tight working point
+
         bJets = op.select(
-            cleanedJets, lambda j: j.btag & (1 << 1))  # medium working point
+            IDJets, lambda j: j.btag & (1 << 1))  # medium working point
 
         # missing transverse energy
         met = op.select(t.metpuppi)
@@ -587,22 +588,22 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         sel2_m = sel1_m.refine("IDMuon", cut=op.rng_len(IDmuons) >= 1)
 
         plots.append(Plot.make1D("LeadingPhotonISO", op.map(
-            ISOphotons, lambda p: p.pt), sel1_p, EqB(30, 0., 300.), title="Leading Photon pT"))
+            ISOphotons, lambda p: p.pt), sel1_p, EqB(30, 0, 300), title="Leading Photon pT"))
 
         plots.append(Plot.make1D("LeadingPhotonIDISO", op.map(
-            IDphotons, lambda p: p.pt), sel2_p, EqB(30, 0., 300.), title="Leading Photon pT"))
+            IDphotons, lambda p: p.pt), sel2_p, EqB(30, 0, 300), title="Leading Photon pT"))
 
         plots.append(Plot.make1D("LeadingElectronISO", ISOelectrons[0].pt, sel1_e, EqB(
-            30, 0., 300.), title="Leading Electron pT"))
+            30, 0, 300), title="Leading Electron pT"))
 
         plots.append(Plot.make1D("LeadingElectronIDISO", IDelectrons[0].pt, sel2_e, EqB(
-            30, 0., 300.), title="Leading Electron pT"))
+            30, 0, 300), title="Leading Electron pT"))
 
         plots.append(Plot.make1D("LeadingMuonISO", ISOmuons[0].pt, sel1_m, EqB(
-            30, 0., 300.), title="Leading Muon pT"))
+            30, 0, 300), title="Leading Muon pT"))
 
         plots.append(Plot.make1D("LeadingMuonIDISO", IDmuons[0].pt, sel2_m, EqB(
-            30, 0., 300.), title="Leading Muon pT"))
+            30, 0, 300), title="Leading Muon pT"))
 
         ## Categories ##
 
@@ -664,81 +665,81 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         # Leading Photon p_T plots
         plots.append(Plot.make1D("LeadingPhotonPTtwoPhotonsSel", IDphotons[0].pt, twoPhotonsSel, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTpTmggRatio_sel", IDphotons[0].pt, pTmggRatio_sel, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTmgg_sel", IDphotons[0].pt, mgg_sel, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc1", IDphotons[0].pt, c1, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc2", IDphotons[0].pt, c2, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc3", IDphotons[0].pt, c3, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc4", IDphotons[0].pt, c4, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc1_Zveto", IDphotons[0].pt, c1_Zveto, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc2_Zveto", IDphotons[0].pt, c2_Zveto, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("LeadingPhotonPTc4_Zveto", IDphotons[0].pt, c4_Zveto, EqB(
-            30, 30., 1000.), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 30, 1000), title="Leading Photon p_{T} [GeV]", plotopts={"log-y": True}))
 
         # Sub-leading Photon p_T plots
         plots.append(Plot.make1D("SubleadingPhotonPTtwoPhotonsSel", IDphotons[1].pt, twoPhotonsSel, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTpTmggRatio_sel", IDphotons[1].pt, pTmggRatio_sel, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTmgg_sel", IDphotons[1].pt, mgg_sel, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc1", IDphotons[1].pt, c1, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc2", IDphotons[1].pt, c2, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc3", IDphotons[1].pt, c3, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc4", IDphotons[1].pt, c4, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc1_Zveto", IDphotons[1].pt, c1_Zveto, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc2_Zveto", IDphotons[1].pt, c2_Zveto, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingPhotonPTc4_Zveto", IDphotons[1].pt, c4_Zveto, EqB(
-            30, 30., 1000.), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25., 1000), title="Subleading Photon p_{T} [GeV]", plotopts={"log-y": True}))
 
         # Leading Tau p_T plots
         plots.append(Plot.make1D("leadingTauPT_c4", bestTauPair[0].pt, c4, EqB(
-            20, 0., 500.), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25, 500), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("leadingTauPT_c4Zveto", bestTauPair[0].pt, c4_Zveto, EqB(
-            20, 0., 500.), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25, 500), title="Leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
 
         # Sub-leading Tau p_T plots
         plots.append(Plot.make1D("SubleadingTauPTc4", bestTauPair[1].pt, c4, EqB(
-            20, 0., 500.), title="Sub-leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25, 500), title="Sub-leading Tau p_{T} [GeV]", plotopts={"log-y": True}))
         plots.append(Plot.make1D("SubleadingTauPTc4_Zveto", bestTauPair[1].pt, c4_Zveto, EqB(
-            100, 0., 500.), title="Subleading Tau p_{T} [GeV]", plotopts={"log-y": True}))
+            100, 25, 500), title="Subleading Tau p_{T} [GeV]", plotopts={"log-y": True}))
 
         # di-Photon mass plots
         plots.append(Plot.make1D("Mgg_twoPhotonsSel", mgg, twoPhotonsSel, EqB(
-            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            100, 0, 1000), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_pTmggRatio_sel", mgg, pTmggRatio_sel, EqB(
-            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            100, 0, 1000), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_mggsel", mgg, mgg_sel, EqB(
-            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c1", mgg, c1, EqB(
-            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c2", mgg, c2, EqB(
-            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c3", mgg, c3, EqB(
-            80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c4", mgg, c4, EqB(
-            30, 0., 1000.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c1_Zveto", mgg, c1_Zveto, EqB(
-            80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c2_Zveto", mgg, c2_Zveto, EqB(
-            80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c4_Zveto", mgg, c4_Zveto, EqB(
-            80, 100, 180.), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
         # Cutflow report
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
