@@ -28,7 +28,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 0.0037234 # 36.69 fb * 2* BR (H --> GG) * BR (H --> WW) * BR (W --> lnu) - from Soumya
     legend: HH \rightarrow WW\gamma\gamma \; DL
-    line-color: "#ff0000" # red
+    line-color: "#000000" # black
     split: 40
   VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     era: HL-LHC
@@ -64,13 +64,19 @@ samples:
     split: 40
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU: 
     era: HL-LHC
+    group: diphoton
     type: mc
     files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU_full.txt
     generated-events: sumgenweight
     cross-section: 98670 # on McM 98.67 pb
-    legend: \gamma \gamma + jets
-    fill-color: "#40D51A"
-    order: 2
+    split: 40
+  DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU:
+    era: HL-LHC
+    group: diphoton
+    type: mc
+    files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 332804 # on McM 332.804 pb
     split: 40
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU: 
     era: HL-LHC
@@ -95,6 +101,7 @@ samples:
     files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU_full.txt
     generated-events: sumgenweight
     cross-section: 799 # from McM 0.799 pb
+    split: 40
   TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
     era: HL-LHC
     group: top
@@ -177,16 +184,16 @@ samples:
     fill-color: "#1AD5B0"
     order: 6
     split: 40
-  # ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
-  #   era: HL-LHC
-  #   type: mc
-  #   files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
-  #   generated-events: sumgenweight
-  #   cross-section: 145200 # from McM 145.2 pb
-  #   legend: 'ZG \rightarrow 2L \gamma'
-  #   fill-color: "#990066" 
-  #   order: 7
-  #   split: 40
+  ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
+    era: HL-LHC
+    type: mc
+    files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
+    generated-events: sumgenweight
+    cross-section: 145200 # from McM 145.2 pb
+    legend: 'ZG \rightarrow 2L \gamma'
+    fill-color: "#990066" 
+    order: 7
+    split: 40
 plotIt:
   configuration:
     width: 700
@@ -209,6 +216,10 @@ plotIt:
       legend: Single H
       fill-color: "#FFCC33"
       order: 1
+    diphoton:
+      legend: \gamma \gamma + jets
+      fill-color: "#40D51A"
+      order: 2
     top:
       legend: Top
       fill-color: "#D489FF"
