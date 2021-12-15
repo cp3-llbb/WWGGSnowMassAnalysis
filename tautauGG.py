@@ -544,32 +544,6 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # mJets_SL= op.invariant_mass(IDJets[1].p4, IDJets[2].p4)
         # hJets = op.sum(IDJets[0].p4, IDJets[1].p4)
 
-        ## Variables for DNN ##
-
-        # Event level variables
-        nTaus = op.rng_len(cleanedTaus)
-        nElecs = op.rng_len(cleanedElectrons)
-        nMuons = op.rng_len(cleanedMuons)
-        nJets = op.rng_len(cleanedJets)
-        nBJets = op.rng_len(bJets)
-        #MET_pt = met.pt
-
-        # Photon and di-Photon variables
-        PtMggLg = IDphotons[0].pt / mgg  # pt / mgg of the leading photon
-        PtMggSLg = IDphotons[1].pt / mgg  # pt / mgg of the sub-leading photon
-        etaLg = IDphotons[0].eta  # eta of the leading photon
-        etaSLg = IDphotons[1].eta  # eta of the sub-leading photon
-        ggPtMgg = (IDphotons[0].pt + IDphotons[1].pt) / \
-            mgg  # pt / mgg of the di-photon
-        # deltaR of the di-photon
-        ggDR = op.deltaR(IDphotons[0].p4, IDphotons[1].p4)
-        # deltaPhi of the di-photon
-        ggPhi = op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4)
-
-        # Lepton, tau and jet variables
-
-        ## End of DNN variables ##
-
         # pT_mGGL = IDphotons[0].pt/ mgg
         # pT_mGGSL = IDphotons[1].pt/ mgg
         # E_mGGL = IDphotons[0].p4.energy() / mgg
@@ -642,7 +616,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # for i in range(len(mggbin_list)):
         #     mggbin_dict[mggbin_list[i]] = mgg_sel.refine(mggbin_list[i], cut = op.in_range(mgg, i+100, i+101))
 
-        ## Z veto ##
+        ########## Z veto ##########
 
         mTauElec = op.invariant_mass(cleanedTaus[0].p4, cleanedElectrons[0].p4)
 
@@ -659,9 +633,74 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         c4_Zveto = c4.refine(
             "hasTwoTaus_Zveto", cut=op.NOT(op.in_range(80, mTauTau, 100)))
 
-        ## End of Z veto ##
+        ########## End of Z veto ############
+
+        ########## Variables for DNN ##########
+
+        # Event level variables
+        nTaus = op.rng_len(cleanedTaus)
+        nElecs = op.rng_len(cleanedElectrons)
+        nMuons = op.rng_len(cleanedMuons)
+        nJets = op.rng_len(cleanedJets)
+        nBJets = op.rng_len(bJets)
+        metPt = met[0].pt
+
+        # Photon and di-Photon variables
+        L_pt_mgg = IDphotons[0].pt / mgg  # pt / mgg of the leading photon
+        SL_pt_mgg = IDphotons[1].pt / mgg  # pt / mgg of the sub-leading photon
+        L_photon_eta = IDphotons[0].eta  # eta of the leading photon
+        SL_photon_eta = IDphotons[1].eta  # eta of the sub-leading photon
+        diP_pt_mgg = (IDphotons[0].pt + IDphotons[1].pt) / mgg  # pt / mgg of the di-photon
+        diP_DR = op.deltaR(IDphotons[0].p4, IDphotons[1].p4) # deltaR of the di-photon
+        diP_Phi = op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4) # deltaPhi of the di-photon
+        
+        # Lepton, tau and jet variables
+        LelectronPt = IDelectrons[0].pt
+        LelectronEta = IDelectrons[0].eta
+        SLelectronPt = IDelectrons[1].pt
+        SLelectronEta = IDelectrons[1].eta
+
+        LmuonPt = IDmuons[0].pt
+        LmuonEta = IDmuons[0].eta
+        SLmuonPt = IDmuons[1].pt
+        SLmuonEta = IDmuons[1].eta
+
+        LtauPt = cleanedTaus[0].pt
+        LtauEta = cleanedTaus[0].eta
+        SLtauPt = cleanedTaus[1].pt
+        SLtauEta = cleanedTaus[1].eta
+
+        DRtautau = op.deltaR(bestTauPair[0].p4, bestTauPair[1].p4) # for c4_Zveto
+        DPhitautau = op.deltaPhi(bestTauPair[0].p4, bestTauPair[1].p4) # for c4_Zveto
+        Mtautau = op.invariant_mass(bestTauPair[0].p4, bestTauPair[1].p4) # for c4_Zveto
+        pTtautau = op.sum(bestTauPair[0].p4 + bestTauPair[1].p4) # for c4_Zveto
+
+        LjetPt = cleanedJets[0].pt
+        LjetEta = cleanedJets[0].eta
+        LjetID = cleanedJets[0].idpass
+        SLjetPt = cleanedJets[1].pt
+        SLjetEta = cleanedJets[1].eta
+        SLjetID = cleanedJets[1].idpass
+
+
+        ########## End of DNN variables ##########
 
         # plots
+
+        LelectronpT = Plot.make1D("ElectronpT", IDelectrons[0].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Leading Electron pT')
+        LelectronEta = Plot.make1D("ElectronEta", IDelectrons[0].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Leading Electron Eta')
+        SLelectronpT = Plot.make1D("SLelectronpT", IDelectrons[1].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Sub-Leading Electron pT')
+        SLelectronEta = Plot.make1D("SLelectronEta", IDelectrons[1].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Sub-Leading Electron Eta')
+
+        muonpT = Plot.make1D("MuonpT", IDmuons[0].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Leading Muon pT')
+        muonEta = Plot.make1D("MuonEta", IDmuons[0].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Leading Muon Eta')
+        SLmuonpT = Plot.make1D("SLmuonpT", IDmuons[1].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Sub-Leading Muon pT')
+        SLmuonEta = Plot.make1D("SLmuonEta", IDmuons[1].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Sub-Leading Muon Eta')
+
+        taupT = Plot.make1D("TaupT", cleanedTaus[0].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Leading Tau pT')
+        tauEta = Plot.make1D("TauEta", cleanedTaus[0].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Leading Tau Eta')
+        SLtaupT = Plot.make1D("SLtaupT", cleanedTaus[1].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Sub-Leading Tau pT')
+        SLtauEta = Plot.make1D("SLtauEta", cleanedTaus[1].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Sub-Leading Tau Eta')
 
         # Leading Photon p_T plots
         plots.append(Plot.make1D("LeadingPhotonPTtwoPhotonsSel", IDphotons[0].pt, twoPhotonsSel, EqB(
