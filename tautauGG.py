@@ -446,7 +446,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             1 << 0))
 
         IDphotons = op.select(ISOphotons, lambda ph: ph.idpass & (
-            1 << 2))
+            1 << 0))
 
         # di-Photon mass
         mgg = op.invariant_mass(IDphotons[0].p4, IDphotons[1].p4)
@@ -537,17 +537,13 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # missing transverse energy
         met = op.select(t.metpuppi)
 
-        # hJets = op.sum(cleanedJets[0].p4, cleanedJets[1].p4)
+        ########## Variables for ease of use ##########
 
-        # hGG = op.sum(IDphotons[0].p4, IDphotons[1].p4)
-        # mJets= op.invariant_mass(IDJets[0].p4, IDJets[1].p4)
-        # mJets_SL= op.invariant_mass(IDJets[1].p4, IDJets[2].p4)
-        # hJets = op.sum(IDJets[0].p4, IDJets[1].p4)
+        nTaus = op.rng_len(cleanedTaus)
+        nElec = op.rng_len(IDelectrons)
+        nMuon = op.rng_len(IDmuons)
 
-        # pT_mGGL = IDphotons[0].pt/ mgg
-        # pT_mGGSL = IDphotons[1].pt/ mgg
-        # E_mGGL = IDphotons[0].p4.energy() / mgg
-        # E_mGGSL = IDphotons[1].p4.energy() / mgg
+        ########## End of Variables ##########
 
         sel1_p = noSel.refine("OnePhoton", cut=op.rng_len(ISOphotons) >= 1)
 
@@ -555,11 +551,11 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         sel1_e = noSel.refine("OneElec", cut=op.rng_len(ISOelectrons) >= 1)
 
-        sel2_e = sel1_e.refine("IDElec", cut=op.rng_len(IDelectrons) >= 1)
+        sel2_e = sel1_e.refine("IDElec", cut=nElec >= 1)
 
         sel1_m = noSel.refine("OneMuon", cut=op.rng_len(ISOmuons) >= 1)
 
-        sel2_m = sel1_m.refine("IDMuon", cut=op.rng_len(IDmuons) >= 1)
+        sel2_m = sel1_m.refine("IDMuon", cut=nMuon >= 1)
 
         plots.append(Plot.make1D("LeadingPhotonISO", op.map(
             ISOphotons, lambda p: p.pt), sel1_p, EqB(30, 0, 300), title="Leading Photon pT"))
@@ -582,39 +578,33 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         ## Categories ##
 
         c1 = mgg_sel.refine("hasOneTauOneElec", cut=op.AND(
-            op.rng_len(cleanedTaus) == 1,
+            nTaus == 1,
             op.rng_len(cleanedElectrons) == 1,
             op.rng_len(cleanedMuons) == 0,
             cleanedTaus[0].charge != cleanedElectrons[0].charge
         ))
 
         c2 = mgg_sel.refine("hasOneTauOneMuon", cut=op.AND(
-            op.rng_len(cleanedTaus) == 1,
+            nTaus == 1,
             op.rng_len(cleanedMuons) == 1,
             op.rng_len(cleanedElectrons) == 0,
             cleanedTaus[0].charge != cleanedMuons[0].charge
         ))
 
         c3 = mgg_sel.refine("hasOneTauNoLept", cut=op.AND(
-            op.rng_len(cleanedTaus) == 1,
+            nTaus == 1,
             op.rng_len(cleanedElectrons) == 0,
             op.rng_len(cleanedMuons) == 0
         ))
 
         c4 = mgg_sel.refine("hasTwoTaus", cut=op.AND(
-            op.rng_len(cleanedTaus) == 2,
+            nTaus == 2,
             op.rng_len(cleanedElectrons) == 0,
             op.rng_len(cleanedMuons) == 0,
             cleanedTaus[0].charge != cleanedTaus[1].charge
         ))
 
         ## End of Categories ##
-
-        # mggbin_list = ["hasTwoTaus"+str(i) for i in range(100, 181)]
-
-        # mggbin_dict = {}
-        # for i in range(len(mggbin_list)):
-        #     mggbin_dict[mggbin_list[i]] = mgg_sel.refine(mggbin_list[i], cut = op.in_range(mgg, i+100, i+101))
 
         ########## Z veto ##########
 
@@ -635,72 +625,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         ########## End of Z veto ############
 
-        ########## Variables for DNN ##########
-
-        # Event level variables
-        nTaus = op.rng_len(cleanedTaus)
-        nElecs = op.rng_len(cleanedElectrons)
-        nMuons = op.rng_len(cleanedMuons)
-        nJets = op.rng_len(cleanedJets)
-        nBJets = op.rng_len(bJets)
-        metPt = met[0].pt
-
-        # Photon and di-Photon variables
-        L_pt_mgg = IDphotons[0].pt / mgg  # pt / mgg of the leading photon
-        SL_pt_mgg = IDphotons[1].pt / mgg  # pt / mgg of the sub-leading photon
-        L_photon_eta = IDphotons[0].eta  # eta of the leading photon
-        SL_photon_eta = IDphotons[1].eta  # eta of the sub-leading photon
-        diP_pt_mgg = (IDphotons[0].pt + IDphotons[1].pt) / mgg  # pt / mgg of the di-photon
-        diP_DR = op.deltaR(IDphotons[0].p4, IDphotons[1].p4) # deltaR of the di-photon
-        diP_Phi = op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4) # deltaPhi of the di-photon
-        
-        # Lepton, tau and jet variables
-        LelectronPt = IDelectrons[0].pt
-        LelectronEta = IDelectrons[0].eta
-        SLelectronPt = IDelectrons[1].pt
-        SLelectronEta = IDelectrons[1].eta
-
-        LmuonPt = IDmuons[0].pt
-        LmuonEta = IDmuons[0].eta
-        SLmuonPt = IDmuons[1].pt
-        SLmuonEta = IDmuons[1].eta
-
-        LtauPt = cleanedTaus[0].pt
-        LtauEta = cleanedTaus[0].eta
-        SLtauPt = cleanedTaus[1].pt
-        SLtauEta = cleanedTaus[1].eta
-
-        DRtautau = op.deltaR(bestTauPair[0].p4, bestTauPair[1].p4) # for c4_Zveto
-        DPhitautau = op.deltaPhi(bestTauPair[0].p4, bestTauPair[1].p4) # for c4_Zveto
-        Mtautau = op.invariant_mass(bestTauPair[0].p4, bestTauPair[1].p4) # for c4_Zveto
-        pTtautau = op.sum(bestTauPair[0].p4 + bestTauPair[1].p4) # for c4_Zveto
-
-        LjetPt = cleanedJets[0].pt
-        LjetEta = cleanedJets[0].eta
-        LjetID = cleanedJets[0].idpass
-        SLjetPt = cleanedJets[1].pt
-        SLjetEta = cleanedJets[1].eta
-        SLjetID = cleanedJets[1].idpass
-
-
-        ########## End of DNN variables ##########
-
         # plots
-
-        LelectronpT = Plot.make1D("ElectronpT", IDelectrons[0].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Leading Electron pT')
-        LelectronEta = Plot.make1D("ElectronEta", IDelectrons[0].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Leading Electron Eta')
-        SLelectronpT = Plot.make1D("SLelectronpT", IDelectrons[1].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Sub-Leading Electron pT')
-        SLelectronEta = Plot.make1D("SLelectronEta", IDelectrons[1].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Sub-Leading Electron Eta')
-
-        muonpT = Plot.make1D("MuonpT", IDmuons[0].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Leading Muon pT')
-        muonEta = Plot.make1D("MuonEta", IDmuons[0].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Leading Muon Eta')
-        SLmuonpT = Plot.make1D("SLmuonpT", IDmuons[1].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Sub-Leading Muon pT')
-        SLmuonEta = Plot.make1D("SLmuonEta", IDmuons[1].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Sub-Leading Muon Eta')
-
-        taupT = Plot.make1D("TaupT", cleanedTaus[0].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Leading Tau pT')
-        tauEta = Plot.make1D("TauEta", cleanedTaus[0].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Leading Tau Eta')
-        SLtaupT = Plot.make1D("SLtaupT", cleanedTaus[1].pt, c4_Zveto, EqB(30, 0., 300.), title = 'Sub-Leading Tau pT')
-        SLtauEta = Plot.make1D("SLtauEta", cleanedTaus[1].eta, c4_Zveto, EqB(30, -3., 3.), title = 'Sub-Leading Tau Eta')
 
         # Leading Photon p_T plots
         plots.append(Plot.make1D("LeadingPhotonPTtwoPhotonsSel", IDphotons[0].pt, twoPhotonsSel, EqB(
@@ -783,8 +708,6 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # Cutflow report
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
-        # for mgg_bin in mggbin_dict:
-        #     cfr.add(mggbin_dict[mgg_bin], "mgg_bin")
         cfr.add(noSel, "No selection")
         cfr.add(c1_Zveto, "One Tau One Electron")
         cfr.add(c2_Zveto, "One Tau One Muon")
