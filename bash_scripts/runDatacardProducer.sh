@@ -19,9 +19,9 @@ source python3/bin/activate
 
 pip install enlighten # execute this at first trial and remove
 
-path=/afs/cern.ch/work/a/aguzel/private/bamboodev/output-tautaugg_withcategories6-2/
+path=/afs/cern.ch/work/a/aguzel/private/bamboodev/output-tautaugg-looseID-withPTmggRatio_split/
 
-categories="hasTwoTausNoLept hasOneTauOneElec hasOneTauOneMuon hasOneTauNoLept"
+categories="c1_Zveto c2_Zveto c3 c4_Zveto"
 
 for category in $categories
 do
