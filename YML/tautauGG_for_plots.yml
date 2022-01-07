@@ -1,10 +1,10 @@
 tree: myana/mytree
 eras:
-  HL-LHC:
+  HL:
     luminosity: 3000000 # 1/pb
 samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
-    era: HL-LHC
+    era: HL
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
@@ -13,7 +13,7 @@ samples:
     line-color: '#000000' #"#260AB3" #blue 
     split: 40
   GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: signal
     files: GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -22,7 +22,7 @@ samples:
     line-color: "#0000ff"
     split: 40
   GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: signal
     files: GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -32,7 +32,7 @@ samples:
     split: 40
   GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
     group: SingleH
-    era: HL-LHC
+    era: HL
     type: mc
     files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -42,7 +42,7 @@ samples:
     split: 40
   VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
     group: SingleH
-    era: HL-LHC
+    era: HL
     type: mc
     files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -52,7 +52,7 @@ samples:
     split: 40
   ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: SingleH
-    era: HL-LHC
+    era: HL
     type: mc
     files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -62,7 +62,7 @@ samples:
     split: 40
   VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: SingleH
-    era: HL-LHC
+    era: HL
     type: mc
     files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -72,7 +72,7 @@ samples:
     split: 40
   TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: topInduced
-    era: HL-LHC
+    era: HL
     type: mc
     files: TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -82,7 +82,7 @@ samples:
     split: 40
   TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU:
     group: topInduced
-    era: HL-LHC
+    era: HL
     type: mc
     files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.txt
     generated-events: sumgenweight
@@ -92,7 +92,7 @@ samples:
     split: 40
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
     group: topInduced
-    era: HL-LHC
+    era: HL
     type: mc
     files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -101,7 +101,7 @@ samples:
     #fill-color: "#D489FF" 
     split: 40
   TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
+    era: HL
     group: topInduced
     type: mc
     files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
@@ -109,7 +109,7 @@ samples:
     cross-section: 0.6231 # from McM 0.6231 pb
     split: 40
   TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
+    era: HL
     group: topInduced
     type: mc
     files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
@@ -117,7 +117,7 @@ samples:
     cross-section: 0.799  # from McM 0.799 pb
     split: 40
   TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
+    era: HL
     group: topInduced
     type: mc
     files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
@@ -125,7 +125,7 @@ samples:
     cross-section: 0.7709 # from McM 0.7709 pb
     split: 40
   TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     group: topInduced
     type: mc
     files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
@@ -134,7 +134,7 @@ samples:
     split: 40
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
-    era: HL-LHC
+    era: HL
     type: mc
     files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -144,7 +144,7 @@ samples:
     split: 40
   W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
-    era: HL-LHC
+    era: HL
     type: mc
     files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -154,7 +154,7 @@ samples:
     split: 40
   W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
-    era: HL-LHC
+    era: HL
     type: mc
     files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -164,7 +164,7 @@ samples:
     split: 40
   GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt   
     generated-events: sumgenweight
@@ -174,7 +174,7 @@ samples:
     split: 40   
   GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -182,7 +182,7 @@ samples:
     split: 40
   GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.txt
     generated-events: sumgenweight
@@ -190,7 +190,7 @@ samples:
     split: 40
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
     group: Diphoton
-    era: HL-LHC
+    era: HL
     type: mc
     files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
@@ -201,7 +201,7 @@ samples:
     split: 40
   DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU:
     group: Diphoton
-    era: HL-LHC
+    era: HL
     type: mc
     files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
@@ -212,7 +212,7 @@ samples:
     split: 40
   WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU.txt
     generated-events: sumgenweight
@@ -220,7 +220,7 @@ samples:
     split: 40
   WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU:
     group: VG
-    era: HL-LHC
+    era: HL
     type: mc
     files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -231,7 +231,7 @@ samples:
     split: 40
   ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
     group: VG
-    era: HL-LHC
+    era: HL
     type: mc
     files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -242,7 +242,7 @@ samples:
     split: 40
   WW_TuneCUETP8M1_14TeV-pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: WW_TuneCUETP8M1_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -250,7 +250,7 @@ samples:
     split: 40  
   QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
@@ -258,7 +258,7 @@ samples:
     split: 40
   QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
@@ -266,7 +266,7 @@ samples:
     split: 40
   QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
@@ -274,7 +274,7 @@ samples:
     split: 40  
   THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU:
     group: SingleH
-    era: HL-LHC
+    era: HL
     type: mc
     files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -282,7 +282,7 @@ samples:
     split: 40  
   DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
