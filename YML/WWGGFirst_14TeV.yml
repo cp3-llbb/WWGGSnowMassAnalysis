@@ -132,6 +132,16 @@ samples:
     generated-events: sumgenweight
     cross-section: 0.769 # from McM 0.769 pb
     split: 40
+  #TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+   # group: topInduced
+   # era: HL-LHC
+   # type: mc
+   # files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+   # generated-events: sumgenweight
+   # cross-section: 4.577 #4.577e+00 +- 5.891e-02 pb
+    #legend: 'ttGG'
+    #fill-color: "#28E298" 
+   # split: 40
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
     era: HL-LHC
@@ -218,7 +228,7 @@ samples:
     cross-section:  1.884
     legend: 'WGGJets'
     fill-color: "#40D51A" #'#008080'  
-    order: 5
+    order: 3
     split: 40
   WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU:
     group: VG
@@ -250,7 +260,7 @@ samples:
     cross-section: 70.44 #McM 
     legend: 'WW(inclusive)'
     fill-color: "#D489FF" #'#1AD5B0' 
-    order: 6
+    order: 2
     split: 40  
   QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: Others
@@ -309,7 +319,7 @@ plotIt:
     #error-marker-style: ?
   plotdefaults:
     log-y: True
-    sort-by-yields: True
+    sort-by-yields: False
     save-extensions: [pdf, png]
     y-axis-range: [0.001,10000000000]
   legend:
@@ -323,11 +333,11 @@ plotIt:
     topInduced:
       legend: Top Induced
       fill-color: "#E2283B" #'#D489FF' 
-      order: 2
+      order: 4
     WJets:
       legend: WJets
       fill-color: "#FFCC33" #'#cc7a16'
-      order: 3
+      order: 5
     #GJet:
      # legend: GJet
      # fill-color: "#1AD5B0" #'#FFFF00'   
@@ -347,7 +357,7 @@ plotIt:
     VG:
       legend: VG
       fill-color: "#28CCE2"
-      order: 4
+      order: 6
 
 
 
