@@ -132,6 +132,14 @@ samples:
     generated-events: sumgenweight
     cross-section: 0.769 # from McM 0.769 pb
     split: 40
+  TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+    era: HL
+    group: topInduced
+    type: mc
+    files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 4.577 # from Soumya
+    split: 40
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: WJets
     era: HL
