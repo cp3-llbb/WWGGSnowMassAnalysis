@@ -518,7 +518,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         # Jets
 
         jets = op.sort(op.select(t.jetpuppi, lambda j: op.AND(
-            j.pt > 25, op.abs(j.eta) < 5)), lambda j: -j.pt)
+            j.pt > 30, op.abs(j.eta) < 5)), lambda j: -j.pt)
 
         cleanedJets = op.select(jets, lambda j: op.AND(
             op.NOT(op.rng_any(cleanedElectrons,
