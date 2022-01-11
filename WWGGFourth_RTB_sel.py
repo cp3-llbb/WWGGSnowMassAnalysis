@@ -404,28 +404,7 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
         super(CMSPhase2SimRTBHistoModule, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
         """ Customised cutflow reports and plots """       
-        if not self.plotList:
-            self.plotList = self.getPlotList(resultsdir=resultsdir)
-        from bamboo.plots import Plot, DerivedPlot, CutFlowReport
-        plotList_cutflowreport = [
-            ap for ap in self.plotList if isinstance(ap, CutFlowReport)]
-        plotList_plotIt = [ap for ap in self.plotList if (isinstance(
-            ap, Plot) or isinstance(ap, DerivedPlot)) and len(ap.binnings) == 1]
-        eraMode, eras = self.args.eras
-        if eras is None:
-            eras = list(config["eras"].keys())
-        if plotList_cutflowreport:
-            printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
-                                readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
-        if plotList_plotIt:
-            from bamboo.analysisutils import writePlotIt, runPlotIt
-            import os.path
-            cfgName = os.path.join(workdir, "plots.yml")
-            writePlotIt(config, plotList_plotIt, cfgName, eras=eras, workdir=workdir, resultsdir=resultsdir,
-                        readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
-            runPlotIt(cfgName, workdir=workdir, plotIt=self.args.plotIt,
-                      eras=(eraMode, eras), verbose=self.args.verbose)
-
+        
    
         #mvaSkim 
         #import os.path 
@@ -642,23 +621,23 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #selection: 2 photons (at least) in an event 
         hasTwoPh = sel2_p.refine("hasTwoPh", cut= op.rng_len(idPhotons) >= 2)
 
-        yields.add(hasTwoPh, title='hasTwoPh')
+        #yields.add(hasTwoPh, title='hasTwoPh')
 
         #selections for the event inv mass of photons within the 100-180 window
         hasInvM = hasTwoPh.refine("hasInvM", cut= op.AND(
             (op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
         ))
-        yields.add(hasInvM, title='hasInvM')
+        #yields.add(hasInvM, title='hasInvM')
 
         #selections for semileptonic final state
-        hasOneL = hasInvM.refine("hasOneL", cut = op.OR(nElec == 1, nMuon == 1))
+        hasOneL = hasInvM.refine("hasOneL", cut = op.AND(op.OR(nElec == 1, nMuon == 1), nTau == 0))
         yields.add(hasOneL, title='hasOneL')
 
         hasOneEl = hasInvM.refine("hasOneEl", cut = op.AND(nElec == 1, nMuon == 0))
-        yields.add(hasOneEl, title='hasOneEl')
+        #yields.add(hasOneEl, title='hasOneEl')
 
         hasOneMu = hasInvM.refine("hasOneMu", cut = op.AND(nElec == 0, nMuon == 1))
-        yields.add(hasOneMu, title='hasOneMu')
+        #yields.add(hasOneMu, title='hasOneMu')
 
         #adding jets on the semileptonic final state
         hasOneJ = hasOneL.refine("hasOneJ", cut = nJet >= 1)
@@ -887,19 +866,49 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #evaluate dnn model on data
         if self.args.mvaEval:
             #from IPython import embed
-            DNNmodel_path  = "/home/ucl/cp3/sdonerta/bamboodev/WWGG/model_threesignal.onnx" 
+            DNNmodel_path  = "/home/ucl/cp3/sdonerta/bamboodev/WWGG/model_noQCD.onnx" 
             mvaVariables.pop("weight", None)
             dnn = op.mvaEvaluator(DNNmodel_path, mvaType = "ONNXRuntime", otherArgs = "predictions")
             inputs = op.array('float',*[op.static_cast('float',val) for val in mvaVariables.values()])
             output = dnn(inputs)
            
             plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
-            hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] > 0.8)
+            hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
             yields.add(hasDNNscore, title='hasDNNscore')
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("DNN_output",op.rng_len(output), hasDNNscore, EqB(20,0,10), title = "dnn_output"))
-            #embed()       
-    
+
+            hasDNNscore2 = hasOneL.refine("hasDNNscore2", cut = op.in_range(0.6 ,output[0], 0.8))
+            yields.add(hasDNNscore2, title='hasDNNscore2')
+            
+            hasDNNscore3 = hasOneL.refine("hasDNNscore3", cut = op.in_range(0.8 ,output[0], 0.92))
+            yields.add(hasDNNscore3, title='hasDNNscore3')
+            
+            hasDNNscore4 = hasOneL.refine("hasDNNscore4", cut = output[0] > 0.92)
+            yields.add(hasDNNscore4, title='hasDNNscore4')
+            
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_150",mGG, hasDNNscore, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_150",mGG, hasDNNscore2, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_150",mGG, hasDNNscore3, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_150",mGG, hasDNNscore4, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
+
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_140",mGG, hasDNNscore, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_140",mGG, hasDNNscore2, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_140",mGG, hasDNNscore3, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_140",mGG, hasDNNscore4, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
+
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_145",mGG, hasDNNscore, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_145",mGG, hasDNNscore2, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_145",mGG, hasDNNscore3, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_145",mGG, hasDNNscore4, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+              
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_1000",mGG, hasDNNscore, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_1000",mGG, hasDNNscore2, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_1000",mGG, hasDNNscore3, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_1000",mGG, hasDNNscore4, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
+
+
+            
         return plots
+
+
 
     
