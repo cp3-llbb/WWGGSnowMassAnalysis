@@ -6,7 +6,7 @@ samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL
     type: signal
-    files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU_full.txt 
+    files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
     cross-section: 0.00001563556176 #pb #36.69 fb  *2 * BR (H --> GG) * BR (H --> W(QQ)W(lnu)) ( 2.137E-01 H->WW,  2.270E-03 H->GammaGamma) {x (2 BR (W->QQ)=0.6741 x BR (W->lnu)=0.1086 (x3 for three flavors))=0.21962178}
     legend: 'HH \rightarrow WW\gamma\gamma'
@@ -15,7 +15,7 @@ samples:
   GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
     era: HL
     type: signal
-    files: GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU_full.txt
+    files: GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.0000037234 # 36.69 fb * 2* BR (H --> GG) * BR (H --> WW) * BR (W --> lnu) - from Soumya
     legend: 'HH \rightarrow WW\gamma\gamma (FL)'
@@ -24,7 +24,7 @@ samples:
   GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
     era: HL
     type: signal
-    files: GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU_full.txt
+    files: GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.00000104441 # 36.69 fb * 2 * BR (H --> GG) * BR (H --> tautau) - from Soumya
     line-color: "#ff0000" 
@@ -34,7 +34,7 @@ samples:
     group: SingleH
     era: HL
     type: mc
-    files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
+    files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.114798
     #legend: 'GGH \rightarrow \gamma\gamma'
@@ -44,7 +44,7 @@ samples:
     group: SingleH
     era: HL
     type: mc
-    files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU_full.txt
+    files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.00951216
     #legend: 'VBFH \rightarrow \gamma\gamma'
@@ -54,7 +54,7 @@ samples:
     group: SingleH
     era: HL
     type: mc
-    files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU_full.txt
+    files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.001393764
     #legend: 'ttH \rightarrow \gamma\gamma'
@@ -64,7 +64,7 @@ samples:
     group: SingleH
     era: HL
     type: mc
-    files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU_full.txt
+    files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.00544326
     #legend: 'VH \rightarrow \gamma\gamma'
@@ -74,7 +74,7 @@ samples:
     group: topInduced
     era: HL
     type: mc
-    files: TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU_full.txt
+    files: TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.2253 #McM #same as sheet 
     #legend: 'ttW'
@@ -84,7 +84,7 @@ samples:
     group: topInduced
     era: HL
     type: mc
-    files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU_full.txt
+    files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.01864 
     #legend: 'ttGG'
@@ -94,7 +94,7 @@ samples:
     group: topInduced
     era: HL
     type: mc
-    files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU_full.txt
+    files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 864.4 #McM same as sheet 
     #legend: 't\bar{t} (inclusive)'
@@ -104,7 +104,7 @@ samples:
     era: HL
     group: topInduced
     type: mc
-    files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU_full.txt
+    files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.6231 # from McM 0.6231 pb
     split: 40
@@ -112,7 +112,7 @@ samples:
     era: HL
     group: topInduced
     type: mc
-    files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU_full.txt
+    files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.799  # from McM 0.799 pb
     split: 40
@@ -120,7 +120,7 @@ samples:
     era: HL
     group: topInduced
     type: mc
-    files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU_full.txt
+    files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.7709 # from McM 0.7709 pb
     split: 40
@@ -128,7 +128,7 @@ samples:
     era: HL
     group: topInduced
     type: mc
-    files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU_full.txt
+    files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.769 # from McM 0.769 pb
     split: 40
@@ -136,7 +136,7 @@ samples:
    group: topInduced
    era: HL
    type: mc
-   files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU_full.txt
+   files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
    generated-events: sumgenweight
    cross-section: 4.577 #4.577e+00 +- 5.891e-02 pb
    legend: 'ttGG'
@@ -146,7 +146,7 @@ samples:
     group: WJets
     era: HL
     type: mc
-    files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_full.txt
+    files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 10370 #McM 10330 #sheet
     #legend: 'W1Jets \rightarrow L\nu'
@@ -156,7 +156,7 @@ samples:
     group: WJets
     era: HL
     type: mc
-    files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_full.txt
+    files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 2965 #McM 3314 #sheet
     #legend: 'W2Jets \rightarrow L\nu'
@@ -166,7 +166,7 @@ samples:
     group: WJets
     era: HL
     type: mc
-    files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_full.txt
+    files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 1268 #McM  ? #sheet
     #legend: 'W3Jets \rightarrow L\nu'
@@ -176,7 +176,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt   
+    files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt   
     generated-events: sumgenweight
     cross-section: 998.1 #McM 1038 #sheet
     #legend: 'G+jets'
@@ -186,7 +186,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU_full.txt
+    files: GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 260.85 #McM #filtereff=0.00222 xsec=117500pb 
     split: 40
@@ -194,7 +194,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU_full.txt
+    files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 3901 #McM #sheet =3901*0.02146 = 83.71546 ??  
     split: 40
@@ -202,7 +202,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU_full.txt
+    files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
     cross-section: 98.67 #McM  94.61 #sheet
     #legend: '\gamma\gamma + jets'
@@ -213,7 +213,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU_full.txt
+    files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
     cross-section: 332.804 #McM  94.61 #sheet
     #legend: '\gamma\gamma + jets'
@@ -223,7 +223,7 @@ samples:
   WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
     era: HL
     type: mc
-    files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU_full.txt
+    files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section:  1.884
     legend: 'WGGJets'
@@ -234,7 +234,7 @@ samples:
     group: VG
     era: HL
     type: mc
-    files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU_full.txt
+    files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 6.032 
     #legend: 'WGJJ'
@@ -245,7 +245,7 @@ samples:
     group: VG
     era: HL
     type: mc
-    files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU_full.txt
+    files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 145.2 #McM same as sheet 
     #legend: 'ZG'
@@ -255,7 +255,7 @@ samples:
   WW_TuneCUETP8M1_14TeV-pythia8_200PU:
     era: HL
     type: mc
-    files: WW_TuneCUETP8M1_14TeV-pythia8_200PU_full.txt
+    files: WW_TuneCUETP8M1_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 70.44 #McM 
     legend: 'WW(inclusive)'
@@ -266,7 +266,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 141200 #McM 141200 #sheet 0.001977 #filtereff / 1.412e+08 fb (soumya) 
     split: 40
@@ -274,7 +274,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 295700 #McM / #sheeet 295700*0.001541 = 455.6737   #filtereff=0.001541 it should be 295700
     split: 40
@@ -282,7 +282,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU_full.txt
+    files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 16510 #McM /
     split: 40  
@@ -290,7 +290,7 @@ samples:
     group: SingleH
     era: HL
     type: mc
-    files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU_full.txt
+    files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 0.000205428 #McM /
     split: 40  
@@ -298,7 +298,7 @@ samples:
     group: Others
     era: HL
     type: mc
-    files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_full.txt
+    files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
     cross-section: 5711 #McM /
     # legend: 'DYJets'
