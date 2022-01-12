@@ -146,16 +146,16 @@ samples:
     legend: 'TTGamma_SingleLeptFromTbar'
     split: 40
     order: 28
-  #TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
-   # group: topInduced
-   # era: HL-LHC
-   # type: mc
-   # files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
-   # generated-events: sumgenweight
-   # cross-section: 4.577 #4.577e+00 +- 5.891e-02 pb
-    #legend: 'ttGG'
-    #fill-color: "#28E298" 
-   # split: 40
+  TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+    #group: topInduced
+    era: HL-LHC
+    type: mc
+    files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 4.577 #4.577e+00 +- 5.891e-02 pb
+    legend: 'ttGG'
+    fill-color: "#28E298" 
+    split: 40
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     #group: WJets
     era: HL-LHC
