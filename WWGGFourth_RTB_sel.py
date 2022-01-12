@@ -405,6 +405,27 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
         super(CMSPhase2SimRTBHistoModule, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
         """ Customised cutflow reports and plots """       
         
+        if not self.plotList:
+            self.plotList = self.getPlotList(resultsdir=resultsdir)
+        from bamboo.plots import Plot, DerivedPlot, CutFlowReport
+        plotList_cutflowreport = [
+            ap for ap in self.plotList if isinstance(ap, CutFlowReport)]
+        plotList_plotIt = [ap for ap in self.plotList if (isinstance(
+            ap, Plot) or isinstance(ap, DerivedPlot)) and len(ap.binnings) == 1]
+        eraMode, eras = self.args.eras
+        if eras is None:
+            eras = list(config["eras"].keys())
+        if plotList_cutflowreport:
+            printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
+                                readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
+        if plotList_plotIt:
+            from bamboo.analysisutils import writePlotIt, runPlotIt
+            import os.path
+            cfgName = os.path.join(workdir, "plots.yml")
+            writePlotIt(config, plotList_plotIt, cfgName, eras=eras, workdir=workdir, resultsdir=resultsdir,
+                        readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
+            runPlotIt(cfgName, workdir=workdir, plotIt=self.args.plotIt,
+                      eras=(eraMode, eras), verbose=self.args.verbose)
    
         #mvaSkim 
         #import os.path 
