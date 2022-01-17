@@ -908,9 +908,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             print(split)
 
             if split == 0:
-                model = DNNmodel_path_odd
+                model = DNNmodel_path_even      
             else:
-                model = DNNmodel_path_even
+                model = DNNmodel_path_odd
 
             dnn = op.mvaEvaluator(model, mvaType = "ONNXRuntime", otherArgs = "predictions")
             inputs = op.array('float',*[op.static_cast('float',val) for val in mvaVariables.values()])
