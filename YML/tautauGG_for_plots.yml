@@ -139,7 +139,7 @@ samples:
    files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
    generated-events: sumgenweight
    cross-section: 4.577 #4.577e+00 +- 5.891e-02 pb
-   legend: 'ttGG'
+   legend: 'ttGJets'
    fill-color: "#28E298" 
    split: 40
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
@@ -311,7 +311,7 @@ plotIt:
     height: 600
     luminosity-label: '3000 fb^{-1} (14 TeV)'
     experiment: CMS
-    extra-label: HL-LHC
+    extra-label: HL
     luminosity-error: 0.025
     show-overflow: false
     for-yields: true
