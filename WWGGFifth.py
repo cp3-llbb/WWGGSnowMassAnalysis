@@ -1,4 +1,4 @@
-import logging
+B65;6003;1cimport logging
 from bamboo.analysisutils import loadPlotIt
 import os.path
 from bamboo.analysismodules import AnalysisModule, HistogramsModule
@@ -905,6 +905,11 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             
             hasDNNscore4 = hasOneL.refine("hasDNNscore4", cut = output[0] > 0.92)
             yields.add(hasDNNscore4, title='hasDNNscore4')
+            
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2",mGG, hasDNNscore2, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3",mGG, hasDNNscore3, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4",mGG, hasDNNscore4, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_150",mGG, hasDNNscore, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_150",mGG, hasDNNscore2, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
