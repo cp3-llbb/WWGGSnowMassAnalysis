@@ -106,46 +106,46 @@ samples:
     fill-color: "#D489FF" 
     order: 7
     split: 40
-  TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
-    #group: topInduced
-    type: mc
-    files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.6231 # from McM 0.6231 pb
-    legend: 'TTGamma_Dilept'
-    split: 40
-    order: 25
-  TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
-    #group: topInduced
-    type: mc
-    files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.799  # from McM 0.799 pb
-    legend: 'TTGamma_Hadronic'
-    split: 40
-    order: 26
-  TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
-    #group: topInduced
-    type: mc
-    files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.7709 # from McM 0.7709 pb
-    legend: 'TTGamma_SingleLeptFromT'
-    split: 40
-    order: 27
-  TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
-    era: HL-LHC
-    #group: topInduced
-    type: mc
-    files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.769 # from McM 0.769 pb
-    legend: 'TTGamma_SingleLeptFromTbar'
-    split: 40
-    order: 28
+  # TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+  #   era: HL-LHC
+  #   #group: topInduced
+  #   type: mc
+  #   files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 0.6231 # from McM 0.6231 pb
+  #   legend: 'TTGamma_Dilept'
+  #   split: 40
+  #   order: 25
+  # TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+  #   era: HL-LHC
+  #   #group: topInduced
+  #   type: mc
+  #   files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 0.799  # from McM 0.799 pb
+  #   legend: 'TTGamma_Hadronic'
+  #   split: 40
+  #   order: 26
+  # TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+  #   era: HL-LHC
+  #   #group: topInduced
+  #   type: mc
+  #   files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 0.7709 # from McM 0.7709 pb
+  #   legend: 'TTGamma_SingleLeptFromT'
+  #   split: 40
+  #   order: 27
+  # TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
+  #   era: HL-LHC
+  #   #group: topInduced
+  #   type: mc
+  #   files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 0.769 # from McM 0.769 pb
+  #   legend: 'TTGamma_SingleLeptFromTbar'
+  #   split: 40
+  #   order: 28
   TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     #group: topInduced
     era: HL-LHC
@@ -284,39 +284,39 @@ samples:
     fill-color: "#40D51A"  
     order: 19
     split: 40  
-  QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    #group: QCD
-    era: HL-LHC
-    type: mc
-    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 141200 #McM 141200 #sheet 0.001977 #filtereff / 1.412e+08 fb (soumya) 
-    legend: 'QCD 40toInf'
-    fill-color: "#40D54A"  
-    order: 20
-    split: 40
-  QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    #group: QCD
-    era: HL-LHC
-    type: mc
-    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 295700 #McM / #sheeet 295700*0.001541 = 455.6737   #filtereff=0.001541 it should be 295700
-    legend: 'QCD 30toInf'
-    fill-color: "#40D55A"  
-    order: 21
-    split: 40
-  QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    #group: QCD
-    era: HL-LHC
-    type: mc
-    files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 16510 #McM /
-    legend: 'QCD 30to40'
-    fill-color: "#40D56A"  
-    order: 22
-    split: 40  
+  # QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #   #group: QCD
+  #   era: HL-LHC
+  #   type: mc
+  #   files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 141200 #McM 141200 #sheet 0.001977 #filtereff / 1.412e+08 fb (soumya) 
+  #   legend: 'QCD 40toInf'
+  #   fill-color: "#40D54A"  
+  #   order: 20
+  #   split: 40
+  # QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #   #group: QCD
+  #   era: HL-LHC
+  #   type: mc
+  #   files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 295700 #McM / #sheeet 295700*0.001541 = 455.6737   #filtereff=0.001541 it should be 295700
+  #   legend: 'QCD 30toInf'
+  #   fill-color: "#40D55A"  
+  #   order: 21
+  #   split: 40
+  # QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #   #group: QCD
+  #   era: HL-LHC
+  #   type: mc
+  #   files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 16510 #McM /
+  #   legend: 'QCD 30to40'
+  #   fill-color: "#40D56A"  
+  #   order: 22
+  #   split: 40  
   THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU:
     #group: SingleH
     era: HL-LHC
