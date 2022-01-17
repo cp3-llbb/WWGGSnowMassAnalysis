@@ -130,11 +130,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
-                colEntries_withEff.append("{0} {1} {2}".format(
-                    entry, sel_eff[i], MCevents[sigSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+                colEntries_withEff.append("{0} {1}".format(
+                    entry, sel_eff[i]))
             entries_smp.append(colEntries_withEff)
         if len(smp_signal) > 1:
             sepStr += f"|{align}|"
@@ -149,7 +149,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
                 colEntries_withEff.append("{0} {1}".format(
@@ -173,11 +173,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
-                colEntries_withEff.append("{0} {1} {2}".format(
-                    entry, sel_eff[i], MCevents[mcSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+                colEntries_withEff.append("{0} {1}".format(
+                    entry, sel_eff[i]))
             entries_smp.append(colEntries_withEff)
         if len(smp_mc) > 1:
             sepStr += f"|{align}|"
@@ -192,7 +192,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
                 colEntries_withEff.append("{0} {1}".format(
@@ -832,93 +832,93 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         cfr.add(c4_Zveto, "Two Taus")
         cfr.add(c3, "One Tau No Lept")
 
-        # mvaVariables = {
-        #     "weight": noSel.weight,
+        mvaVariables = {
+            "weight": noSel.weight,
 
-        #     # Event level variables
-        #     "nTaus": nTaus,
-        #     "nElecs": op.rng_len(cleanedElectrons),
-        #     "nMuons": op.rng_len(cleanedMuons),
-        #     "nJets": op.rng_len(cleanedJets),
-        #     "nBJets": op.rng_len(bJets),
-        #     "metPt": met[0].pt,
+            # Event level variables
+            "nTaus": nTaus,
+            "nElecs": op.rng_len(cleanedElectrons),
+            "nMuons": op.rng_len(cleanedMuons),
+            "nJets": op.rng_len(cleanedJets),
+            "nBJets": op.rng_len(bJets),
+            "metPt": met[0].pt,
 
-        #     # Photon and di-Photon variables
-        #     "L_pt_mgg": IDphotons[0].pt / mgg,
-        #     "L_photon_eta": IDphotons[0].eta,
-        #     "L_photon_ID": IDphotons[0].idpass,
-        #     "SL_pt_mgg": IDphotons[1].pt / mgg,
-        #     "SL_photon_eta": IDphotons[1].eta,
-        #     "SL_photon_ID": IDphotons[1].idpass,
-        #     "diP_pt_mgg": (IDphotons[0].pt + IDphotons[1].pt) / mgg,
-        #     "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
-        #     "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
+            # Photon and di-Photon variables
+            "L_pt_mgg": IDphotons[0].pt / mgg,
+            "L_photon_eta": IDphotons[0].eta,
+            "L_photon_ID": IDphotons[0].idpass,
+            "SL_pt_mgg": IDphotons[1].pt / mgg,
+            "SL_photon_eta": IDphotons[1].eta,
+            "SL_photon_ID": IDphotons[1].idpass,
+            "diP_pt_mgg": (IDphotons[0].pt + IDphotons[1].pt) / mgg,
+            "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
+            "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
 
-        #     # Lepton, tau and jet variables
-        #     "LelectronPt": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].pt),
-        #     "LelectronEta": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].eta),
-        #     "LelectronID": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].idpass),
-        #     "SLelectronPt": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].pt),
-        #     "SLelectronEta": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].eta),
-        #     "SLelectronID": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].idpass),
+            # Lepton, tau and jet variables
+            "LelectronPt": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].pt),
+            "LelectronEta": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].eta),
+            "LelectronID": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].idpass),
+            "SLelectronPt": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].pt),
+            "SLelectronEta": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].eta),
+            "SLelectronID": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].idpass),
 
-        #     "LmuonPt": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].pt),
-        #     "LmuonEta": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].eta),
-        #     "LmuonID": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].idpass),
-        #     "SLmuonPt": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].pt),
-        #     "SLmuonEta": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].eta),
-        #     "SLmuonID": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].idpass),
+            "LmuonPt": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].pt),
+            "LmuonEta": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].eta),
+            "LmuonID": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].idpass),
+            "SLmuonPt": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].pt),
+            "SLmuonEta": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].eta),
+            "SLmuonID": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].idpass),
 
-        #     "LtauPt": op.switch(nTaus == 0, op.c_float(0.), cleanedTaus[0].pt),
-        #     "LtauEta": op.switch(nTaus == 0, op.c_float(0.), cleanedTaus[0].eta),
-        #     "SLtauPt": op.switch(op.OR(nTaus == 0, nTaus == 1), op.c_float(0.), cleanedTaus[1].pt),
-        #     "SLtauEta": op.switch(op.OR(nTaus == 0, nTaus == 1), op.c_float(0.), cleanedTaus[1].eta),
+            "LtauPt": op.switch(nTaus == 0, op.c_float(0.), cleanedTaus[0].pt),
+            "LtauEta": op.switch(nTaus == 0, op.c_float(0.), cleanedTaus[0].eta),
+            "SLtauPt": op.switch(op.OR(nTaus == 0, nTaus == 1), op.c_float(0.), cleanedTaus[1].pt),
+            "SLtauEta": op.switch(op.OR(nTaus == 0, nTaus == 1), op.c_float(0.), cleanedTaus[1].eta),
 
-        #     "DRtautau": op.deltaR(
-        #         cleanedTaus[0].p4, cleanedTaus[1].p4),
-        #     "DPhitautau": op.deltaPhi(
-        #         cleanedTaus[0].p4, cleanedTaus[1].p4),
-        #     "Mtautau": op.invariant_mass(
-        #         cleanedTaus[0].p4, cleanedTaus[1].p4),
-        #     "pTtautau": op.sum(cleanedTaus[0].pt +
-        #                        cleanedTaus[1].pt),
+            "DRtautau": op.deltaR(
+                cleanedTaus[0].p4, cleanedTaus[1].p4),
+            "DPhitautau": op.deltaPhi(
+                cleanedTaus[0].p4, cleanedTaus[1].p4),
+            "Mtautau": op.invariant_mass(
+                cleanedTaus[0].p4, cleanedTaus[1].p4),
+            "pTtautau": op.sum(cleanedTaus[0].pt +
+                               cleanedTaus[1].pt),
 
-        #     "Ljet_Pt": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].pt),
-        #     "Ljet_Eta": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].eta),
-        #     "Ljet_ID": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].idpass),
-        #     "Ljet_btag": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].btag),
-        #     "SLjet_Pt": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].pt),
-        #     "SLjet_Eta": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].eta),
-        #     "SLjet_ID": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].idpass),
-        #     "SLjet_btag": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].btag),
+            "Ljet_Pt": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].pt),
+            "Ljet_Eta": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].eta),
+            "Ljet_ID": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].idpass),
+            "Ljet_btag": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].btag),
+            "SLjet_Pt": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].pt),
+            "SLjet_Eta": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].eta),
+            "SLjet_ID": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].idpass),
+            "SLjet_btag": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].btag),
 
-        #     "met": met[0].pt
-        # }
+            "met": met[0].pt
+        }
 
-        # # save mvaVariables to be retrieved later in the postprocessor and save in a parquet file
-        # if self.args.mvaSkim or self.args.mvaEval:
-        #     from bamboo.plots import Skim
-        #     plots.append(Skim("c4_Zveto", mvaVariables, c4_Zveto))
+        # save mvaVariables to be retrieved later in the postprocessor and save in a parquet file
+        if self.args.mvaSkim or self.args.mvaEval:
+            from bamboo.plots import Skim
+            plots.append(Skim("c4_Zveto", mvaVariables, c4_Zveto))
 
-        # # evaluate dnn model on data
-        # if self.args.mvaEval:
-        #     #from IPython import embed
-        #     DNNmodel_path = "DNN_HHWWGG/model.onnx"
-        #     mvaVariables.pop("weight", None)
-        #     dnn = op.mvaEvaluator(
-        #         DNNmodel_path, mvaType="ONNXRuntime", otherArgs="predictions")
-        #     inputs = op.array(
-        #         'float', *[op.static_cast('float', val) for val in mvaVariables.values()])
-        #     output = dnn(inputs)
+        # evaluate dnn model on data
+        if self.args.mvaEval:
+            #from IPython import embed
+            DNNmodel_path = "DNN_HHWWGG/model.onnx"
+            mvaVariables.pop("weight", None)
+            dnn = op.mvaEvaluator(
+                DNNmodel_path, mvaType="ONNXRuntime", otherArgs="predictions")
+            inputs = op.array(
+                'float', *[op.static_cast('float', val) for val in mvaVariables.values()])
+            output = dnn(inputs)
 
-        #     plots.append(Plot.make1D(
-        #         "dnn_score", output, c4_Zveto, EqB(50, 0, 1.)))
-        #     hasDNNscore = c4_Zveto.refine("hasDNNscore", cut=output[0] > 0.58)
-        #     cfr.add(hasDNNscore, title='hasDNNscore')
-        #     plots.append(Plot.make1D("Mgg_c4Zveto_hasDNNscore", mgg, hasDNNscore, EqB(
-        #         80, 100., 180.), title="m_{\gamma\gamma}"))
-        #     plots.append(Plot.make1D("DNN_output", op.rng_len(
-        #         output), hasDNNscore, EqB(20, 0, 10), title="dnn_output"))
-        #     # embed()
+            plots.append(Plot.make1D(
+                "dnn_score", output, c4_Zveto, EqB(50, 0, 1.)))
+            hasDNNscore = c4_Zveto.refine("hasDNNscore", cut=output[0] > 0.58)
+            cfr.add(hasDNNscore, title='hasDNNscore')
+            plots.append(Plot.make1D("Mgg_c4Zveto_hasDNNscore", mgg, hasDNNscore, EqB(
+                80, 100., 180.), title="m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("DNN_output", op.rng_len(
+                output), hasDNNscore, EqB(20, 0, 10), title="dnn_output"))
+            # embed()
 
         return plots
