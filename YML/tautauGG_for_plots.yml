@@ -1,7 +1,7 @@
 tree: myana/mytree
 eras:
   HL:
-    luminosity: 3000000 # 1/fb
+    luminosity: 3000000 # 1/pb
 samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL
