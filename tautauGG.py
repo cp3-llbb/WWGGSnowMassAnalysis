@@ -415,11 +415,7 @@ class CMSPhase2SimHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
             eras = list(config["eras"].keys())
         if plotList_cutflowreport:
             printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
-<<<<<<< Updated upstream
                                 readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
-=======
-                                 readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
->>>>>>> Stashed changes
         if plotList_plotIt:
             import os.path
             from bamboo.analysisutils import writePlotIt, runPlotIt
