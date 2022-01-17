@@ -689,7 +689,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         ))
 
         c4 = mgg_sel.refine("hasTwoTaus", cut=op.AND(
-            nTaus == 2,
+            nTaus >= 2,
             op.rng_len(cleanedElectrons) == 0,
             op.rng_len(cleanedMuons) == 0,
             #op.deltaR(bestTauPair[0].p4, bestTauPair[1].p4) > 0.2
@@ -787,37 +787,37 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         #     80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         # plots.append(Plot.make1D("Mgg_c4", mgg, c4, EqB(
         #     80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("Mgg_c1_Zveto_180", mgg, c1_Zveto, EqB(
-            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("Mgg_c2_Zveto_180", mgg, c2_Zveto, EqB(
-            80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c1_Zveto_180", mgg, c1_Zveto, EqB(
+        #     80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c2_Zveto_180", mgg, c2_Zveto, EqB(
+        #     80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c3_180", mgg, c3, EqB(
             80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c4_Zveto_180", mgg, c4_Zveto, EqB(
             80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
-        plots.append(Plot.make1D("Mgg_c1_Zveto_140", mgg, c1_Zveto, EqB(
-            40, 100, 140), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("Mgg_c2_Zveto_140", mgg, c2_Zveto, EqB(
-            40, 100, 140), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c1_Zveto_140", mgg, c1_Zveto, EqB(
+        #     40, 100, 140), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c2_Zveto_140", mgg, c2_Zveto, EqB(
+        #     40, 100, 140), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c3_140", mgg, c3, EqB(
             40, 100, 140), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c4_Zveto_140", mgg, c4_Zveto, EqB(
             40, 100, 140), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
-        plots.append(Plot.make1D("Mgg_c1_Zveto_105_145", mgg, c1_Zveto, EqB(
-            40, 105, 145), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("Mgg_c2_Zveto_105_145", mgg, c2_Zveto, EqB(
-            40, 105, 145), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c1_Zveto_105_145", mgg, c1_Zveto, EqB(
+        #     40, 105, 145), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c2_Zveto_105_145", mgg, c2_Zveto, EqB(
+        #     40, 105, 145), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c3_105_145", mgg, c3, EqB(
             40, 105, 145), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c4_Zveto_105_145", mgg, c4_Zveto, EqB(
             40, 105, 145), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
-        plots.append(Plot.make1D("Mgg_c1_Zveto_150", mgg, c1_Zveto, EqB(
-            50, 100, 150), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("Mgg_c2_Zveto_150", mgg, c2_Zveto, EqB(
-            50, 100, 150), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c1_Zveto_150", mgg, c1_Zveto, EqB(
+        #     50, 100, 150), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        # plots.append(Plot.make1D("Mgg_c2_Zveto_150", mgg, c2_Zveto, EqB(
+        #     50, 100, 150), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c3_150", mgg, c3, EqB(
             50, 100, 150), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("Mgg_c4_Zveto_150", mgg, c4_Zveto, EqB(
@@ -827,8 +827,8 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
         cfr.add(noSel, "No selection")
-        cfr.add(c1_Zveto, "One Tau One Electron")
-        cfr.add(c2_Zveto, "One Tau One Muon")
+        # cfr.add(c1_Zveto, "One Tau One Electron")
+        # cfr.add(c2_Zveto, "One Tau One Muon")
         cfr.add(c4_Zveto, "Two Taus")
         cfr.add(c3, "One Tau No Lept")
 
