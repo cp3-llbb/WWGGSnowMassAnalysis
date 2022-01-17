@@ -17,7 +17,7 @@ samples:
     type: signal
     files: GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.000612797 # 31.049 * 0.000970198 (BR_HH_WWgg) * 0.1046 (BR_WW_2l2nu)
+    cross-section: 0.00000315094 # = 31.049fb * 0.001(pb/fb) * 0.000970198 (BR_HH_WWgg) * 0.1046 (BR_WW_2l2nu)
     legend: 'HH \rightarrow WW\gamma\gamma (FL)'
     line-color: "#0000ff"
     split: 40
@@ -26,7 +26,7 @@ samples:
     type: signal
     files: GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.000000883834453 # projected back from 14TeV, 0.00000104441 * 31.049 (HH_xsec 13TeV) / 36.69 (HH_xsec 14Tev)
+    cross-section: 0.000000883835 # = 31.049fb * 0.001(pb/fb) * 2 * BR(H --> GG) * BR(H --> tautau)
     line-color: "#ff0000" 
     legend: 'HH \rightarrow \tau\tau\gamma\gamma'
     split: 40
