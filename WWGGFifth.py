@@ -44,7 +44,6 @@ _yieldsTexPreface = "\n".join(f"{ln}" for ln in
 \begin{document}
 """.split("\n"))
 
-
 def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orientation="v", align="c", yieldPrecision=1, ratioPrecision=2):
     if orientation not in ("v", "h"):
         raise RuntimeError(
@@ -131,11 +130,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
-                colEntries_withEff.append("{0} {1} {2}".format(
-                    entry, sel_eff[i], MCevents[sigSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+                colEntries_withEff.append("{0} {1}".format(
+                    entry, sel_eff[i]))
             entries_smp.append(colEntries_withEff)
         if len(smp_signal) > 1:
             sepStr += f"|{align}|"
@@ -150,7 +149,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
                 colEntries_withEff.append("{0} {1}".format(
@@ -174,11 +173,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
-                colEntries_withEff.append("{0} {1} {2}".format(
-                    entry, sel_eff[i], MCevents[mcSmp.cfg.pretty_name.rstrip(".root")][0][i]))
+                colEntries_withEff.append("{0} {1}".format(
+                    entry, sel_eff[i]))
             entries_smp.append(colEntries_withEff)
         if len(smp_mc) > 1:
             sepStr += f"|{align}|"
@@ -193,7 +192,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 sel_eff = np.append(sel_eff, [float(
                     colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
-                sel_eff[i] = str(f"({sel_eff[i]:.2f}\%)")
+                sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
             for i, entry in enumerate(colEntries):
                 colEntries_withEff.append("{0} {1}".format(
@@ -240,35 +239,38 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
         c_byRow = c_bySmp
         c_byCol = c_byHdr
     if entries_smp:
-        colWidths = [max(len(rh) for rh in rowHdrs)+1]+[max(len(hdr), max(len(c)
-                                                                          for c in col))+1 for hdr, col in zip(colHdrs[1:], c_byCol)]
-        return "\n".join([
-            f"\\resizebox{{\\textwidth}}{{!}}{{",
-            f"\\begin{{tabular}}{{ {sepStr} }}",
-            "    \\hline",
-            "    {0} \\\\".format(" & ".join(h.ljust(cw)
-                                  for cw, h in zip(colWidths, colHdrs))),
-            "    \\hline"]+[
-                "    {0} \\\\".format(" & ".join(en.rjust(cw)
-                                      for cw, en in zip(colWidths, [rh]+rowEntries)))
-                for rh, rowEntries in zip(rowHdrs, c_byRow)
-        ]+[
-            "    \\hline",
-            "\\end{tabular}"
-            "}"
-            "\\end{document}"
-        ])
+            colWidths = [max(len(rh) for rh in rowHdrs)+1]+[max(len(hdr), max(len(c)
+                                                                              for c in col))+1 for hdr, col in zip(colHdrs[1:], c_byCol)]
+            return "\n".join([
+                f"\\resizebox{{\\textwidth}}{{!}}{{",
+                f"\\begin{{tabular}}{{ {sepStr} }}",
+                "    \\hline",
+                "    {0} \\\\".format(" & ".join(h.ljust(cw)
+                                      for cw, h in zip(colWidths, colHdrs))),
+                "    \\hline"]+[
+                    "    {0} \\\\".format(" & ".join(en.rjust(cw)
+                                          for cw, en in zip(colWidths, [rh]+rowEntries)))
+                    for rh, rowEntries in zip(rowHdrs, c_byRow)
+            ]+[
+                "    \\hline",
+                "\\end{tabular}"
+                "}"
+                "\\end{document}"
+            ])
 
 
 def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=None, readCounters=lambda f: -1., eras=("all", None), verbose=False):
     """
     Print yields to the log file, and write a LaTeX yields table for each
+
     Samples can be grouped (only for the LaTeX table) by specifying the
     ``yields-group`` key (overriding the regular ``groups`` used for plots).
     The sample (or group) name to use in this table should be specified
     through the ``yields-title`` sample key.
+
     In addition, the following options in the ``plotIt`` section of
     the YAML configuration file influence the layout of the LaTeX yields table:
+
     - ``yields-table-stretch``: ``\\arraystretch`` value, 1.15 by default
     - ``yields-table-align``: orientation, ``h`` (default), samples in rows, or ``v``, samples in columns
     - ``yields-table-text-align``: alignment of text in table cells (default: ``c``)
@@ -393,8 +395,6 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
 
 # END cutflow reports, adapted from bamboo.analysisutils
 
-# END cutflow reports, adapted from bamboo.analysisutils
-
 
 class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     """ Base module for producing plots from Phase2 flat trees """
@@ -404,7 +404,6 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     def postProcess(self, taskList, config=None, workdir=None, resultsdir=None):
         super(CMSPhase2SimRTBHistoModule, self).postProcess(taskList, config=config, workdir=workdir, resultsdir=resultsdir)
         """ Customised cutflow reports and plots """       
-        
         if not self.plotList:
             self.plotList = self.getPlotList(resultsdir=resultsdir)
         from bamboo.plots import Plot, DerivedPlot, CutFlowReport
@@ -651,8 +650,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #yields.add(hasInvM, title='hasInvM')
 
         #selections for semileptonic final state
-        #hasOneL = hasInvM.refine("hasOneL", cut = op.AND(op.OR(nElec == 1, nMuon == 1), nTau == 0))
-        hasOneL = hasInvM.refine("hasOneL", cut = op.OR(op.AND(nElec == 1, nMuon == 0, nTau == 0), op.AND(nElec == 0, nMuon == 1, nTau == 0)))
+        hasOneL = hasInvM.refine("hasOneL", cut = op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)))
         yields.add(hasOneL, title='hasOneL')
 
         hasOneEl = hasInvM.refine("hasOneEl", cut = op.AND(nElec == 1, nMuon == 0))
@@ -672,13 +670,14 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #yields.add(hasThreeJ, title='hasThreeJ')
 
         hasTwoL = hasInvM.refine('hasTwoL', cut = op.OR(
-            op.AND(op.AND(nElec >= 2, nMuon == 0, nTau == 0), met[0].pt > 20, idElectrons[0].charge != idElectrons[1].charge, op.NOT(op.deltaR(idElectrons[0].p4, idElectrons[1].p4) < 0.4), op.AND(mE < 80, mE >100) ),
-            op.AND(op.AND(nElec == 1, nMuon >= 1, nTau == 0), met[0].pt > 20, idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
-            op.AND(op.AND(nElec >= 1, nMuon == 1, nTau == 0), met[0].pt > 20, idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
-            op.AND(op.AND(nMuon >= 2, nElec == 0, nTau == 0),met[0].pt > 20, idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.AND(mMu < 80, mMu >100)),
+            op.AND(op.AND(nElec >= 2, nMuon == 0), met[0].pt > 20, idElectrons[0].charge != idElectrons[1].charge, op.NOT(op.deltaR(idElectrons[0].p4, idElectrons[1].p4) < 0.4), op.AND(mE < 80, mE >100) ),
+            op.AND(op.AND(nElec == 1, nMuon >= 1), met[0].pt > 20, idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
+            op.AND(op.AND(nElec >= 1, nMuon == 1), met[0].pt > 20, idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
+            op.AND(op.AND(nMuon >= 2, nElec == 0),met[0].pt > 20, idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.AND(mMu < 80, mMu >100)),
             pTGG > 91
             ))
         yields.add(hasTwoL, title='hasTwoL')
+
         #hasZeroL = hasInvM.refine('hasZeroL', cut = nJet == 4)
         #yields.add(hasZeroL, title='hasZeroL')
 
@@ -744,16 +743,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("LeadingPhotonE_mGGLhasOneL", E_mGGL, hasOneL,EqB(100, 0., 5.) ,title = "Leading Photon E/m_{\gamma\gamma}"))
         plots.append(Plot.make1D("SubLeadingPhotonE_mGGLhasOneL", E_mGGSL, hasOneL,EqB(100, 0., 5.) ,title = "SubLeading Photon E/m_{\gamma\gamma}")) 
         plots.append(Plot.make1D("MET", metPt, hasOneL,EqB(80, 0., 800.) ,title="MET"))
-        plots.append(Plot.make1D("Inv_mass_gghasOneL_150",mGG , hasOneL, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasOneL_140",mGG , hasOneL, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasOneL_145",mGG , hasOneL, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
-
  
         #hasTwoL
         plots.append(Plot.make1D("Inv_mass_gghasTwoL",mGG , hasTwoL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasTwoL_150",mGG , hasTwoL, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasTwoL_140",mGG , hasTwoL, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasTwoL_145",mGG , hasTwoL, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
 
         #hasZeroL
         #plots.append(Plot.make1D("Inv_mass_gghasZeroL",mGG , hasZeroL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
@@ -895,25 +887,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #evaluate dnn model on data
         if self.args.mvaEval:
             #from IPython import embed
-            DNNmodel_path_even  = "/home/ucl/cp3/sdonerta/DNN/even_model.onnx" 
-            DNNmodel_path_odd  = "/home/ucl/cp3/sdonerta/DNN/odd_model.onnx" 
+            DNNmodel_path  = "/home/ucl/cp3/sdonerta/bamboodev/WWGG/model_noQCD.onnx" 
             mvaVariables.pop("weight", None)
-            from bamboo.root import loadHeader
-            loadHeader("/home/ucl/cp3/sdonerta/bamboodev/WWGG/header_split.h") 
-            # Better to use a relative path
-            # eg  <path_to_the_header>) = os.path.join(os.path.dirname(os.path.abspath(__file__)),'header_split.h')
-
-            split_evaluator = op.extMethod('split::Ph1_phi')
-
-            split = split_evaluator(idPhotons[0].phi)
-            #print(split)
-
-            if split == 0:
-                model = DNNmodel_path_even      
-            else:
-                model = DNNmodel_path_odd
-
-            dnn = op.mvaEvaluator(model, mvaType = "ONNXRuntime", otherArgs = "predictions")
+            dnn = op.mvaEvaluator(DNNmodel_path, mvaType = "ONNXRuntime", otherArgs = "predictions")
             inputs = op.array('float',*[op.static_cast('float',val) for val in mvaVariables.values()])
             output = dnn(inputs)
            
@@ -929,41 +905,28 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             
             hasDNNscore4 = hasOneL.refine("hasDNNscore4", cut = output[0] > 0.92)
             yields.add(hasDNNscore4, title='hasDNNscore4')
-
-            hasDNNscore5 = hasOneL.refine("hasDNNscore5", cut = output[0] > 0.6)
-            yields.add(hasDNNscore5, title='hasDNNscore5')
             
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2",mGG, hasDNNscore2, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3",mGG, hasDNNscore3, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4",mGG, hasDNNscore4, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5",mGG, hasDNNscore5, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_150",mGG, hasDNNscore, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_150",mGG, hasDNNscore2, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_150",mGG, hasDNNscore3, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_150",mGG, hasDNNscore4, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_150",mGG, hasDNNscore5, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
 
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_140",mGG, hasDNNscore, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_140",mGG, hasDNNscore2, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_140",mGG, hasDNNscore3, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_140",mGG, hasDNNscore4, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_140",mGG, hasDNNscore5, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
 
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_145",mGG, hasDNNscore, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_145",mGG, hasDNNscore2, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_145",mGG, hasDNNscore3, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_145",mGG, hasDNNscore4, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_145",mGG, hasDNNscore5, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))  
-
+              
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_1000",mGG, hasDNNscore, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_1000",mGG, hasDNNscore2, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_1000",mGG, hasDNNscore3, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_1000",mGG, hasDNNscore4, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_1000",mGG, hasDNNscore5, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
 
-            
+
             
         return plots
 
