@@ -46,7 +46,7 @@ samples:
     type: mc
     files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
-    cross-section: 1 # 1pb on McM
+    cross-section: 303.2 #13TeV
     #legend: '\gamma\gamma + jets'
     #fill-color: "#40D51A"
     #order: 5
@@ -139,7 +139,7 @@ samples:
     type: mc
     files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 
+    cross-section: 24810 # !!! BIGGER THAN 14 TeV !!!
     split: 40 
   TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: topInduced
@@ -168,7 +168,7 @@ samples:
     type: mc
     files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 
+    cross-section:  # COULDN'T FIND
     split: 40
   TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
     era: HL-LHC
@@ -176,7 +176,7 @@ samples:
     type: mc
     files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 
+    cross-section:  # COULDN'T FIND
     split: 40
   TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
     era: HL-LHC
@@ -184,7 +184,7 @@ samples:
     type: mc
     files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 
+    cross-section:  # COULDN'T FIND
     split: 40
   TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
     era: HL-LHC
@@ -192,7 +192,7 @@ samples:
     type: mc
     files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 
+    cross-section:  # COULDN'T FIND
     split: 40
   TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
     group: topInduced
@@ -290,7 +290,7 @@ samples:
     type: mc
     files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 1 # from McM
+    cross-section: 0.00017866 # kf=1.06
     split: 40  
   DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     group: Others
@@ -298,7 +298,7 @@ samples:
     type: mc
     files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 
+    cross-section:  # COULDN'T FIND
     legend: 'DYJets'
     fill-color: "#cc7a16"
     #order: 9
