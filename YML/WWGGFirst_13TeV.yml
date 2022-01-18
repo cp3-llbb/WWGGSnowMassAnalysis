@@ -59,7 +59,7 @@ samples:
     type: mc
     files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.0013397722o
+    cross-section: 0.0013397722
     #legend: 'ttH \rightarrow \gamma\gamma'
     #fill-color: "#FFCC33" 
     split: 40
@@ -311,7 +311,7 @@ plotIt:
   configuration:
     width: 700
     height: 600
-    luminosity-label: '41.5 fb^{-1} (14 TeV)'
+    luminosity-label: '137 fb^{-1} (14 TeV)'
     experiment: CMS
     extra-label: HL
     luminosity-error: 0.025

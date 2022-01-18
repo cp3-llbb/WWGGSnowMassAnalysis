@@ -425,7 +425,7 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
                         readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes, plotDefaults=self.plotDefaults)
             runPlotIt(cfgName, workdir=workdir, plotIt=self.args.plotIt,
                       eras=(eraMode, eras), verbose=self.args.verbose)
-   
+        
         #mvaSkim 
         #import os.path 
         from bamboo.plots import Skim
@@ -746,6 +746,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("Inv_mass_gghasOneL_150",mGG , hasOneL, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL_140",mGG , hasOneL, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL_145",mGG , hasOneL, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+        plots.append(Plot.make1D("Inv_mass_gghasOneL_135",mGG , hasOneL, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
  
         #hasTwoL
@@ -753,6 +754,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("Inv_mass_gghasTwoL_150",mGG , hasTwoL, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasTwoL_140",mGG , hasTwoL, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasTwoL_145",mGG , hasTwoL, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+        plots.append(Plot.make1D("Inv_mass_gghasTwoL_135",mGG , hasTwoL, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
         #hasZeroL
         #plots.append(Plot.make1D("Inv_mass_gghasZeroL",mGG , hasZeroL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
@@ -937,6 +939,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3",mGG, hasDNNscore3, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4",mGG, hasDNNscore4, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5",mGG, hasDNNscore5, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+
             
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_150",mGG, hasDNNscore, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_150",mGG, hasDNNscore2, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
@@ -961,6 +964,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_1000",mGG, hasDNNscore3, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_1000",mGG, hasDNNscore4, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_1000",mGG, hasDNNscore5, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
+
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2",mGG, hasDNNscore2, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3",mGG, hasDNNscore3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4",mGG, hasDNNscore4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5",mGG, hasDNNscore5, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
 
         return plots
