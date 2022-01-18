@@ -235,7 +235,7 @@ samples:
    files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
    generated-events: sumgenweight
    cross-section: 4.577 #4.577e+00 +- 5.891e-02 pb
-   legend: 'ttGG'
+   legend: 'ttGJets'
    fill-color: "#28E298" 
    split: 40
   TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU:
