@@ -1,109 +1,120 @@
 tree: myana/mytree
 eras:
-  HL-LHC:
+  HL:
     luminosity: 41500 # 1/pb
 samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
-    era: HL-LHC
+    era: HL
     type: signal
     files: GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt 
     generated-events: sumgenweight
-    cross-section: 0.00001328    #13 TeV  0.01328454187
+    cross-section: 0.00001328    
+    #13 TeV  0.01328454187
     legend: 'HH \rightarrow WW\gamma\gamma '
     line-color: "#260AB3" #blue 
     split: 40
   GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: signal
     files: GluGluToHHTo2G2l2nu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.00000315094 # = 31.049fb * 0.001(pb/fb) * 0.000970198 (BR_HH_WWgg) * 0.1046 (BR_WW_2l2nu)
+    cross-section: 0.00000315094 
+    # = 31.049fb * 0.001(pb/fb) * 0.000970198 (BR_HH_WWgg) * 0.1046 (BR_WW_2l2nu)
     legend: 'HH \rightarrow WW\gamma\gamma (FL)'
     line-color: "#0000ff"
     split: 40
   GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: signal
     files: GluGluToHHTo2G2Tau_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.000000883835 # = 31.049fb * 0.001(pb/fb) * 2 * BR(H --> GG) * BR(H --> tautau)
+    cross-section: 0.000000883835 
+    # = 31.049fb * 0.001(pb/fb) * 2 * BR(H --> GG) * BR(H --> tautau)
     line-color: "#ff0000" 
     legend: 'HH \rightarrow \tau\tau\gamma\gamma'
     split: 40
+  GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
+    group: SingleH
+    era: HL
+    type: mc
+    files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.10620967
+    #legend: 'GGH \rightarrow \gamma\gamma'
+    #fill-color: "#FFFF99"
+    split: 40
+  VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
+    group: SingleH
+    era: HL
+    type: mc
+    files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section:0.0089582826 
+    #legend: 'VBFH \rightarrow \gamma\gamma'
+    #fill-color: "#00FF99"
+    split: 40
+  ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+    group: SingleH
+    era: HL
+    type: mc
+    files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.0013397722o
+    #legend: 'ttH \rightarrow \gamma\gamma'
+    #fill-color: "#FFCC33" 
+    split: 40
+  VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+    group: SingleH
+    era: HL
+    type: mc
+    files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.0055657812
+    #legend: 'VH \rightarrow \gamma\gamma'
+    #fill-color: "#008080" 
+    split: 40
+  THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU:
+    group: SingleH
+    era: HL
+    type: mc
+    files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.00017866
+    split: 40  
   DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU:
-    era: HL-LHC
+    era: HL
     type: mc
     files: DiPhotonJetsBox_MGG-80toInf_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
     cross-section: 84.4 #13TeV
-    legend: '\gamma\gamma + jets'
+    legend: '\gamma\gamma + jets 80-Inf'
     fill-color: "#40D51A"
     order: 5
     split: 40
   DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU:
     group: Others
-    era: HL-LHC
+    era: HL
     type: mc
     files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
     cross-section: 303.2 #13TeV
-    #legend: '\gamma\gamma + jets'
+    #legend: '\gamma\gamma + jets 40-80'
     #fill-color: "#40D51A"
     #order: 5
     split: 40
   GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
     group: GJet
-    era: HL-LHC
+    era: HL
     type: mc
     files: GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt   
     generated-events: sumgenweight
-    cross-section: 850.8 #13TeV
+    cross-section: 878.1 #13TeV
     #legend: 'G+jets'
     #fill-color: "#FFFF00"
     split: 40
-  W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
-    group: WJets
-    era: HL-LHC
-    type: mc
-    files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 7825.1 #13TeV
-    #legend: 'W1Jets \rightarrow L#nu'
-    #fill-color: "#40D51A"
-    split: 40
-  W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
-    group: WJets
-    era: HL-LHC
-    type: mc
-    files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 3807.1 #13TeV
-    #legend: 'W2Jets \rightarrow L#nu'
-    #fill-color: "#1AD5B0" # lightpurple #CHANGETHECOLOR
-    split: 40
-  W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
-    group: WJets
-    era: HL-LHC
-    type: mc
-    files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 991.6 #13TeV, 942.3 on McM
-    #legend: 'W3Jets \rightarrow L#nu'
-    #fill-color: "#D489FF" 
-    split: 40
-  TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
-    group: topInduced
-    era: HL-LHC
-    type: mc
-    files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 830 #13TeV 
-    #legend: 't\bar{t} (inclusive)'
-    #fill-color: "#D489FF" 
-    split: 40 
   GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU:
     group: GJet
-    era: HL-LHC
+    era: HL
     type: mc
     files: GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -111,111 +122,69 @@ samples:
     split: 40
   GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU:
     group: GJet
-    era: HL-LHC
+    era: HL
     type: mc
     files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 3216.0  
+    cross-section: 3216 
     split: 40
-  QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    group: QCD
-    era: HL-LHC
-    type: mc
-    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 113400.0 
-    split: 40
-  QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    group: QCD
-    era: HL-LHC
-    type: mc
-    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section:  260500.0  
-    split: 40
-  QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    group: Others
-    era: HL-LHC
-    type: mc
-    files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 24810 # !!! BIGGER THAN 14 TeV !!!
-    split: 40 
-  TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
-    group: topInduced
-    era: HL-LHC
-    type: mc
-    files: TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.2001  
-    #legend: 'ttW'
-    #fill-color: "#c7e619"
-    split: 40
-  TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU:
-    group: topInduced
-    era: HL-LHC
-    type: mc
-    files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.01731 
-    #legend: 'ttGG'
-    #fill-color: "#28E298" 
-    split: 40
+  #QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #  group: QCD
+  #  era: HL
+  #  type: mc
+  #  files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section: 113400.0 
+  #  split: 40
+  #QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #  group: QCD
+  #  era: HL
+  #  type: mc
+  #  files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section:  260500.0  
+  #  split: 40
+  #QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #  group: Others
+  #  era: HL
+  #  type: mc
+  #  files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section: 24810 # !!! BIGGER THAN 14 TeV !!!
+  #  split: 40 
 
-  TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
-    group: topInduced
+  W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
+    era: HL
     type: mc
-    files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    files: W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section:  # COULDN'T FIND
+    cross-section: 7655.415
+    #legend: 'W1Jets \rightarrow L#nu'
+    #fill-color: "#40D51A"
     split: 40
-  TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
-    group: topInduced
+  W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
+    era: HL
     type: mc
-    files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    files: W2JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section:  # COULDN'T FIND
+    cross-section: 3008.947
+    #legend: 'W2Jets \rightarrow L#nu'
+    #fill-color: "#1AD5B0" # lightpurple #CHANGETHECOLOR
     split: 40
-  TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
-    era: HL-LHC
-    group: topInduced
+  W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: WJets
+    era: HL
     type: mc
-    files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+    files: W3JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section:  # COULDN'T FIND
-    split: 40
-  TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
-    era: HL-LHC
-    group: topInduced
-    type: mc
-    files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section:  # COULDN'T FIND
-    split: 40
-  TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
-    group: topInduced
-    era: HL-LHC
-    type: mc
-    files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 4.322 # from McM
-    #legend: 'ttGJets'
-    fill-color: "#28E298" 
-    split: 40
-  WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
-    era: HL-LHC
-    type: mc
-    files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 1.693
-    legend: 'WGGJets'
-    fill-color: "#008080"
-    order: 6
+    cross-section: 991.6 #13TeV, 942.3 on McM
+    #legend: 'W3Jets \rightarrow L#nu'
+    #fill-color: "#D489FF" 
     split: 40
   WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: mc
     files: WGJJToLNu_EWK_QCD_TuneCP5_14TeV-madgraph-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -224,8 +193,29 @@ samples:
     fill-color: "#28CCE2"
     order: 7
     split: 40
+  WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
+    era: HL
+    type: mc
+    files: WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 1.693
+    legend: 'WGGJets'
+    fill-color: "#008080"
+    order: 6
+    split: 40
+  DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
+    group: Others
+    era: HL
+    type: mc
+    files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 5765.4 # COULDN'T FIND
+    legend: 'DYJets'
+    fill-color: "#cc7a16"
+    #order: 9
+    split: 60
   ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: mc
     files: ZGTo2LG_TuneCUETP8M1_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -235,7 +225,7 @@ samples:
     order: 8
     split: 40
   WW_TuneCUETP8M1_14TeV-pythia8_200PU:
-    era: HL-LHC
+    era: HL
     type: mc
     files: WW_TuneCUETP8M1_14TeV-pythia8_200PU.txt
     generated-events: sumgenweight
@@ -244,72 +234,86 @@ samples:
     fill-color: "#D489FF" #'#1AD5B0' 
     order: 2
     split: 40 
-  GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
-    group: SingleH
-    era: HL-LHC
+  TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
+    group: topInduced
+    era: HL
     type: mc
-    files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
+    files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 48.5800
-    #legend: 'GGH \rightarrow \gamma\gamma'
-    #fill-color: "#FFFF99"
+    cross-section: 830 #13TeV 
+    #legend: 't\bar{t} (inclusive)'
+    #fill-color: "#D489FF" 
+    split: 40 
+  TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+    group: topInduced
+    era: HL
+    type: mc
+    files: TTGJets_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 4.322 # from McM
+    #legend: 'ttGJets'
+    fill-color: "#28E298" 
     split: 40
-  VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU:
-    group: SingleH
-    era: HL-LHC
+  TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU:
+    group: topInduced
+    era: HL
     type: mc
-    files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
+    files: TTGG_0Jets_TuneCUETP8M1_14TeV_amcatnlo_madspin_pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 3.782
-    #legend: 'VBFH \rightarrow \gamma\gamma'
-    #fill-color: "#00FF99"
+    cross-section: 0.01731 
+    #legend: 'ttGG'
+    #fill-color: "#28E298" 
     split: 40
-  ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
-    group: SingleH
-    era: HL-LHC
+  TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
+    group: topInduced
+    era: HL
     type: mc
-    files: ttHJetToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
+    files: TTWJetsToLNu_TuneCUETP8M1_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.5071
-    #legend: 'ttH \rightarrow \gamma\gamma'
-    #fill-color: "#FFCC33" 
+    cross-section: 0.2001  
+    #legend: 'ttW'
+    #fill-color: "#c7e619"
     split: 40
-  VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU:
-    group: SingleH
-    era: HL-LHC
-    type: mc
-    files: VHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-madspin-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 2.257
-    #legend: 'VH \rightarrow \gamma\gamma'
-    #fill-color: "#008080" 
-    split: 40
-  THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU:
-    group: SingleH
-    era: HL-LHC
-    type: mc
-    files: THQ_ctcvcp_HToGG_M125_TuneCUETP8M1_14TeV-madgraph-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 0.00017866 # kf=1.06
-    split: 40  
-  DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
-    group: Others
-    era: HL-LHC
-    type: mc
-    files: DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section:  # COULDN'T FIND
-    legend: 'DYJets'
-    fill-color: "#cc7a16"
-    #order: 9
-    split: 60
+
+  #TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+  #  era: HL
+  #  group: topInduced
+  #  type: mc
+  #  files: TTGamma_Dilept_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section:  # COULDN'T FIND
+  #  split: 40
+  #TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+  #  era: HL
+  #  group: topInduced
+  #  type: mc
+  #  files: TTGamma_Hadronic_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section:  # COULDN'T FIND
+  #  split: 40
+  #TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU: 
+  #  era: HL
+  #  group: topInduced
+  #  type: mc
+  #  files: TTGamma_SingleLeptFromT_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section:  # COULDN'T FIND
+  #  split: 40
+  #TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU:
+  #  era: HL
+  #  group: topInduced
+  #  type: mc
+  #  files: TTGamma_SingleLeptFromTbar_TuneCUETP8M2T4_14TeV-madgraph-pythia8_200PU.txt
+  #  generated-events: sumgenweight
+  #  cross-section:  # COULDN'T FIND
+  #  split: 40
 plotIt:
   configuration:
     width: 700
     height: 600
     luminosity-label: '41.5 fb^{-1} (14 TeV)'
     experiment: CMS
-    extra-label: HL-LHC
+    extra-label: HL
     luminosity-error: 0.025
     show-overflow: true
     for-yields: true
