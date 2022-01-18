@@ -188,7 +188,7 @@ samples:
     cross-section:  1.884
     legend: 'WGGJets'
     fill-color: "#40D51A" #'#008080'  
-    order: 3
+    #order: 3
     split: 40
   DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     era: HL
@@ -218,7 +218,7 @@ samples:
     cross-section: 70.44 #McM 
     legend: 'WW(inclusive)'
     fill-color: "#D489FF" #'#1AD5B0' 
-    order: 2
+    #order: 2
     split: 40  
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
     era: HL
