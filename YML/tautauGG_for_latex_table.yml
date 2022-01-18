@@ -35,7 +35,7 @@ samples:
     type: mc
     files: GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.114798
+    cross-section: 0.114798 #chk if they include k-factors? 
     legend: 'GGH \rightarrow \gamma\gamma'
     #fill-color: "#FFFF99"
     split: 40
@@ -44,7 +44,7 @@ samples:
     type: mc
     files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.00951216
+    cross-section: 0.00951216 #chk? 
     legend: 'VBFH \rightarrow \gamma\gamma'
     #fill-color: "#00FF99"
     split: 40
@@ -89,7 +89,7 @@ samples:
     type: mc
     files: DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU.txt
     generated-events: sumgenweight
-    cross-section: 332.804 #McM  94.61 #sheet
+    cross-section: 332.804 #McM  94.61 #sheet?
     legend: '\gamma\gamma + jets 40-80'
     #fill-color: "#40D51A"
     #order: 5
