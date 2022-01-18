@@ -1,7 +1,7 @@
 tree: myana/mytree
 eras:
   HL:
-    luminosity: 41500 # 1/pb
+    luminosity: 137000.0 # 1/pb
 samples:
   GluGluToHHTo2G2Qlnu_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:  
     era: HL
@@ -49,7 +49,7 @@ samples:
     type: mc
     files: VBFHToGG_M125_TuneCP5_14TeV-amcatnlo-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section:0.0089582826 
+    cross-section: 0.0089582826 
     #legend: 'VBFH \rightarrow \gamma\gamma'
     #fill-color: "#00FF99"
     split: 40
@@ -126,7 +126,7 @@ samples:
     type: mc
     files: GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 3216 
+    cross-section: 3216.0 
     split: 40
   #QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
   #  group: QCD
@@ -240,7 +240,7 @@ samples:
     type: mc
     files: TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 830 #13TeV 
+    cross-section: 830.0 #13TeV 
     #legend: 't\bar{t} (inclusive)'
     #fill-color: "#D489FF" 
     split: 40 
