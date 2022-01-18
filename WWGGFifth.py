@@ -1,4 +1,4 @@
-B65;6003;1cimport logging
+import logging
 from bamboo.analysisutils import loadPlotIt
 import os.path
 from bamboo.analysismodules import AnalysisModule, HistogramsModule
