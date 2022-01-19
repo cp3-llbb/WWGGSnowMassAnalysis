@@ -965,11 +965,11 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_1000",mGG, hasDNNscore4, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_1000",mGG, hasDNNscore5, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
 
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2",mGG, hasDNNscore2, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3",mGG, hasDNNscore3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4",mGG, hasDNNscore4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5",mGG, hasDNNscore5, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_135",mGG, hasDNNscore, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_135",mGG, hasDNNscore2, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_135",mGG, hasDNNscore3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_135",mGG, hasDNNscore4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_135",mGG, hasDNNscore5, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
 
         return plots
