@@ -585,6 +585,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         ))
         sort_jets = op.sort(clJets, lambda jet : -jet.pt)  
         idJets = op.select(sort_jets, lambda j : j.idpass & (1<<2))
+
+        bJets = op.select(
+            idJets, lambda j: j.btag & (1 << 2))  # tight
         
         mGG = op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4)
         pTGG = op.sum(idPhotons[0].pt, idPhotons[1].pt)
@@ -669,17 +672,22 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         hasThreeJ = hasTwoJ.refine("hasThreeJ", cut = nJet >= 3)
         #yields.add(hasThreeJ, title='hasThreeJ')
 
-        hasTwoL = hasInvM.refine('hasTwoL', cut = op.OR(
-            op.AND(op.AND(nElec >= 2, nMuon == 0), met[0].pt > 20, idElectrons[0].charge != idElectrons[1].charge, op.NOT(op.deltaR(idElectrons[0].p4, idElectrons[1].p4) < 0.4), op.AND(mE < 80, mE >100) ),
-            op.AND(op.AND(nElec == 1, nMuon >= 1), met[0].pt > 20, idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
-            op.AND(op.AND(nElec >= 1, nMuon == 1), met[0].pt > 20, idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
-            op.AND(op.AND(nMuon >= 2, nElec == 0),met[0].pt > 20, idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.AND(mMu < 80, mMu >100)),
-            pTGG > 91
+        hasTwoL = hasInvM.refine('hasTwoL', cut = op.AND(
+            op.OR(
+            op.AND(op.AND(nElec >= 2, nMuon == 0), idElectrons[0].charge != idElectrons[1].charge, op.NOT(op.deltaR(idElectrons[0].p4, idElectrons[1].p4) < 0.4), op.AND(mE < 80, mE >100)),
+            op.AND(op.AND(nElec == 1, nMuon >= 1), idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
+            op.AND(op.AND(nElec >= 1, nMuon == 1), idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
+            op.AND(op.AND(nMuon >= 2, nElec == 0), idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.AND(mMu < 80, mMu >100))),
+            pTGG > 91,
+            op.AND(idElectrons[2].pt > 10, idMuons[2].pt > 10),
+            bJets.pt < 20,
+            met[0].pt > 20   
             ))
+            
         yields.add(hasTwoL, title='hasTwoL')
 
-        #hasZeroL = hasInvM.refine('hasZeroL', cut = nJet == 4)
-        #yields.add(hasZeroL, title='hasZeroL')
+        hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
+        yields.add(hasZeroL, title='hasZeroL')
 
         #plots       
 
@@ -746,6 +754,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("Inv_mass_gghasOneL_150",mGG , hasOneL, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL_140",mGG , hasOneL, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL_145",mGG , hasOneL, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+        plots.append(Plot.make1D("Inv_mass_gghasOneL_135",mGG , hasOneL, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
  
         #hasTwoL
@@ -753,6 +762,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("Inv_mass_gghasTwoL_150",mGG , hasTwoL, EqB(50, 100.,150.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasTwoL_140",mGG , hasTwoL, EqB(40, 100.,140.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasTwoL_145",mGG , hasTwoL, EqB(40, 105.,145.), title = "m_{\gamma\gamma}"))
+        plots.append(Plot.make1D("Inv_mass_gghasTwoL_135",mGG , hasTwoL, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
         #hasZeroL
         #plots.append(Plot.make1D("Inv_mass_gghasZeroL",mGG , hasZeroL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
@@ -857,39 +867,39 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "deltaPhi_DiPh": op.deltaPhi(idPhotons[0].p4, idPhotons[1].p4),
             "deltaR_DiPh": op.deltaR(idPhotons[0].p4, idPhotons[1].p4),
             "nJets": nJet,
-            "E_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].p4.E()),   
-            "pT_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].pt),
-            "Eta_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].eta),
-            "Phi_jet1": op.switch(op.rng_len(idJets)==0,op.c_float(0.),idJets[0].phi), 
-            "E_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].p4.E()),   
-            "pT_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].pt),
-            "Eta_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].eta),
-            "Phi_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].phi),  
-            "E_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].p4.E()),   
-            "pT_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].pt),
-            "Eta_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].eta),
-            "Phi_jet3": op.switch(op.rng_len(idJets)<3,op.c_float(0.),idJets[2].phi),
-            "E_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].p4.E()),   
-            "pT_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].pt),
-            "Eta_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].eta),
-            "Phi_jet4": op.switch(op.rng_len(idJets)<4,op.c_float(0.),idJets[3].phi),
-            #"InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
-            #"InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL),
-            "w1_pT": w1.pt,
-            "w1_eta": w1.eta,
+            "E_jet1": idJets[0].p4.E(),   
+            "pT_jet1": idJets[0].pt,
+            "Eta_jet1": idJets[0].eta,
+            "Phi_jet1": idJets[0].phi, 
+            "E_jet2": idJets[1].p4.E(),   
+            "pT_jet2": idJets[1].pt,
+            "Eta_jet2": idJets[1].eta,
+            "Phi_jet2": idJets[1].phi,  
+            "E_jet3": idJets[2].p4.E(),   
+            "pT_jet3": idJets[2].pt,
+            "Eta_jet3": idJets[2].eta,
+            "Phi_jet3": idJets[2].phi,
+            "E_jet4": idJets[3].p4.E(),   
+            "pT_jet4": idJets[3].pt,
+            "Eta_jet4": idJets[3].eta,
+            "Phi_jet4": idJets[3].phi,
+            "w1_pT": op.sum(idJets[0].pt, idJets[1].pt),
+            "w1_eta": op.sum(idJets[0].eta, idJets[1].eta),
             "w1_mass": w1_invmass,
-            "w2_pT": w2.pt,
-            "w2_eta": w2.eta,
+            "w2_pT": op.sum(idJets[2].pt, idJets[3].pt),
+            "w2_eta": op.sum(idJets[2].eta, idJets[3].eta),
             "w2_mass": w2_invmass,
-            "ww_pT": ww.pt,
-            "ww_eta": ww.eta,
+            "ww_pT": op.sum(idJets[0].pt, idJets[1].pt,idJets[2].pt, idJets[3].pt),
+            "ww_eta": op.sum(idJets[0].eta, idJets[1].eta,idJets[2].eta, idJets[3].eta),
             "ww_mass": ww_invmass
         } 
+         
 
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("Skim", mvaVariables,hasOneL))
+            #plots.append(Skim("Skim", mvaVariables,hasOneL))
+            plots.append(Skim("Skim_FH", mvaVariables_FH, hasZeroL))
 
         #evaluate dnn model on data
         if self.args.mvaEval:
@@ -962,6 +972,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_1000",mGG, hasDNNscore4, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_1000",mGG, hasDNNscore5, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
 
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_135",mGG, hasDNNscore, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_135",mGG, hasDNNscore2, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_135",mGG, hasDNNscore3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_135",mGG, hasDNNscore4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_135",mGG, hasDNNscore5, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+
             d_HH = op.log(output[0]/(output[1]+output[2]))
 
             hasdHHscore = hasOneL.refine("hasdHHscore", cut = d_HH < 7)
@@ -1008,6 +1024,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_dHH_3_1000",mGG, hasdHHscore3, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_dHH_4_1000",mGG, hasdHHscore4, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_dHH_5_1000",mGG, hasdHHscore5, EqB(5000, 0.,1000.), title = "m_{\gamma\gamma}"))
+
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_dHH_135",mGG, hasdHHscore, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2_dHH_135",mGG, hasdHHscore2, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_3_dHH_135",mGG, hasdHHscore3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_4_dHH_135",mGG, hasdHHscore4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_5_dHH_135",mGG, hasdHHscore5, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
         return plots
 
