@@ -823,6 +823,11 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         plots.append(Plot.make1D("Mgg_c4_Zveto_150", mgg, c4_Zveto, EqB(
             50, 100, 150), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
+        plots.append(Plot.make1D("Mgg_c3_135", mgg, c3, EqB(
+            20, 115, 135), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("Mgg_c4_Zveto_135", mgg, c4_Zveto, EqB(
+            20, 115, 135), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+
         # Cutflow report
         cfr = CutFlowReport("yields", recursive=True, printInLog=False)
         plots.append(cfr)
