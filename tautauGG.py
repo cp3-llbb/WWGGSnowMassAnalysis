@@ -653,7 +653,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         sel2_m = sel1_m.refine("IDMuon", cut=nMuon >= 1)
 
         plots.append(Plot.make1D("LeadingPhotonISO", op.map(
-            ISOphotons, lambda p: p.pt), sel1_p, EqB(30, 0, 300), title="Leading Photon pT"))
+            isoPhotons, lambda p: p.pt), sel1_p, EqB(30, 0, 300), title="Leading Photon pT"))
 
         plots.append(Plot.make1D("LeadingPhotonIDISO", op.map(
             IDphotons, lambda p: p.pt), sel2_p, EqB(30, 0, 300), title="Leading Photon pT"))
@@ -911,8 +911,8 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
             "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
 
-            "LtauPt": cleanedTaus[0].pt
-            "LtauEta": cleanedTaus[0].eta
+            "LtauPt": cleanedTaus[0].pt,
+            "LtauEta": cleanedTaus[0].eta,
 
             "Ljet_Pt": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].pt),
             "Ljet_Eta": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].eta),
