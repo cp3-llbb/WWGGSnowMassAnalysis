@@ -630,10 +630,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sort_jets = op.sort(clJets, lambda jet : -jet.pt)  
         idJets = op.select(sort_jets, lambda j : j.idpass & (1<<2))
 
-        bJets = op.select(
-            idJets, lambda j: j.btag & (1 << 1))  
-        
-
+        #bJets = op.select(
+         #   idJets, lambda j: j.btag & (1 << 1))  
 
         mGG = op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4)
         pTGG = op.sum(idPhotons[0].pt, idPhotons[1].pt)
@@ -813,20 +811,20 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         hasTwoL = hasInvM.refine('hasTwoL', cut = op.AND(
             op.OR(
-            op.AND(op.AND(nElec >= 2, nMuon == 0), idElectrons[0].charge != idElectrons[1].charge, op.NOT(op.deltaR(idElectrons[0].p4, idElectrons[1].p4) < 0.4), op.AND(mE < 80, mE >100)),
-            op.AND(op.AND(nElec == 1, nMuon >= 1), idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
-            op.AND(op.AND(nElec >= 1, nMuon == 1), idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.AND(mEMu < 80, mEMu >100)),
-            op.AND(op.AND(nMuon >= 2, nElec == 0), idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.AND(mMu < 80, mMu >100))),
+            op.AND(op.AND(nElec >= 2, nMuon == 0), idElectrons[0].charge != idElectrons[1].charge, op.NOT(op.deltaR(idElectrons[0].p4, idElectrons[1].p4) < 0.4), op.OR(mE < 80, mE >100)),
+            op.AND(op.AND(nElec >= 1, nMuon >= 1), idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.OR(mEMu < 80, mEMu >100)),
+            #op.AND(op.AND(nElec >= 1, nMuon == 1), idElectrons[0].charge != idMuons[0].charge, op.NOT(op.deltaR(idElectrons[0].p4, idMuons[0].p4) < 0.4), op.OR(mEMu < 80, mEMu >100)),
+            op.AND(op.AND(nMuon >= 2, nElec == 0), idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.OR(mMu < 80, mMu >100))),
             pTGG > 91,
-            op.AND(idElectrons[2].pt > 10, idMuons[2].pt > 10),
-            bJets.pt < 20,
+            #op.AND(idElectrons[2].pt > 10, idMuons[2].pt > 10),
+            #bJets.pt < 20,
             met[0].pt > 20   
             ))
 
         yields.add(hasTwoL, title='hasTwoL')
 
-        hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
-        yields.add(hasZeroL, title='hasZeroL')
+        #hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
+        #yields.add(hasZeroL, title='hasZeroL')
 
         #plots       
 
@@ -1037,8 +1035,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #save mvaVariables to be retrieved later in the postprocessor and saved in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            #plots.append(Skim("Skim", mvaVariables,hasOneL))
-            plots.append(Skim("Skim_FH", mvaVariables_FH, hasZeroL))
+            plots.append(Skim("Skim", mvaVariables,hasOneL))
+            #plots.append(Skim("Skim_FH", mvaVariables_FH, hasZeroL))
 
         #evaluate dnn model on data
         if self.args.mvaEval:
@@ -1066,7 +1064,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             output = dnn(inputs)
                       
             plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
-            hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
+            #hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
+            hasDNNscore = hasOneL.refine("hasDNNscore", cut = op.in_range(0.1, output[0], 0.6))
             yields.add(hasDNNscore, title='hasDNNscore')
 
             hasDNNscore2 = hasOneL.refine("hasDNNscore2", cut = op.in_range(0.6 ,output[0], 0.8))

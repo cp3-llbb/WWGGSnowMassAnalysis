@@ -680,10 +680,10 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             op.AND(op.AND(nMuon >= 2, nElec == 0), idMuons[0].charge != idMuons[1].charge, op.NOT(op.deltaR(idMuons[0].p4, idMuons[1].p4) < 0.4), op.AND(mMu < 80, mMu >100))),
             pTGG > 91,
             op.AND(idElectrons[2].pt > 10, idMuons[2].pt > 10),
-            bJets.pt < 20,
+            bJets.p4.Pt() < 20,
             met[0].pt > 20   
             ))
-            
+
         yields.add(hasTwoL, title='hasTwoL')
 
         hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
