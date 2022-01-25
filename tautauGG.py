@@ -860,7 +860,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             "SL_photon_phi": IDphotons[1].phi,
             "SL_photon_ID": IDphotons[1].idpass,
             "diP_pt_mgg": (IDphotons[0].pt + IDphotons[1].pt) / mgg,
-            "diP_eta": op.sum(IDphotons[0].p4, IDphotons[1].p4),
+            "diP_eta": op.sum(IDphotons[0].eta, IDphotons[1].eta) / 2,
             "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
             "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
 
@@ -877,7 +877,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
                 cleanedTaus[0].p4, cleanedTaus[1].p4),
             "pTtautau": op.sum(cleanedTaus[0].pt +
                                cleanedTaus[1].pt),
-            "Eta_tautau": op.sum(cleanedTaus[0].eta + cleanedTaus[1].eta),
+            "eta_tautau": op.sum(cleanedTaus[0].eta + cleanedTaus[1].eta) / 2,
 
             "Ljet_Pt": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].pt),
             "Ljet_Eta": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].eta),
@@ -907,7 +907,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             "SL_photon_phi": IDphotons[1].phi,
             "SL_photon_ID": IDphotons[1].idpass,
             "diP_pt_mgg": (IDphotons[0].pt + IDphotons[1].pt) / mgg,
-            "diP_eta": op.sum(IDphotons[0].p4, IDphotons[1].p4),
+            "diP_eta": op.sum(IDphotons[0].eta, IDphotons[1].eta) / 2,
             "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
             "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
 
