@@ -414,9 +414,9 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
         eraMode, eras = self.args.eras
         if eras is None:
             eras = list(config["eras"].keys())
-        if plotList_cutflowreport:
-            printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
-                                readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
+        #if plotList_cutflowreport:
+         #   printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
+          #                      readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
         if plotList_plotIt:
             from bamboo.analysisutils import writePlotIt, runPlotIt
             import os.path
@@ -524,7 +524,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #WW
 
         #selection of photons with eta in the detector acceptance
-        photons = op.select(t.gamma, lambda ph : op.AND(op.abs(ph.eta)<3.0, ph.pt >25.)) 
+        photons = op.select(t.gamma, lambda ph : op.AND(op.abs(ph.eta)<2.5, ph.pt >25.)) 
         #sort photons by pT 
         sort_ph = op.sort(photons, lambda ph : -ph.pt)
 
@@ -532,7 +532,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         isoPhotons = op.select(sort_ph, lambda ph : ph.isopass & (1<<0)) #switched to tight ID on 26/11
         idPhotons = op.select(isoPhotons, lambda ph : ph.idpass & (1<<2))
         #H->WW->2q1l1nu
-
+        
 
         #tautau
 
@@ -561,7 +561,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #WW       
         electrons = op.select(t.elec, lambda el : op.AND(
-        el.pt > 30., op.abs(el.eta) < 3.0
+        el.pt > 10., op.abs(el.eta) < 2.5
         ))
         
         #select jets with pt>25 GeV end eta in the detector acceptance
@@ -583,7 +583,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #WW
 
         muons = op.select(t.muon, lambda mu : op.AND(
-        mu.pt > 30., op.abs(mu.eta) < 2.8
+        mu.pt > 10., op.abs(mu.eta) < 2.5
         ))
 
         clMuons = op.select(muons, lambda mu : op.AND(
@@ -649,7 +649,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #define more variables for ease of use
         nElec = op.rng_len(idElectrons)
-        nMuon = op.rng_len(idMuons)
+        nMuon = op.rng_len(isoMuons)
         nJet = op.rng_len(idJets)
         nPhoton = op.rng_len(idPhotons)
         nTau = op.rng_len(isolatedTaus) 
@@ -674,6 +674,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sel1_p = noSel.refine("2Photon", cut = op.AND((op.rng_len(sort_ph) >= 2), (sort_ph[0].pt > 35.)))
 
         sel2_p = sel1_p.refine("idPhoton", cut = op.AND((op.rng_len(idPhotons) >= 2), (idPhotons[0].pt > 35.)))
+        
 
         sel1_e = noSel.refine("OneE", cut = op.rng_len(sort_el) >= 1)
         
@@ -779,12 +780,30 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
          
         #selection: 2 photons (at least) in an event 
-        hasTwoPh = sel2_p.refine("hasTwoPh", cut= op.rng_len(idPhotons) >= 2)
+        #hasTwoPh = sel2_p.refine("hasTwoPh", cut= op.rng_len(idPhotons) >= 2)
+        
+        yields.add(sel2_p, title='sel2_p')
 
-        #yields.add(hasTwoPh, title='hasTwoPh')
+        genp = op.select(t.genpart,lambda g : op.AND(g.pid==22, g.status==1))
+        lambda_photon_match = lambda reco,gen : op.AND(op.deltaR(gen.p4,reco.p4) < 0.2 , (op.abs(gen.pt-reco.pt)/(gen.pt)) < 0.2 )
+        gen_p_matched = op.select(genp, lambda ge : op.rng_any(idPhotons, lambda re: lambda_photon_match(re,ge)))
+        sort_gen_p_matched = op.sort(gen_p_matched, lambda gp : -gp.pt)
+      
+        #if op.OR(sample.startswith('DY'), sample.startswith('W1'), sample.startswith('W2'), sample.startswith('W3'), sample.startswith('TT_Tune')):
+         #   is_genmatch = sel2_p.refine('genmatch',cut= op.AND(op.rng_len(sort_gen_p_matched) > 0, sort_gen_p_matched[0].pt <20 ))
+        #elif op.OR(sample.startswith('ZG'), sample.startswith('WGJJ'), sample.startswith('TTGJets')):
+         #   is_genmatch = sel2_p.refine('genmatch',cut= op.AND(op.rng_len(sort_gen_p_matched) > 0, sort_gen_p_matched[0].pt >20 ))
+        #else:
+         #   is_genmatch =  sel2_p.refine('genmatch', cut= op.c_bool(True))
+
+        #yields.add(is_genmatch, title='DCRemoval')
 
         #selections for the event inv mass of photons within the 100-180 window
-        hasInvM = hasTwoPh.refine("hasInvM", cut= op.AND(
+        #hasInvM = is_genmatch.refine("hasInvM", cut= op.AND(
+         #   (op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
+        #))
+
+        hasInvM = sel2_p.refine("hasInvM", cut= op.AND(
             (op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
         ))
         #yields.add(hasInvM, title='hasInvM')
@@ -988,7 +1007,10 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "Phi_jet2": op.switch(op.rng_len(idJets)<2,op.c_float(0.),idJets[1].phi),  
             "InvM_jet": op.switch(op.rng_len(idJets)<2,op.c_float(0.),mJets),
             "InvM_jet2": op.switch(op.rng_len(idJets)<3,op.c_float(0.),mJets_SL),
-            "met":metPt
+            "met": metPt
+            #"mgg": mGG,
+            #"dnn_HH": output[0],
+            #"dHH": dHH
         } 
         
         mvaVariables_FH = {
@@ -1065,7 +1087,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                       
             plots.append(Plot.make1D("dnn_score", output,hasOneL,EqB(50, 0, 1.)))
             #hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
-            hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
+            hasDNNscore = hasOneL.refine("hasDNNscore", cut = op.in_range(0.1, output[0], 0.6))
             yields.add(hasDNNscore, title='hasDNNscore')
 
             hasDNNscore2 = hasOneL.refine("hasDNNscore2", cut = op.in_range(0.6 ,output[0], 0.8))
@@ -1132,6 +1154,15 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
             hasdHHscore5 = hasOneL.refine("hasdHHscore5", cut = d_HH > 7)
             yields.add(hasdHHscore5, title='hasdHHscore5')
+
+            #mvaVariables_final = {
+            #"mgg": mGG,
+            #"dnn_HH": output[0],
+            #"dHH": dHH
+            #} 
+
+            #from bamboo.plots import Skim
+            #plots.append(Skim("Skim_final", mvaVariables_final,hasOneL))
 
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_dHH",mGG, hasdHHscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_dHH_2",mGG, hasdHHscore2, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
