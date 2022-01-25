@@ -528,15 +528,16 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         noSel = noSel.refine("withgenweight", weight=t.genweight)
 
         # Photons
+        photons = op.select(t.gamma, lambda ph: op.AND(
+            op.abs(ph.eta) < 3.0, ph.pt > 25))
 
-        photons = op.sort(
-            op.select(t.gamma, lambda ph: op.abs(ph.eta) < 3), lambda ph: -ph.pt)
+        # sort photons by pT
+        sort_ph = op.sort(photons, lambda ph: -ph.pt)
 
-        ISOphotons = op.select(photons, lambda ph: ph.isopass & (
-            1 << 0))
+        # select photons with loose ISO & ID
+        isoPhotons = op.select(sort_ph, lambda ph: ph.isopass & (1 << 0))
 
-        IDphotons = op.select(ISOphotons, lambda ph: ph.idpass & (
-            1 << 0))
+        IDphotons = op.select(isoPhotons, lambda ph: ph.idpass & (1 << 0))
 
         # di-Photon mass
         mgg = op.invariant_mass(IDphotons[0].p4, IDphotons[1].p4)
@@ -557,26 +558,32 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         electrons = op.sort(op.select(t.elec, lambda el: op.AND(
             op.abs(el.eta) < 3, el.pt > 30)), lambda el: -el.pt)
 
-        ISOelectrons = op.select(electrons, lambda el: el.isopass & (1 << 0))
+        cleanedElectrons = op.select(electrons, lambda el: op.NOT(
+            op.rng_any(IDphotons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.4)))
+
+        ISOelectrons = op.select(
+            cleanedElectrons, lambda el: el.isopass & (1 << 0))
 
         IDelectrons = op.select(
             ISOelectrons, lambda el: el.idpass & (1 << 0))
 
-        cleanedElectrons = op.select(IDelectrons, lambda el: op.NOT(
-            op.rng_any(IDphotons, lambda ph: op.deltaR(el.p4, ph.p4) < 0.2)))
+        # Jets
+        jets = op.sort(op.select(t.jetpuppi, lambda j: op.AND(
+            j.pt > 30, op.abs(j.eta) < 5)), lambda j: -j.pt)
 
         # Muons
 
         muons = op.sort(op.select(t.muon, lambda mu: op.AND(
             op.abs(mu.eta) < 2.8, mu.pt > 30)), lambda mu: -mu.pt)
 
-        ISOmuons = op.select(muons, lambda mu: mu.isopass & (1 << 0))
+        cleanedMuons = op.select(muons, lambda mu: op.AND(op.NOT(
+            op.rng_any(IDphotons, lambda ph: op.deltaR(mu.p4, ph.p4) < 0.4)),
+            op.NOT(op.rng_any(jets, lambda j: op.deltaR(mu.p4, j.p4) < 0.4))))
+
+        ISOmuons = op.select(cleanedMuons, lambda mu: mu.isopass & (1 << 0))
 
         IDmuons = op.select(
             ISOmuons, lambda mu: mu.idpass & (1 << 0))
-
-        cleanedMuons = op.select(IDmuons, lambda mu: op.NOT(
-            op.rng_any(IDphotons, lambda ph: op.deltaR(mu.p4, ph.p4) < 0.2)))
 
         # taus
 
@@ -605,10 +612,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         bestTauPair = op.rng_min_element_by(
             allTauPairs, lambda tt: op.abs(op.invariant_mass(tt[0].p4, tt[1].p4)-mH))
 
-        # Jets
-
-        jets = op.sort(op.select(t.jetpuppi, lambda j: op.AND(
-            j.pt > 30, op.abs(j.eta) < 5)), lambda j: -j.pt)
+        # Cleaned Jets and B-Jets
 
         cleanedJets = op.select(jets, lambda j: op.AND(
             op.NOT(op.rng_any(cleanedElectrons,
@@ -636,7 +640,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
 
         ########## End of Variables ##########
 
-        sel1_p = noSel.refine("OnePhoton", cut=op.rng_len(ISOphotons) >= 1)
+        sel1_p = noSel.refine("OnePhoton", cut=op.rng_len(isoPhotons) >= 1)
 
         sel2_p = sel1_p.refine("IDPhoton", cut=op.rng_len(IDphotons) >= 1)
 
@@ -649,7 +653,7 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         sel2_m = sel1_m.refine("IDMuon", cut=nMuon >= 1)
 
         plots.append(Plot.make1D("LeadingPhotonISO", op.map(
-            ISOphotons, lambda p: p.pt), sel1_p, EqB(30, 0, 300), title="Leading Photon pT"))
+            isoPhotons, lambda p: p.pt), sel1_p, EqB(30, 0, 300), title="Leading Photon pT"))
 
         plots.append(Plot.make1D("LeadingPhotonIDISO", op.map(
             IDphotons, lambda p: p.pt), sel2_p, EqB(30, 0, 300), title="Leading Photon pT"))
@@ -837,13 +841,11 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
         cfr.add(c4_Zveto, "Two Taus")
         cfr.add(c3, "One Tau No Lept")
 
-        mvaVariables = {
+        mvaVariables_c4_zveto = {
             "weight": noSel.weight,
 
             # Event level variables
-            "nTaus": nTaus,
-            "nElecs": op.rng_len(cleanedElectrons),
-            "nMuons": op.rng_len(cleanedMuons),
+            "nTaus": op.rng_len(cleanedTaus),
             "nJets": op.rng_len(cleanedJets),
             "nBJets": op.rng_len(bJets),
             "metPt": met[0].pt,
@@ -851,33 +853,21 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
             # Photon and di-Photon variables
             "L_pt_mgg": IDphotons[0].pt / mgg,
             "L_photon_eta": IDphotons[0].eta,
+            "L_photon_phi": IDphotons[0].phi,
             "L_photon_ID": IDphotons[0].idpass,
             "SL_pt_mgg": IDphotons[1].pt / mgg,
             "SL_photon_eta": IDphotons[1].eta,
+            "SL_photon_phi": IDphotons[1].phi,
             "SL_photon_ID": IDphotons[1].idpass,
             "diP_pt_mgg": (IDphotons[0].pt + IDphotons[1].pt) / mgg,
+            "diP_eta": op.sum(IDphotons[0].eta, IDphotons[1].eta) / 2,
             "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
             "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
 
-            # Lepton, tau and jet variables
-            "LelectronPt": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].pt),
-            "LelectronEta": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].eta),
-            "LelectronID": op.switch(nElec == 0, op.c_float(0.), IDelectrons[0].idpass),
-            "SLelectronPt": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].pt),
-            "SLelectronEta": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].eta),
-            "SLelectronID": op.switch(op.OR(nElec == 0, nElec == 1), op.c_float(0.), IDelectrons[1].idpass),
-
-            "LmuonPt": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].pt),
-            "LmuonEta": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].eta),
-            "LmuonID": op.switch(nMuon == 0, op.c_float(0.), IDmuons[0].idpass),
-            "SLmuonPt": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].pt),
-            "SLmuonEta": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].eta),
-            "SLmuonID": op.switch(op.OR(nMuon == 0, nMuon == 1), op.c_float(0.), IDmuons[1].idpass),
-
-            "LtauPt": op.switch(nTaus == 0, op.c_float(0.), cleanedTaus[0].pt),
-            "LtauEta": op.switch(nTaus == 0, op.c_float(0.), cleanedTaus[0].eta),
-            "SLtauPt": op.switch(op.OR(nTaus == 0, nTaus == 1), op.c_float(0.), cleanedTaus[1].pt),
-            "SLtauEta": op.switch(op.OR(nTaus == 0, nTaus == 1), op.c_float(0.), cleanedTaus[1].eta),
+            "LtauPt":  cleanedTaus[0].pt,
+            "LtauEta": cleanedTaus[0].eta,
+            "SLtauPt": cleanedTaus[1].pt,
+            "SLtauEta": cleanedTaus[1].eta,
 
             "DRtautau": op.deltaR(
                 cleanedTaus[0].p4, cleanedTaus[1].p4),
@@ -887,33 +877,69 @@ class CMSPhase2Sim(CMSPhase2SimHistoModule):
                 cleanedTaus[0].p4, cleanedTaus[1].p4),
             "pTtautau": op.sum(cleanedTaus[0].pt +
                                cleanedTaus[1].pt),
+            "eta_tautau": op.sum(cleanedTaus[0].eta + cleanedTaus[1].eta) / 2,
 
             "Ljet_Pt": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].pt),
             "Ljet_Eta": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].eta),
             "Ljet_ID": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].idpass),
             "Ljet_btag": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].btag),
-            "SLjet_Pt": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].pt),
-            "SLjet_Eta": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].eta),
-            "SLjet_ID": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].idpass),
-            "SLjet_btag": op.switch(op.OR(nJets == 0, nJets == 1), op.c_float(0.), cleanedJets[1].btag),
+            "SLjet_Pt": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].pt),
+            "SLjet_Eta": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].eta),
+            "SLjet_ID": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].idpass),
+            "SLjet_btag": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].btag)
+        }
 
-            "met": met[0].pt
+        mvaVariables_c3 = {
+            "weight": noSel.weight,
+
+            # Event level variables
+            "nJets": op.rng_len(cleanedJets),
+            "nBJets": op.rng_len(bJets),
+            "metPt": met[0].pt,
+
+            # Photon and di-Photon variables
+            "L_pt_mgg": IDphotons[0].pt / mgg,
+            "L_photon_eta": IDphotons[0].eta,
+            "L_photon_phi": IDphotons[0].phi,
+            "L_photon_ID": IDphotons[0].idpass,
+            "SL_pt_mgg": IDphotons[1].pt / mgg,
+            "SL_photon_eta": IDphotons[1].eta,
+            "SL_photon_phi": IDphotons[1].phi,
+            "SL_photon_ID": IDphotons[1].idpass,
+            "diP_pt_mgg": (IDphotons[0].pt + IDphotons[1].pt) / mgg,
+            "diP_eta": op.sum(IDphotons[0].eta, IDphotons[1].eta) / 2,
+            "diP_DR": op.deltaR(IDphotons[0].p4, IDphotons[1].p4),
+            "diP_Phi": op.deltaPhi(IDphotons[0].p4, IDphotons[1].p4),
+
+            "LtauPt": cleanedTaus[0].pt,
+            "LtauEta": cleanedTaus[0].eta,
+
+            "Ljet_Pt": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].pt),
+            "Ljet_Eta": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].eta),
+            "Ljet_ID": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].idpass),
+            "Ljet_btag": op.switch(nJets == 0, op.c_float(0.), cleanedJets[0].btag),
+            "SLjet_Pt": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].pt),
+            "SLjet_Eta": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].eta),
+            "SLjet_ID": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].idpass),
+            "SLjet_btag": op.switch(nJets < 2, op.c_float(0.), cleanedJets[1].btag)
         }
 
         # save mvaVariables to be retrieved later in the postprocessor and save in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
-            plots.append(Skim("c4_Zveto", mvaVariables, c4_Zveto))
+            plots.append(Skim("c4_Zveto", mvaVariables_c4_zveto, c4_Zveto))
+            plots.append(Skim("c3", mvaVariables_c3, c3))
 
         # evaluate dnn model on data
         if self.args.mvaEval:
             #from IPython import embed
             DNNmodel_path = "DNN_HHWWGG/model.onnx"
-            mvaVariables.pop("weight", None)
+            mvaVariables_c4_zveto.pop("weight", None)
+            mvaVariables_c3.pop("weight", None)
             dnn = op.mvaEvaluator(
                 DNNmodel_path, mvaType="ONNXRuntime", otherArgs="predictions")
             inputs = op.array(
-                'float', *[op.static_cast('float', val) for val in mvaVariables.values()])
+                'float', *[op.static_cast('float', val) for val in mvaVariables_c4_zveto.values()])
             output = dnn(inputs)
 
             plots.append(Plot.make1D(
