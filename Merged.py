@@ -524,7 +524,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #WW
 
         #selection of photons with eta in the detector acceptance
-        photons = op.select(t.gamma, lambda ph : op.AND(op.abs(ph.eta)<3.0, ph.pt >25.)) 
+        photons = op.select(t.gamma, lambda ph : op.AND(op.abs(ph.eta)<2.5, ph.pt >25.)) 
         #sort photons by pT 
         sort_ph = op.sort(photons, lambda ph : -ph.pt)
 
@@ -561,7 +561,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #WW       
         electrons = op.select(t.elec, lambda el : op.AND(
-        el.pt > 30., op.abs(el.eta) < 3.0
+        el.pt > 10., op.abs(el.eta) < 2.5
         ))
         
         #select jets with pt>25 GeV end eta in the detector acceptance
@@ -583,15 +583,15 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         #WW
 
         muons = op.select(t.muon, lambda mu : op.AND(
-        mu.pt > 30., op.abs(mu.eta) < 2.8
+        mu.pt > 10., op.abs(mu.eta) < 2.5
         ))
 
         clMuons = op.select(muons, lambda mu : op.AND(
             op.NOT(op.rng_any(idPhotons, lambda ph : op.deltaR(mu.p4, ph.p4) < 0.4 )),
             op.NOT(op.rng_any(jets, lambda j : op.deltaR(mu.p4, j.p4) < 0.4 ))))
         sort_mu = op.sort(clMuons, lambda mu : -mu.pt)
-        idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<0)) #apply tight ID  
-        isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<0)) #apply tight isolation 
+        idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply tight ID  
+        isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
         
 
         taus = op.sort(op.select(t.tau, lambda tau: op.AND(
@@ -649,7 +649,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #define more variables for ease of use
         nElec = op.rng_len(idElectrons)
-        nMuon = op.rng_len(idMuons)
+        nMuon = op.rng_len(isoMuons)
         nJet = op.rng_len(idJets)
         nPhoton = op.rng_len(idPhotons)
         nTau = op.rng_len(isolatedTaus) 
@@ -674,6 +674,10 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sel1_p = noSel.refine("2Photon", cut = op.AND((op.rng_len(sort_ph) >= 2), (sort_ph[0].pt > 35.)))
 
         sel2_p = sel1_p.refine("idPhoton", cut = op.AND((op.rng_len(idPhotons) >= 2), (idPhotons[0].pt > 35.)))
+
+        sel2_p_80 = sel1_p.refine("LP80", cut = op.AND((op.rng_len(idPhotons) >= 2), (idPhotons[0].pt > 80.)))
+
+        sel2_p_100 = sel1_p.refine("LP100", cut = op.AND((op.rng_len(idPhotons) >= 2), (idPhotons[0].pt > 100.)))
 
         sel1_e = noSel.refine("OneE", cut = op.rng_len(sort_el) >= 1)
         
@@ -779,19 +783,33 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
          
         #selection: 2 photons (at least) in an event 
-        hasTwoPh = sel2_p.refine("hasTwoPh", cut= op.rng_len(idPhotons) >= 2)
+        #hasTwoPh = sel2_p.refine("hasTwoPh", cut= op.rng_len(idPhotons) >= 2)
 
         #yields.add(hasTwoPh, title='hasTwoPh')
 
         #selections for the event inv mass of photons within the 100-180 window
-        hasInvM = hasTwoPh.refine("hasInvM", cut= op.AND(
+        hasInvM = sel2_p.refine("hasInvM", cut= op.AND(
             (op.in_range(100, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 180)) 
         ))
         #yields.add(hasInvM, title='hasInvM')
 
+        hasInvM80 = sel2_p_80.refine("hasInvM80", cut= op.AND(
+            (op.in_range(115, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 135)) 
+        ))
+
+        hasInvM100 = sel2_p_100.refine("hasInvM100", cut= op.AND(
+            (op.in_range(115, op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4), 135)) 
+        ))
+
         #selections for semileptonic final state
         hasOneL = hasInvM.refine("hasOneL", cut = op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)))
         yields.add(hasOneL, title='hasOneL')
+
+        hasOneL80 = hasInvM80.refine("hasOneL80", cut = op.AND(op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)), met[0].pt > 80))
+        yields.add(hasOneL80, title='hasOneL80')
+
+        hasOneL100 = hasInvM100.refine("hasOneL100", cut = op.AND(op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)), met[0].pt > 100))
+        yields.add(hasOneL100, title='hasOneL100')
 
         hasOneEl = hasInvM.refine("hasOneEl", cut = op.AND(nElec == 1, nMuon == 0))
         #yields.add(hasOneEl, title='hasOneEl')
@@ -825,6 +843,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         #hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
         #yields.add(hasZeroL, title='hasZeroL')
+
+        #Sascha's checks
+
 
         #plots       
 
