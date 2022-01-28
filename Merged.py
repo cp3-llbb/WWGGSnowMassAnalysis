@@ -731,6 +731,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             op.rng_len(isoMuons) == 0
         ))
 
+        yields.add(c3, "One Tau No Lept")
+
         c4 = mGG_sel.refine("hasTwoTaus", cut=op.AND(
             nTau >= 2,
             op.rng_len(idElectrons) == 0,
@@ -756,6 +758,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         c4_Zveto = c4.refine(
             "hasTwoTaus_Zveto", cut=op.NOT(op.in_range(80, mTauTau, 100)))
+
+        yields.add(c4_Zveto, "Two Taus")
+        
 
         ########## End of Z veto ############
 
@@ -871,14 +876,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("mGG_c4_Zveto_135", mGG, c4_Zveto, EqB(
             20, 115, 135), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
 
-        # Cutflow report
-        cfr = CutFlowReport("yields", recursive=True, printInLog=False)
-        plots.append(cfr)
-        cfr.add(noSel, "No selection")
-        # cfr.add(c1_Zveto, "One Tau One Electron")
-        # cfr.add(c2_Zveto, "One Tau One Muon")
-        cfr.add(c4_Zveto, "Two Taus")
-        cfr.add(c3, "One Tau No Lept")
 
         mvaVariables_c4_zveto = {
             "weight": noSel.weight,
@@ -1002,14 +999,14 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("dnn_score_tau", output_tt[0], c3, EqB(50, 0, 1.)))
 
             hasdNNscore = c3.refine("hasdNNscore", cut=op.in_range(0.1, output_tt[0], 0.75))
-            cfr.add(hasdNNscore, title='hasdNNscore')
+            yields.add(hasdNNscore, title='hasdNNscore')
 
             plots.append(Plot.make1D("mGG_c3_hasDNNscore", mGG, hasdNNscore, EqB(80, 100., 180.), title="m_{\gamma\gamma}"))
 
             plots.append(Plot.make1D("mGG_c3_hasDNNscore_135", mGG, hasdNNscore, EqB(20, 115., 135.), title="m_{\gamma\gamma}"))
 
             hasdNNscore2 = c3.refine("hasdNNscore2", cut=output_tt[0] > 0.75)
-            cfr.add(hasdNNscore2, title='hasdNNscore2')
+            yields.add(hasdNNscore2, title='hasdNNscore2')
 
             plots.append(Plot.make1D("mGG_c3_hasDNNscore2", mGG, hasdNNscore2, EqB(80, 100., 180.), title="m_{\gamma\gamma}"))
 
@@ -1037,7 +1034,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("mGG_c3_hasdHHscore_tt_135", mGG, hasdHHscore_tt, EqB(20, 115., 135.), title="m_{\gamma\gamma}"))
 
             hasdHHscore2_tt = c3.refine("hasdHHscore2_tt", cut = d_HH_tt > 15 )
-            yields.add(hasdHHscore2_tt, title='hasdHHscore2_tt')
+            #yields.add(hasdHHscore2_tt, title='hasdHHscore2_tt')
 
             plots.append(Plot.make1D("mGG_c3_hasdHHscore2_tt", mGG, hasdHHscore2_tt, EqB(80, 100., 180.), title="m_{\gamma\gamma}"))
 
@@ -1351,19 +1348,19 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                       
             plots.append(Plot.make1D("dnn_score", output[0],hasOneL, EqB(50, 0, 1.)))
             #hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
-            hasDNNscore = hasOneL.refine("hasDNNscore", cut = op.in_range(0.1, output[0], 0.5))
+            hasDNNscore = hasOneL.refine("hasDNNscore", cut = op.in_range(0.1, output[0], 0.6))
             yields.add(hasDNNscore, title='hasDNNscore')
 
-            hasDNNscore2 = hasOneL.refine("hasDNNscore2", cut = op.in_range(0.5 ,output[0], 0.65))
+            hasDNNscore2 = hasOneL.refine("hasDNNscore2", cut = op.in_range(0.6 ,output[0], 0.8))
             yields.add(hasDNNscore2, title='hasDNNscore2')
             
-            hasDNNscore3 = hasOneL.refine("hasDNNscore3", cut = op.in_range(0.65 ,output[0], 0.8))
+            hasDNNscore3 = hasOneL.refine("hasDNNscore3", cut = op.in_range(0.8 ,output[0], 0.92))
             yields.add(hasDNNscore3, title='hasDNNscore3')
             
-            hasDNNscore4 = hasOneL.refine("hasDNNscore4", cut = output[0] > 0.8)
+            hasDNNscore4 = hasOneL.refine("hasDNNscore4", cut = output[0] > 0.92)
             yields.add(hasDNNscore4, title='hasDNNscore4')
 
-            hasDNNscore5 = hasOneL.refine("hasDNNscore5", cut = output[0] > 0.5)
+            hasDNNscore5 = hasOneL.refine("hasDNNscore5", cut = output[0] > 0.6)
             yields.add(hasDNNscore5, title='hasDNNscore5')
             
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN",mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
