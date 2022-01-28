@@ -90,7 +90,7 @@ samples:
     cross-section: 84.4 #13TeV
     legend: '\gamma\gamma + jets 80-Inf'
     fill-color: "#40D51A"
-    order: 5
+    #order: 5
     split: 40
   DiPhotonJetsBox_MGG-40to80_14TeV-Sherpa_200PU:
     #group: Others
@@ -194,7 +194,7 @@ samples:
     cross-section: 4.958
     legend: 'WGJJ'
     fill-color: "#28CCE2"
-    order: 7
+    #order: 7
     split: 40
   WGGJets_TuneCP5_14TeV_madgraphMLM_pythia8_200PU:
     era: HL
@@ -204,7 +204,7 @@ samples:
     cross-section: 1.693
     legend: 'WGGJets'
     fill-color: "#008080"
-    order: 6
+    #order: 6
     split: 40
   DYJets_incl_MLL-50_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     #group: Others
@@ -225,7 +225,7 @@ samples:
     cross-section: 117.864
     legend: 'ZG'
     fill-color: "#990066"  
-    order: 8
+    #order: 8
     split: 40
   WW_TuneCUETP8M1_14TeV-pythia8_200PU:
     era: HL
@@ -235,7 +235,7 @@ samples:
     cross-section: 63.21 # from McM
     legend: 'WW(inclusive)'
     fill-color: "#D489FF" #'#1AD5B0' 
-    order: 2
+    #order: 2
     split: 40 
   TT_TuneCUETP8M2T4_14TeV-powheg-pythia8_200PU:
     #group: topInduced
