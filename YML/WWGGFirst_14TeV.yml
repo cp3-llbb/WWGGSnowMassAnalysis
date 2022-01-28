@@ -342,15 +342,15 @@ plotIt:
       order: 2
     GJets:
       legend: '\gamma Jets'
-      fill-color: "#1AD5B0" #'#FFCC33'
+      fill-color: '#D489FF'
       order: 3
     VBInduced:
       legend: VBInduced
-      fill-color: "#28CCE2"
+      fill-color: "#c7e619"
       order: 4
     TopInduced:
       legend: Top Induced
-      fill-color: "#E2283B" #'#D489FF' 
+      fill-color: "#1AD5B0" 
       order: 5
     Others:
       legend: Others
