@@ -645,8 +645,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         sel2_m = sel1_m.refine("idMuon", cut = op.rng_len(idMuons) >= 1)
         sel3_m = sel2_m.refine("isoMuon", cut = op.AND(op.rng_len(isoMuons) >= 1))
 
-        #--------------------------TAUTAU-----------------------------------------
-        
+       
         ## Categories ##
         #selections for semileptonic final state
         hasOneL = hasInvM.refine("hasOneL", cut = op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)))
