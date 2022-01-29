@@ -823,49 +823,13 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "SLjet_Pt": op.switch(nJet < 2, op.c_float(0.), idJets[1].pt),
             "SLjet_Eta": op.switch(nJet < 2, op.c_float(0.), idJets[1].eta),
         }
-        mvaVariables_c4_zveto = {
-            "weight": noSel.weight,
-            # Event level variables
-            "nTaus": nTau,
-            "nJets": nJet,
-            "nBJets": op.rng_len(bJets),
-            "metPt": metPt,
-            # Photon and di-Photon variables
-            "L_pt_mGG": pT_mGGL,
-            "L_photon_eta": idPhotons[0].eta,
-            "L_photon_phi": idPhotons[0].phi,
-            "E_mGG_ph1": E_mGGL,
-            "E_mGG_ph2": E_mGGSL,
-            "SL_pt_mGG": pT_mGGSL,
-            "SL_photon_eta": idPhotons[1].eta,
-            "SL_photon_phi": idPhotons[1].phi,
-            "LtauPt":  isolatedTaus[0].pt,
-            "LtauEta": isolatedTaus[0].eta,
-            "SLtauPt": isolatedTaus[1].pt,
-            "SLtauEta": isolatedTaus[1].eta,
-            "LtauPhi": isolatedTaus[0].phi,
-            "SLtauPhi": isolatedTaus[1].phi,
-            "DRtautau": op.deltaR(isolatedTaus[0].p4, isolatedTaus[1].p4),
-            "DPhitautau": op.deltaPhi(isolatedTaus[0].p4, isolatedTaus[1].p4),
-            "Mtautau": op.invariant_mass(isolatedTaus[0].p4, isolatedTaus[1].p4),
-            "LTauE": isolatedTaus[0].p4.E(),
-            "SLTauE": isolatedTaus[1].p4.E(),
-            "Ljet_Pt": op.switch(nJet == 0, op.c_float(0.), idJets[0].pt),
-            "Ljet_Eta": op.switch(nJet == 0, op.c_float(0.), idJets[0].eta),
-            "SLjet_Pt": op.switch(nJet < 2, op.c_float(0.), idJets[1].pt),
-            "SLjet_Eta": op.switch(nJet < 2, op.c_float(0.), idJets[1].eta),
-        }
-
-
+        
         # save mvaVariables to be retrieved later in the postprocessor and save in a parquet file
         if self.args.mvaSkim or self.args.mvaEval:
             from bamboo.plots import Skim
             plots.append(Skim("Skim", mvaVariables,hasOneL))
             plots.append(Skim("c3", mvaVariables_c3, c3))
-            plots.append(Skim("c4_Zveto", mvaVariables_c4_zveto, c4_Zveto))
-            #plots.append(Skim("Skim_FH", mvaVariables_FH, hasZeroL))
-
-
+        
         # evaluate dnn model on data
         if self.args.mvaEval:
             #from IPython import embed
