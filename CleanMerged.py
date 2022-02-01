@@ -414,7 +414,6 @@ def printCutFlowReports(config, reportList, workdir=".", resultsdir=".", suffix=
 
 # END cutflow reports, adapted from bamboo.analysisutils
 
-
 class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
     """ Base module for producing plots from Phase2 flat trees """
     def __init__(self, args):
@@ -472,8 +471,31 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
                             cols["weight"] *= cb.scale
                             cols["process"] = [smp.name]*len(cols["weight"])
                             frames.append(pd.DataFrame(cols))
+                if len(frames) == 0:
+                    print (f'Could not find any sample with TTree {skim.treeName}, moving on to next Skim')
+                    continue
                 df = pd.concat(frames)
                 df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                # Add physical event weight -> data equivalent yield
+
+                # lumiDict = config['eras']
+                # smpCfg = config['samples'][smp.name.replace('.root','')]
+                # XS = smpCfg['cross-section']
+                # BR = smpCfg['branching-ratio'] if 'branching-ratio' in  smpCfg.keys() else 1.
+                # genSum = self.readCounters(smp.tFile)[smpCfg['generated-events']]
+                # L = lumiDict[smpCfg['era']]['luminosity']
+
+                # Note : XS * BR * L / genSum  -> is already in smp.scale ... so that was useless
+                # Feel free to remove the above lines, but figured in case you're interested
+                df["yield"] = df['weight'] * smp.scale
+
+                # Save it #
+                # -> You could make a different output directory for the skims if you like
+                # Eg : 
+                # skimOutputDir = os.path.join(workdir,'mySkims')
+                # if not os.path.exists(skimOutputDir):
+                #     os.makedirs(skimOutputDir)
+                # pqoutname = os.path.join(skimOutputDir, f"{skim.name}.parquet"
                 pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
                 df.to_parquet(pqoutname)
                 logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
