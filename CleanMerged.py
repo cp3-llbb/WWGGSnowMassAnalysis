@@ -446,9 +446,11 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
    
         #mvaSkim 
         #import os.path 
+        from IPython import embed
         from bamboo.plots import Skim
+        from bamboo.root import gbl
         skims = [ap for ap in self.plotList if isinstance(ap, Skim)]
-        if self.args.mvaSkim and skims:
+        if (self.args.mvaSkim or self.args.mvaEval) and skims:
             from bamboo.analysisutils import loadPlotIt
             p_config, samples, _, systematics, legend = loadPlotIt(config, [], eras=self.args.eras[1], workdir=workdir, resultsdir=resultsdir, readCounters=self.readCounters, vetoFileAttributes=self.__class__.CustomSampleAttributes)
             #try:
@@ -457,49 +459,112 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
             import os.path
             #except ImportError as ex:
                 #logger.error("Could not import pandas, no dataframes will be saved")
-            for skim in skims:
-                frames = []
+
+            if self.args.mvaSkim:
+                for skim in skims:
+                    frames = []
+                    for smp in samples:
+                        for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                            # Take specific columns
+                            tree = cb.tFile.Get(skim.treeName)
+                            if not tree:
+                                print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
+                            else:
+                                N = tree.GetEntries()
+                                cols = gbl.ROOT.RDataFrame(tree).AsNumpy()
+                                cols["weight"] *= cb.scale
+                                cols["process"] = [smp.name]*len(cols["weight"])
+                                frames.append(pd.DataFrame(cols))
+                    if len(frames) == 0:
+                        print (f'Could not find any sample with TTree {skim.treeName}, moving on to next Skim')
+                        continue
+                    df = pd.concat(frames)
+                    df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
+                    pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
+                    df.to_parquet(pqoutname)
+                    logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
+            if self.args.mvaEval:
+                from array import array
+                # Make output directory #
+                outputDir = os.path.join(workdir,'skimsForFit')
+                if not os.path.exists(outputDir):
+                    os.makedirs(outputDir)
+                # Loop over samples and skims #
+                treeDict = {}
                 for smp in samples:
-                    for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
-                        # Take specific columns
-                        tree = cb.tFile.Get(skim.treeName)
-                        if not tree:
-                            print( f"KEY TTree {skim.treeName} does not exist, we are gonna skip this {smp}\n")
+                    sampleName = smp.name.replace('.root','')
+                    treeDict[sampleName] = {}
+                    for skim in skims:
+                        # Get full TTree #
+                        trees = []
+                        scales = []
+                        for cb in (smp.files if hasattr(smp, "files") else [smp]):  # could be a helper in plotit
+                            if cb.tFile.GetListOfKeys().FindObject(skim.treeName):
+                                trees.append(cb.tFile.Get(skim.treeName))
+                                scales.append(cb.scale)
+                            else:
+                                print (f'TTree {skim.treeName} not found in in {cb.path}, continuing')
+
+                        if len(trees) == 0:
+                            print (f'No TTree {skim.treeName} in {smp.name}, continuing')
+                            continue
+
+                        treeDict[sampleName][skim.treeName] = [trees,scales]
+
+                groups = {'signal':[],'singleH':[],'continuum':[]}
+                for sampleName,sampleCfg in config['samples'].items():
+                    if sampleCfg['type']=='signal':
+                        groups['signal'].append(sampleName)
+                    else:
+                        if any([sampleName.startswith(substr) for substr in ['GluGluH','VBFH','ttH','TH','VH']]):
+                            groups['singleH'].append(sampleName)
                         else:
-                            N = tree.GetEntries()
-                            cols = gbl.ROOT.RDataFrame(tree).AsNumpy()
-                            cols["weight"] *= cb.scale
-                            cols["process"] = [smp.name]*len(cols["weight"])
-                            frames.append(pd.DataFrame(cols))
-                if len(frames) == 0:
-                    print (f'Could not find any sample with TTree {skim.treeName}, moving on to next Skim')
-                    continue
-                df = pd.concat(frames)
-                df["process"] = pd.Categorical(df["process"], categories=pd.unique(df["process"]), ordered=False)
-                # Add physical event weight -> data equivalent yield
+                            groups['continuum'].append(sampleName)
+                            
+                for group,sampleNames in groups.items():
+                    outName = os.path.join(outputDir,f'{group}.root')
+                    if os.path.exists(outName):
+                        os.remove(outName)
+                    outFile = gbl.TFile(outName,"RECREATE")
+                    subdir = outFile.mkdir('tagsDumper')
+                    subdir = subdir.mkdir('trees')
+                    subdir.cd()
+                    for sampleName in sampleNames:
+                        for skimName in treeDict[sampleName].keys():
+                            treeName = f'{sampleName}_125_13TeV_{skim.treeName}.root'
+                            outTree = gbl.TTree(treeName,treeName)
+                            
+                            trees,scales = treeDict[sampleName][skimName]
+                            branchNames = []
+                            branchArrs = []
+                            branchObj = []
+                            try: 
+                                trees[0].GetListOfBranches()
+                            except:
+                                embed()
 
-                # lumiDict = config['eras']
-                # smpCfg = config['samples'][smp.name.replace('.root','')]
-                # XS = smpCfg['cross-section']
-                # BR = smpCfg['branching-ratio'] if 'branching-ratio' in  smpCfg.keys() else 1.
-                # genSum = self.readCounters(smp.tFile)[smpCfg['generated-events']]
-                # L = lumiDict[smpCfg['era']]['luminosity']
+                            for branch in trees[0].GetListOfBranches():
+                                brName,brType = branch.GetTitle().split('/')
+                                branchNames.append(brName)
+                                branchArr = array(brType.lower(),[0.])
+                                branchArrs.append(branchArr)
+                                branchObj.append(outTree.Branch(brName,branchArr,f'{brName}/{brType}'))
 
-                # Note : XS * BR * L / genSum  -> is already in smp.scale ... so that was useless
-                # Feel free to remove the above lines, but figured in case you're interested
-                df["yield"] = df['weight'] * smp.scale
+                            for tree,scale in zip(trees,scales):
+                                for idx,event in enumerate(tree):
+                                    tree.GetEntry(idx)
+                                    for brName,brArr,brObj in zip(branchNames,branchArrs,branchObj):
+                                        value = getattr(tree,brName)
+                                        if brName == "weight": 
+                                            brArr[0] = value * scale 
+                                        else:
+                                            brArr[0] = value
+                                    outTree.Fill()
 
-                # Save it #
-                # -> You could make a different output directory for the skims if you like
-                # Eg : 
-                # skimOutputDir = os.path.join(workdir,'mySkims')
-                # if not os.path.exists(skimOutputDir):
-                #     os.makedirs(skimOutputDir)
-                # pqoutname = os.path.join(skimOutputDir, f"{skim.name}.parquet"
-                pqoutname = os.path.join(resultsdir, f"{skim.name}.parquet")
-                df.to_parquet(pqoutname)
-                logger.info(f"Dataframe for skim {skim.name} saved to {pqoutname}")    
-        
+                            outTree.Write("",gbl.TObject.kOverwrite)
+                            print (f'TTree {skimName} for sample {sampleName} saved in {outFile.GetName()}')
+                    outFile.Close()
+
         #produce histograms "with datacard conventions"
         if self.args.datacards:
             datacardPlots = [ap for ap in self.plotList if ap.name == "Empty_histo" or ap.name =="Inv_mass_gg" or ap.name =="Inv_mass_bb" or ap.name =="Inv_mass_HH" or (self.args.mvaEval and ap.name =="dnn_score")]
@@ -516,7 +581,6 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
                 obj.Write(name)
             from functools import partial
             import plotit.systematics
-            from bamboo.root import gbl
             
             for era in (self.args.eras[1] or config["eras"].keys()):
                 f_dch = gbl.TFile.Open(os.path.join(dcdir, f"histo_for_combine_{era}.root"), "RECREATE")
