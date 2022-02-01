@@ -533,7 +533,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         from bamboo import treefunctions as op
         
         #count no of events here 
-        noSel = noSel.refine("withgenweight", weight=t.genweight)
+        noSel = noSel.refine("withgenweight",  weight=t.genweight, cut=[op.AND(op.abs(t.genweight)<300, t.genweight>0)])
         plots = []
         #yields
         yields = CutFlowReport("yields", recursive=True, printInLog=True)
@@ -592,7 +592,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
         mGG     = op.invariant_mass(idPhotons[0].p4, idPhotons[1].p4)
         mTauTau = op.invariant_mass(isolatedTaus[0].p4, isolatedTaus[1].p4)
-        pTGG    = op.sum(idPhotons[0].pt, idPhotons[1].pt)
+        pTGG    = (op.sum(idPhotons[0].p4, idPhotons[1].p4)).pt()
         mJets   = op.invariant_mass(idJets[0].p4, idJets[1].p4)
         mJets_SL= op.invariant_mass(idJets[1].p4, idJets[2].p4)
        
@@ -673,18 +673,18 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             met[0].pt > 20   
             ))
 
-        yields.add(hasTwoL, title='hasTwoL')
+        #yields.add(hasTwoL, title='hasTwoL')
         
         #hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
         #yields.add(hasZeroL, title='hasZeroL')
 
         c3 = hasInvM.refine("hasOneTauNoLept", cut=op.AND( nTau == 1, op.rng_len(idElectrons) == 0, op.rng_len(isoMuons) == 0 ))
-        yields.add(c3, "One Tau No Lept")
+        #yields.add(c3, "One Tau No Lept")
 
         c4 = hasInvM.refine("hasTwoTaus", cut=op.AND(nTau >= 2, op.rng_len(idElectrons) == 0, op.rng_len(isoMuons) == 0 ))
         ########## Z veto ##########
         c4_Zveto = c4.refine( "hasTwoTaus_Zveto", cut=op.NOT(op.in_range(80, mTauTau, 100)))
-        yields.add(c4_Zveto, "Two Taus")
+        #yields.add(c4_Zveto, "Two Taus")
 
         ## End of Categories ##
         #plots       
@@ -823,9 +823,11 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "SLjet_Pt": op.switch(nJet < 2, op.c_float(0.), idJets[1].pt),
             "SLjet_Eta": op.switch(nJet < 2, op.c_float(0.), idJets[1].eta),
         }
+
         
         # save mvaVariables to be retrieved later in the postprocessor and save in a parquet file
-        if self.args.mvaSkim or self.args.mvaEval:
+        #if self.args.mvaSkim or self.args.mvaEval:
+        if self.args.mvaSkim:
             from bamboo.plots import Skim
             plots.append(Skim("Skim", mvaVariables,hasOneL))
             plots.append(Skim("c3", mvaVariables_c3, c3))
@@ -833,10 +835,10 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         # evaluate dnn model on data
         if self.args.mvaEval:
             #from IPython import embed
-            tt_DNNmodel_path_even  = "/home/ucl/cp3/sdonerta/DNN_Tautau/even_model.onnx" 
-            tt_DNNmodel_path_odd  = "/home/ucl/cp3/sdonerta/DNN_Tautau/odd_model.onnx"     
-            WW_DNNmodel_path_even  = "/home/ucl/cp3/sdonerta/DNN_new/even_model_tth.onnx" 
-            WW_DNNmodel_path_odd  = "/home/ucl/cp3/sdonerta/DNN_new/odd_model_tth.onnx" 
+            WW_DNNmodel_path_even = "/home/ucl/cp3/sjain/bamboodev/DNN/DNN_HHWWGG/even_model_test2.onnx"
+            WW_DNNmodel_path_odd  = "/home/ucl/cp3/sjain/bamboodev/DNN/DNN_HHWWGG/odd_model_test2.onnx"
+            tt_DNNmodel_path_even = "/home/ucl/cp3/sjain/bamboodev/DNN/DNN_HHWWGG/even_model_test2_tau.onnx"
+            tt_DNNmodel_path_odd  = "/home/ucl/cp3/sjain/bamboodev/DNN/DNN_HHWWGG/odd_model_test2_tau.onnx"
             mvaVariables.pop("weight", None)
             mvaVariables_c3.pop("weight", None)
             from bamboo.root import loadHeader
@@ -872,9 +874,9 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             
 
             hasDNNscore_tt = c3.refine("hasDNNscore_tt", cut=op.in_range(0.1, output_tt[0], 0.75))
-            yields.add(hasDNNscore_tt, title='hasDNNscore_tt')
+            yields.add(hasDNNscore_tt, title='hasDNNscore_{tt}')
             hasDNNscore2_tt = c3.refine("hasDNNscore2_tt", cut=output_tt[0] > 0.75)
-            yields.add(hasDNNscore2_tt, title='hasDNNscore2_tt')
+            yields.add(hasDNNscore2_tt, title='hasDNNscore2_{tt}')
 
             plots.append(Plot.make1D("dnn_score_ww", output_ww[0],hasOneL, EqB(50, 0, 1.)))
             plots.append(Plot.make1D("dnn_score_tt", output_tt[0],c3, EqB(50, 0, 1.)))
@@ -893,6 +895,25 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("mGG_c3_hasDNNscore_135", mGG, hasDNNscore_tt, EqB(20, 115., 135.), title="m_{\gamma\gamma}"))
             plots.append(Plot.make1D("mGG_c3_hasDNNscore2_135", mGG, hasDNNscore2_tt, EqB(20, 115., 135.), title="m_{\gamma\gamma}"))
 
+            final_variables = {
+                "weight": noSel.weight,
+                "CMS_hgg_mass": mGG,
+            }
+
+            from bamboo.plots import Skim
+            plots.append(Skim("oneL_C1", final_variables,hasDNNscore))   
+            plots.append(Skim("oneL_C2", final_variables,hasDNNscore2))   
+            plots.append(Skim("oneL_C3", final_variables,hasDNNscore3))   
+            plots.append(Skim("oneL_C4", final_variables,hasDNNscore4))   
+            plots.append(Skim("twoL", final_variables,hasTwoL))   
+            plots.append(Skim("oneT_C1", final_variables,hasDNNscore_tt))   
+            plots.append(Skim("oneT_C2", final_variables,hasDNNscore2_tt))   
+            plots.append(Skim("twoT", final_variables,c4_Zveto))   
+
+
+        yields.add(c3, "One Tau No Lept")
+        yields.add(hasTwoL, title='hasTwoL')
+        yields.add(c4_Zveto, "Two Taus")
         return plots
 
 
