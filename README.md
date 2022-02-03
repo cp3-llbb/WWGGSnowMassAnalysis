@@ -20,7 +20,7 @@ and after those get completed:
 
 ## Options 
 
-`--mvaSkim` to skim and make a TTree with skimmed variables
+`--mvaSkim` to skim and make a TTree with skimmed variables.
 `--mvaEval` to import a DNN model in bamboo and evaluate on samples.
 `--onlypost` if you already ran and have your outputs but willing to make changes to plots or YML details
 
