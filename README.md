@@ -18,7 +18,7 @@ and after those get completed:
 
 `bambooRun --distributed=finalize -m CleanMerged.py:SnowmassExample YML/tautauGG_for_latex_table.yml -o OUTPUT_NAME `
 
-# Options 
+## Options 
 
 `--mvaSkim` to skim and make a TTree with skimmed variables
 `--mvaEval` to import a DNN model in bamboo and evaluate on samples.
