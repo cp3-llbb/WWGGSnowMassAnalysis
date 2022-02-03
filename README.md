@@ -4,9 +4,9 @@ Repository for the HH->WWGG Snowmass analysis.
 
 `bambooRun -m CleanMerged.py:SnowmassExample YML/tautauGG_for_latex_table.yml -o OUTPUT_NAME` 
 
-To test; use --MaxFiles=1 to run with 1 root file.
+To test, one can use `--MaxFiles=1` to run with 1 root file.
 
-To submit to slurm, only add --distributed=driver
+To submit to slurm, only add `--distributed=driver`
 
 `bambooRun --distributed=driver -m CleanMerged.py:SnowmassExample YML/tautauGG_for_latex_table.yml -o OUTPUT_NAME` 
 
