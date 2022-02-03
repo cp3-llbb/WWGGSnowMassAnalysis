@@ -20,6 +20,14 @@ and after those get completed:
 
 `bambooRun --distributed=finalize -m CleanMerged.py:SnowmassExample YML/tautauGG_for_latex_table.yml -o OUTPUT_NAME `
 
+A tiny problem that we experienced is that when you want to read files from eos spaces or some other storage, there was a problem with the proxy transfer. To avoid the `Could not open file` error, do:
+
+``
+cp $X509_USER_PROXY ~/.x509_proxy
+export X509_USER_PROXY=~/.x509_proxy
+``
+So that the generated proxy can be transferred to the machines where your jobs are submitted to. 
+
 ## Options 
 
 `--mvaSkim` to skim and make a TTree with skimmed variables.
