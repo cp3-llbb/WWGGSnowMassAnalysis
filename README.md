@@ -2,6 +2,8 @@
 
 Repository for the HH->WWGG Snowmass analysis. 
 
+The analysis is being performed with [bamboo framework](https://bamboo-hep.readthedocs.io/en/latest/).
+
 `bambooRun -m CleanMerged.py:SnowmassExample YML/tautauGG_for_latex_table.yml -o OUTPUT_NAME` 
 
 To test, one can use `--MaxFiles=1` to run with 1 root file.
