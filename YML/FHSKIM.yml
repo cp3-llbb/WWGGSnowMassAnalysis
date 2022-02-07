@@ -35,7 +35,7 @@ samples:
     type: signal
     files: GluGluToHHTo2G4Q_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
     generated-events: sumgenweight
-    cross-section: 0.00001617507
+    cross-section: 0.00001617507 #3.132e-02 +- 7.471e-05 pb /afs/cern.ch/work/i/idonerta/CMSSW_11_0_2/src/output_WWGG_FH_conder.txt 5k events
     line-color: "#ff0000" 
     legend: 'HH \rightarrow \gamma\gamma 4Q'
     split: 40
