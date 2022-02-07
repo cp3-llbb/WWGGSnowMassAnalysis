@@ -33,6 +33,24 @@ samples:
     line-color: "#ff0000" 
     legend: 'HH \rightarrow \tau\tau\gamma\gamma'
     split: 40
+  GluGluToHHTo2G4Q_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
+    era: HL
+    type: signal
+    files: GluGluToHHTo2G4Q_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.00001368819
+    line-color: "#ff0000" 
+    legend: 'HH \rightarrow \gamma\gamma 4Q'
+    split: 40
+  GluGluToHHTo2B2G_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
+    era: HL
+    type: signal
+    files: GluGluToHHTo2B2G_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU.txt
+    generated-events: sumgenweight
+    cross-section: 0.00008175201
+    line-color: "#ff0000" 
+    legend: 'HH \rightarrow bb\gamma\gamma'
+    split: 40
   GluGluHToGG_M125_TuneCP5_14TeV-amcatnloFXFX-pythia8_200PU:
     ##group: SingleH
     era: HL
