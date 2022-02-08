@@ -863,15 +863,23 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             "weight": noSel.weight,
             "Eta_ph1": idPhotons[0].eta,
             "Phi_ph1": idPhotons[0].phi,
-            #"E_mGG_ph1": E_mGGL,
+            "E_mGG_ph1": E_mGGL,
             "pT_mGG_ph1": pT_mGGL,
             "Eta_ph2": idPhotons[1].eta,
             "Phi_ph2": idPhotons[1].phi,
-            #"E_mGG_ph2": E_mGGSL,
+            "E_mGG_ph2": E_mGGSL,
             "pT_mGG_ph2": pT_mGGSL,
             "deltaPhi_DiPh": op.deltaPhi(idPhotons[0].p4, idPhotons[1].p4),
             "deltaR_DiPh": op.deltaR(idPhotons[0].p4, idPhotons[1].p4),
             "nBJets": op.rng_len(bJets),
+            "bJet1_pt": op.switch(op.rng_len(bJets) == 0, op.c_float(0.), bJets[0].pt),
+            "bJet1_eta": op.switch(op.rng_len(bJets) == 0, op.c_float(0.), bJets[0].eta),
+            "bJet1_phi": op.switch(op.rng_len(bJets) == 0, op.c_float(0.), bJets[0].phi),
+            "bJet1_E": op.switch(op.rng_len(bJets) == 0, op.c_float(0.), bJets[0].p4.E()),
+            "bJet2_pt": op.switch(op.rng_len(bJets) < 2, op.c_float(0.), bJets[1].pt),
+            "bJet2_eta": op.switch(op.rng_len(bJets) < 2, op.c_float(0.), bJets[1].eta),
+            "bJet2_phi": op.switch(op.rng_len(bJets) < 2, op.c_float(0.), bJets[1].phi),
+            "bJet4_E": op.switch(op.rng_len(bJets) < 2, op.c_float(0.), bJets[1].p4.E()),
             "nJets": nJet,
             "E_jet1": idJets[0].p4.E(),   
             "pT_jet1": idJets[0].pt,
@@ -980,7 +988,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             hasDNNscore2_tt = c3.refine("hasDNNscore2_tt", cut = output_tt[0] > 0.65)
             yields.add(hasDNNscore2_tt, title='hasDNNscore2_tt') 
 
-            mybbggKiller = hasZeroL.refine("mybbggKiller", cut = output_bbGGKiller[0] < 0.6)
+            mybbggKiller = hasZeroL.refine("mybbggKiller", cut = output_bbGGKiller[0] < 0.8)
             yields.add(mybbggKiller, title='bbggKiller') 
             hasDNNscore_FH1 = mybbggKiller.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
             yields.add(hasDNNscore_FH1, title='hasDNNscore_FH1')
@@ -1037,13 +1045,13 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
                 plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             DNN_selections2 = {f'hasDNNscore_Cat2{i:.5f}_{j:.5f}'.replace('.','p'):hasOneL.refine(f'hasDNNscore_{i:.5f}_{j:.5f}',cut = op.in_range(i, output_ww[0],j)) 
-                     for j in np.linspace(0.6,0.7,20) for i in np.linspace(0.7,0.8,20)}
+                     for i in np.linspace(0.6,0.7,20) for j in np.linspace(0.7,0.8,20)}
 
             for name, selection in DNN_selections2.items():
                 plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             DNN_selections3 = {f'hasDNNscore_Cat3{i:.5f}_{j:.5f}'.replace('.','p'):hasOneL.refine(f'hasDNNscore_{i:.5f}_{j:.5f}',cut = op.in_range(i, output_ww[0],j)) 
-                     for j in np.linspace(0.85,0.92,20) for i in np.linspace(0.8,0.85,20)}
+                     for i in np.linspace(0.8,0.85,20) for j in np.linspace(0.85,0.92,20)}
 
             for name, selection in DNN_selections3.items():
                 plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))         
