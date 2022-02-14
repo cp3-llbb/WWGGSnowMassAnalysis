@@ -114,10 +114,9 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                         s_entries.append(eh)
             st_t = Stack(entries=s_entries)
             if s_entries:
-                uncert = " \pm {{:.{}f}}".format(precision).format(
-                    np.sqrt(st_t.sumw2+st_t.syst2)[1]) if showUncert else ""
-                colEntries.append("{{0}}".format(
-                    precision).format(st_t.contents[1]))
+                # uncert = " \pm {{:.{}f}}".format(precision).format(
+                #     np.sqrt(st_t.sumw2+st_t.syst2)[1]) if showUncert else ""
+                colEntries.append("{{0}}".format(precision).format(st_t.contents[1]))
                 stacks_t.append(st_t)
             else:
                 colEntries.append("---")
@@ -146,8 +145,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             colEntries_matrix = np.array(colEntries_forEff)
             sel_eff = np.array([100])
             for i in range(1, len(report.titles)):
-                sel_eff = np.append(sel_eff, [float(
-                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+                if float(colEntries_matrix[0]) == 0:
+                    sel_eff = np.append(sel_eff, [0]).tolist()
+                else:
+                    sel_eff = np.append(sel_eff, [float(
+                        colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
                 sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
@@ -165,8 +167,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             colEntries_matrix = np.array(colEntries_forEff)
             sel_eff = np.array([100])
             for i in range(1, len(report.titles)):
-                sel_eff = np.append(sel_eff, [float(
-                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+                if float(colEntries_matrix[0]) == 0:
+                    sel_eff = np.append(sel_eff, [0]).tolist()
+                else:
+                    sel_eff = np.append(sel_eff, [float(
+                        colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
                 sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
@@ -189,8 +194,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             colEntries_matrix = np.array(colEntries_forEff)
             sel_eff = np.array([100])
             for i in range(1, len(report.titles)):
-                sel_eff = np.append(sel_eff, [float(
-                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+                if float(colEntries_matrix[0]) == 0:
+                    sel_eff = np.append(sel_eff, [0]).tolist()
+                else:
+                    sel_eff = np.append(sel_eff, [float(
+                        colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
                 sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
@@ -208,8 +216,11 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             colEntries_matrix = np.array(colEntries_forEff)
             sel_eff = np.array([100])
             for i in range(1, len(report.titles)):
-                sel_eff = np.append(sel_eff, [float(
-                    colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
+                if float(colEntries_matrix[0]) == 0:
+                    sel_eff = np.append(sel_eff, [0]).tolist()
+                else:
+                    sel_eff = np.append(sel_eff, [float(
+                        colEntries_matrix[i]) / float(colEntries_matrix[0]) * 100]).tolist()
             for i in range(len(report.titles)):
                 sel_eff[i] = str(f"({sel_eff[i]:.3f}\%)")
             colEntries_withEff = []
@@ -452,9 +463,9 @@ class CMSPhase2SimRTBHistoModule(CMSPhase2SimRTBModule, HistogramsModule):
         eraMode, eras = self.args.eras
         if eras is None:
             eras = list(config["eras"].keys())
-        #if plotList_cutflowreport:
-         #   printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
-          #                      readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
+        if plotList_cutflowreport:
+           printCutFlowReports(config, plotList_cutflowreport, workdir=workdir, resultsdir=resultsdir,
+                               readCounters=self.readCounters, eras=(eraMode, eras), verbose=self.args.verbose)
         if plotList_plotIt:
             from bamboo.analysisutils import writePlotIt, runPlotIt
             import os.path
@@ -567,18 +578,18 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         yields_ZeroL = CutFlowReport("yields_ZeroL", recursive=True, printInLog=True)
         yields_OneTau = CutFlowReport("yields_OneTau", recursive=True, printInLog=True)
         yields_TwoTaus = CutFlowReport("yields_TwoTaus", recursive=True, printInLog=True)
-
-        plots.append(yields_OneL)
-        plots.append(yields_TwoL)
-        plots.append(yields_ZeroL)
-        plots.append(yields_OneTau)
-        plots.append(yields_TwoTaus)
         
         yields_OneL.add(noSel, title= 'noSel')
         yields_TwoL.add(noSel, title= 'noSel')
         yields_ZeroL.add(noSel, title= 'noSel')
         yields_OneTau.add(noSel, title= 'noSel')
         yields_TwoTaus.add(noSel, title= 'noSel')
+
+        plots.append(yields_OneL)
+        plots.append(yields_TwoL)
+        plots.append(yields_ZeroL)
+        plots.append(yields_OneTau)
+        plots.append(yields_TwoTaus)
 
         #selection of photons with eta in the detector acceptance
         photons = op.select(t.gamma, lambda ph : op.AND(op.abs(ph.eta)<2.5, ph.pt >25.)) 
