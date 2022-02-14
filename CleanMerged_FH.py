@@ -562,9 +562,23 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
 
         #yields
-        yields = CutFlowReport("yields", recursive=True, printInLog=True)
-        plots.append(yields)
-        yields.add(noSel, title= 'noSel')
+        yields_OneL = CutFlowReport("yields_OneL", recursive=True, printInLog=True)
+        yields_TwoL = CutFlowReport("yields_TwoL", recursive=True, printInLog=True)
+        yields_ZeroL = CutFlowReport("yields_ZeroL", recursive=True, printInLog=True)
+        yields_OneTau = CutFlowReport("yields_OneTau", recursive=True, printInLog=True)
+        yields_TwoTaus = CutFlowReport("yields_TwoTaus", recursive=True, printInLog=True)
+
+        plots.append(yields_OneL)
+        plots.append(yields_TwoL)
+        plots.append(yields_ZeroL)
+        plots.append(yields_OneTau)
+        plots.append(yields_TwoTaus)
+        
+        yields_OneL.add(noSel, title= 'noSel')
+        yields_TwoL.add(noSel, title= 'noSel')
+        yields_ZeroL.add(noSel, title= 'noSel')
+        yields_OneTau.add(noSel, title= 'noSel')
+        yields_TwoTaus.add(noSel, title= 'noSel')
 
         #selection of photons with eta in the detector acceptance
         photons = op.select(t.gamma, lambda ph : op.AND(op.abs(ph.eta)<2.5, ph.pt >25.)) 
@@ -593,7 +607,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         idMuons = op.select(sort_mu, lambda mu : mu.idpass & (1<<2)) #apply tight ID  
         isoMuons = op.select(idMuons, lambda mu : mu.isopass & (1<<2)) #apply tight isolation 
         
-        taus = op.sort(op.select(t.tau, lambda tau: op.AND(tau.pt > 20., op.abs(tau.eta) < 3)), lambda tau: -tau.pt)
+        taus = op.sort(op.select(t.tau, lambda tau: op.AND(tau.pt > 20., op.abs(tau.eta) < 2.5)), lambda tau: -tau.pt)
         cleanedTaus = op.select(taus, lambda tau: op.AND(op.NOT(op.rng_any(idPhotons, lambda ph: op.deltaR(tau.p4, ph.p4) < 0.2)),
                                                          op.NOT(op.rng_any(idElectrons, lambda el: op.deltaR(tau.p4, el.p4) < 0.2)),
                                                          op.NOT(op.rng_any(isoMuons,lambda mu: op.deltaR(tau.p4, mu.p4) < 0.2))
@@ -684,17 +698,19 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         ## Categories ##
         #selections for semileptonic final state
         hasOneL = hasInvM.refine("hasOneL", cut = op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)))
-        yields.add(hasOneL, title='hasOneL')
-        hasOneL80 = hasInvM80.refine("hasOneL80", cut = op.AND(op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)), met[0].pt > 80))
+        yields_OneL.add(hasOneL, title='hasOneL')
+       
+        #hasOneL80 = hasInvM80.refine("hasOneL80", cut = op.AND(op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)), met[0].pt > 80))
         #yields.add(hasOneL80, title='hasOneL80')
-        hasOneL100 = hasInvM100.refine("hasOneL100", cut = op.AND(op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)), met[0].pt > 100))
+        #hasOneL100 = hasInvM100.refine("hasOneL100", cut = op.AND(op.OR(op.AND(nElec == 1, nMuon == 0), op.AND(nElec == 0, nMuon == 1)), met[0].pt > 100))
         #yields.add(hasOneL100, title='hasOneL100')
+       
         hasOneEl = hasInvM.refine("hasOneEl", cut = op.AND(nElec == 1, nMuon == 0))
         hasOneMu = hasInvM.refine("hasOneMu", cut = op.AND(nElec == 0, nMuon == 1))
         #adding jets on the semileptonic final state
-        hasOneJ = hasOneL.refine("hasOneJ", cut = nJet >= 1)
-        hasTwoJ = hasOneJ.refine("hasTwoJ", cut = nJet >= 2)
-        hasThreeJ = hasTwoJ.refine("hasThreeJ", cut = nJet >= 3)
+        #hasOneJ = hasOneL.refine("hasOneJ", cut = nJet >= 1)
+        #hasTwoJ = hasOneJ.refine("hasTwoJ", cut = nJet >= 2)
+        #hasThreeJ = hasTwoJ.refine("hasThreeJ", cut = nJet >= 3)
         
         hasTwoL = hasInvM.refine('hasTwoL', cut = op.AND(
             op.OR(
@@ -708,18 +724,19 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             met[0].pt > 20   
             ))
 
-        #yields.add(hasTwoL, title='hasTwoL')
+        yields_TwoL.add(hasTwoL, title='hasTwoL')
         
         hasZeroL = hasInvM.refine('hasZeroL', cut = op.AND(nJet >= 4, nElec == 0, nMuon == 0, nTau == 0))
-        #yields.add(hasZeroL, title='hasZeroL')
+        yields_ZeroL.add(hasZeroL, title='hasZeroL')
 
         c3 = hasInvM.refine("hasOneTauNoLept", cut=op.AND( nTau == 1, op.rng_len(idElectrons) == 0, op.rng_len(isoMuons) == 0 ))
-        #yields.add(c3, "One Tau No Lept")
+        yields_OneTau.add(c3, "One Tau No Lept")
 
         c4 = hasInvM.refine("hasTwoTaus", cut=op.AND(nTau >= 2, op.rng_len(idElectrons) == 0, op.rng_len(isoMuons) == 0 ))
+        yields_TwoTaus.add(c4, "Two Taus")
         ########## Z veto ##########
-        c4_Zveto = c4.refine( "hasTwoTaus_Zveto", cut=op.NOT(op.in_range(80, mTauTau, 100)))
-        #yields.add(c4_Zveto, "Two Taus")
+        #c4_Zveto = c4.refine( "hasTwoTaus_Zveto", cut=op.NOT(op.in_range(80, mTauTau, 100)))
+        
 
         ## End of Categories ##
         #plots       
@@ -740,8 +757,8 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         plots.append(Plot.make1D("MET", metPt, hasOneL,EqB(80, 0., 800.) ,title="MET"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL",mGG , hasOneL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
         plots.append(Plot.make1D("Inv_mass_gghasOneL_135",mGG , hasOneL, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasOneL80",mGG , hasOneL80, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
-        plots.append(Plot.make1D("Inv_mass_gghasOneL100",mGG , hasOneL100, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+        #plots.append(Plot.make1D("Inv_mass_gghasOneL80",mGG , hasOneL80, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
+        #plots.append(Plot.make1D("Inv_mass_gghasOneL100",mGG , hasOneL100, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
  
         #Leading electron Plots
         ElectronpT = Plot.make1D("ElectronpT", idElectrons[0].pt, hasOneEl, EqB(30, 0., 300.), title = 'Leading Electron pT')
@@ -783,24 +800,24 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         # tau category plots
         plots.append(Plot.make1D("mGG_c3", mGG, c3, EqB(80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         plots.append(Plot.make1D("mGG_c3_135", mGG, c3, EqB(20, 115, 135), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("mGG_c4_Zveto", mGG, c4_Zveto, EqB(80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
-        plots.append(Plot.make1D("mGG_c4_Zveto_135", mGG, c4_Zveto, EqB(20, 115, 135), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("mGG_c4", mGG, c4, EqB(80, 100, 180), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
+        plots.append(Plot.make1D("mGG_c4_135", mGG, c4, EqB(20, 115, 135), title="M_{\gamma\gamma}", plotopts={"log-y": True}))
         
-        #hasOneJ
-        plots.append(Plot.make1D("LeadingJetPtOneJ", idJets[0].pt, hasOneJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
-        plots.append(Plot.make1D("LeadingJetEtaOneJ", idJets[0].eta, hasOneJ, EqB(80, -4., 4.), title="Leading Jet eta"))
-        plots.append(Plot.make1D("LeadingJetPhiOneJ", idJets[0].phi, hasOneJ, EqB(100, -3.5, 3.5), title="Leading Jet phi"))
-        plots.append(Plot.make1D("LeadingJetEOnej", idJets[0].p4.energy(), hasOneJ, EqB(50, 0.,500.), title = 'Leading Jet E'))
+        # #hasOneJ
+        # plots.append(Plot.make1D("LeadingJetPtOneJ", idJets[0].pt, hasOneJ, EqB(30, 0., 300.), title = 'Leading Jet pT'))
+        # plots.append(Plot.make1D("LeadingJetEtaOneJ", idJets[0].eta, hasOneJ, EqB(80, -4., 4.), title="Leading Jet eta"))
+        # plots.append(Plot.make1D("LeadingJetPhiOneJ", idJets[0].phi, hasOneJ, EqB(100, -3.5, 3.5), title="Leading Jet phi"))
+        # plots.append(Plot.make1D("LeadingJetEOnej", idJets[0].p4.energy(), hasOneJ, EqB(50, 0.,500.), title = 'Leading Jet E'))
         
-        #hasTwoJ
-        plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
-        plots.append(Plot.make1D("SubLeadingJetEtaTwoJ", idJets[1].eta, hasTwoJ, EqB(80, -4., 4.), title="SubLeading Jet eta"))
-        plots.append(Plot.make1D("SubLeadingJetPhiTwoJ", idJets[1].phi, hasTwoJ, EqB(100, -3.5, 3.5), title="SubLeading Jet phi"))
-        plots.append(Plot.make1D("SubLeadingJetETwoJ", idJets[1].p4.energy(), hasTwoJ, EqB(50, 0.,500.), title = 'SubLeading Jet E'))
-        plots.append(Plot.make1D("Inv_mass_jjTwoJ", mJets, hasTwoJ, EqB(80, 20.,220.), title = "m_{jets}"))
+        # #hasTwoJ
+        # plots.append(Plot.make1D("SubLeadingJetPtTwoJ", idJets[1].pt, hasTwoJ, EqB(30, 0., 300.), title = 'SubLeading Jet pT'))
+        # plots.append(Plot.make1D("SubLeadingJetEtaTwoJ", idJets[1].eta, hasTwoJ, EqB(80, -4., 4.), title="SubLeading Jet eta"))
+        # plots.append(Plot.make1D("SubLeadingJetPhiTwoJ", idJets[1].phi, hasTwoJ, EqB(100, -3.5, 3.5), title="SubLeading Jet phi"))
+        # plots.append(Plot.make1D("SubLeadingJetETwoJ", idJets[1].p4.energy(), hasTwoJ, EqB(50, 0.,500.), title = 'SubLeading Jet E'))
+        # plots.append(Plot.make1D("Inv_mass_jjTwoJ", mJets, hasTwoJ, EqB(80, 20.,220.), title = "m_{jets}"))
 
-        #hasThreeJ
-        plots.append(Plot.make1D("Inv_mass_jjThreeJ", mJets_SL, hasThreeJ, EqB(80, 100.,180.), title = "m_{jets}"))
+        # #hasThreeJ
+        # plots.append(Plot.make1D("Inv_mass_jjThreeJ", mJets_SL, hasThreeJ, EqB(80, 100.,180.), title = "m_{jets}"))
 
         mvaVariables = {
             "weight": noSel.weight,
@@ -972,43 +989,90 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             inputs_bbGGKiller = op.array('float',*[op.static_cast('float',val) for val in mvaVariables_FH.values()])
             output_bbGGKiller = dnn_bbGGKiller(inputs_bbGGKiller)
 
-            #hasDNNscore = hasOneL.refine("hasDNNscore", cut = output[0] < 0.6)
+            #================================= hasOneL_DNN =============================================
+
+            # bbGGKiller_OneL = hasOneL.refine("bbGGKiller_OneL", cut = output_bbGGKiller[0] < 0.8)
+            # yields_OneL.add(bbGGKiller_OneL, title='bbGGKiller')
+
+            # hasDNNscore = bbGGKiller_OneL.refine("hasDNNscore", cut = op.in_range(0.1, output_ww[0], 0.6))
+            # yields_OneL.add(hasDNNscore, title='hasDNNscore')
+
+            # hasDNNscore2 = bbGGKiller_OneL.refine("hasDNNscore2", cut = op.in_range(0.6 ,output_ww[0], 0.8))
+            # yields_OneL.add(hasDNNscore2, title='hasDNNscore2')
+
+            # hasDNNscore3 = bbGGKiller_OneL.refine("hasDNNscore3", cut = op.in_range(0.8 ,output_ww[0], 0.92))
+            # yields_OneL.add(hasDNNscore3, title='hasDNNscore3')
+
+            # hasDNNscore4 = bbGGKiller_OneL.refine("hasDNNscore4", cut = output_ww[0] > 0.92)
+            # yields_OneL.add(hasDNNscore4, title='hasDNNscore4')
+
             hasDNNscore = hasOneL.refine("hasDNNscore", cut = op.in_range(0.1, output_ww[0], 0.6))
-            yields.add(hasDNNscore, title='hasDNNscore')
+            yields_OneL.add(hasDNNscore, title='hasDNNscore')
+
             hasDNNscore2 = hasOneL.refine("hasDNNscore2", cut = op.in_range(0.6 ,output_ww[0], 0.8))
-            yields.add(hasDNNscore2, title='hasDNNscore2')
+            yields_OneL.add(hasDNNscore2, title='hasDNNscore2')
+
             hasDNNscore3 = hasOneL.refine("hasDNNscore3", cut = op.in_range(0.8 ,output_ww[0], 0.92))
-            yields.add(hasDNNscore3, title='hasDNNscore3')
+            yields_OneL.add(hasDNNscore3, title='hasDNNscore3')
+
             hasDNNscore4 = hasOneL.refine("hasDNNscore4", cut = output_ww[0] > 0.92)
-            yields.add(hasDNNscore4, title='hasDNNscore4')
+            yields_OneL.add(hasDNNscore4, title='hasDNNscore4')
+            
+            #================================== OneTau_DNN =============================================
+
+            # bbGGKiller_c3 = c3.refine("bbGGKiller_c3", cut = output_bbGGKiller[0] < 0.8)
+            # yields_OneTau.add(bbGGKiller_c3, title='bbGGKiller')
+
+            # hasDNNscore_tt = bbGGKiller_c3.refine("hasDNNscore_tt", cut = op.in_range(0.1, output_tt[0], 0.65))
+            # yields_OneTau.add(hasDNNscore_tt, title='hasDNNscore_tt')
+
+            # hasDNNscore2_tt = bbGGKiller_c3.refine("hasDNNscore2_tt", cut = output_tt[0] > 0.65)
+            # yields_OneTau.add(hasDNNscore2_tt, title='hasDNNscore2_tt') 
             
 
             hasDNNscore_tt = c3.refine("hasDNNscore_tt", cut = op.in_range(0.1, output_tt[0], 0.65))
-            yields.add(hasDNNscore_tt, title='hasDNNscore_tt')
+            yields_OneTau.add(hasDNNscore_tt, title='hasDNNscore_tt')
+
             hasDNNscore2_tt = c3.refine("hasDNNscore2_tt", cut = output_tt[0] > 0.65)
-            yields.add(hasDNNscore2_tt, title='hasDNNscore2_tt') 
+            yields_OneTau.add(hasDNNscore2_tt, title='hasDNNscore2_tt')
+            
 
-            mybbggKiller = hasZeroL.refine("mybbggKiller", cut = output_bbGGKiller[0] < 0.8)
-            yields.add(mybbggKiller, title='bbggKiller') 
-            hasDNNscore_FH1 = mybbggKiller.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
-            yields.add(hasDNNscore_FH1, title='hasDNNscore_FH1')
+            #================================== hasZeroL_DNN ===========================================
 
-            hasDNNscore_FH2 = mybbggKiller.refine("hasDNNscore_FH2", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.8))
-            yields.add(hasDNNscore_FH2, title='hasDNNscore_FH2')
+            bbGGKiller_ZeroL = hasZeroL.refine("bbGGKiller_ZeroL", cut = output_bbGGKiller[0] < 0.8)
+            yields_ZeroL.add(bbGGKiller_ZeroL, title='bbGGKiller') 
 
-            hasDNNscore_FH3 = mybbggKiller.refine("hasDNNscore_FH3", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.92))
-            yields.add(hasDNNscore_FH3, title='hasDNNscore_FH3')
+            hasDNNscore_FH1 = bbGGKiller_ZeroL.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
+            yields_ZeroL.add(hasDNNscore_FH1, title='hasDNNscore_FH1')
 
-            hasDNNscore_FH4 = mybbggKiller.refine("hasDNNscore_FH4", cut = op.in_range(0.92, output_WWGGIdentifier[0], 1.0 ))
-            #hasDNNscore_FH_l = hasZeroL.refine("hasDNNscore_FH_l", cut = op.in_range(0.983, output_WWGGIdentifier[0], 1.0 ))
-            #hasDNNscore_FH4 = hasDNNscore_FH_l.refine("hasDNNscore_FH4", cut = output_bbGGKiller[0] < 0.6)
-            yields.add(hasDNNscore_FH4, title='hasDNNscore_FH4')
+            hasDNNscore_FH2 = bbGGKiller_ZeroL.refine("hasDNNscore_FH2", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.8))
+            yields_ZeroL.add(hasDNNscore_FH2, title='hasDNNscore_FH2')
+
+            hasDNNscore_FH3 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.92))
+            yields_ZeroL.add(hasDNNscore_FH3, title='hasDNNscore_FH3')
+
+            hasDNNscore_FH4 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4", cut = op.in_range(0.92, output_WWGGIdentifier[0], 1.0 ))
+            yields_ZeroL.add(hasDNNscore_FH4, title='hasDNNscore_FH4')
+            
+            #=================================== hasTwoL & Two Taus =====================================
+
+            # bbGGKiller_TwoL = hasTwoL.refine("bbGGKiller_TwoL", cut = output_bbGGKiller[0] < 0.8)
+            # yields_TwoL.add(bbGGKiller_TwoL, title= 'bbGGKiller')
+
+            # bbGGKiller_c4 = c4.refine("bbggKiller_c4", cut = output_bbGGKiller[0] < 0.8)
+            # yields_TwoTaus.add(bbGGKiller_c4, title="bbGGKiller")
+            #============================================================================================
 
             plots.append(Plot.make1D("dnn_score_ww", output_ww[0],hasOneL, EqB(50, 0, 1.)))
             plots.append(Plot.make1D("dnn_score_tt", output_tt[0],c3, EqB(50, 0, 1.)))
             plots.append(Plot.make1D("dnn_score_bbGGKiller", output_bbGGKiller[0],hasZeroL, EqB(50, 0, 1.)))
             plots.append(Plot.make1D("dnn_score_WWGGIdentifier", output_WWGGIdentifier[0],hasZeroL, EqB(50, 0, 1.)))
 
+            # plots.append(Plot.make1D("InvMassgg_oneL_afterBBGGKiller", mGG, bbGGKiller_OneL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("InvMassgg_TwoL_afterBBGGKiller", mGG, bbGGKiller_TwoL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("InvMassgg_c3_afterBBGGKiller", mGG, bbGGKiller_c3, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("InvMassgg_c4_afterBBGGKiller", mGG, bbGGKiller_c4, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("InvMassgg_ZeroL_afterBBGGKiller", mGG, bbGGKiller_ZeroL, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN"  ,mGG, hasDNNscore, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasOneL_DNN_2",mGG, hasDNNscore2, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
@@ -1034,33 +1098,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_135",mGG , hasDNNscore_FH3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_135",mGG , hasDNNscore_FH4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
-            #-------------DNN Boundary Optimization--------------------------
-            import numpy as np
-            
-            
-            DNN_selections = {f'hasDNNscore_Cat1{i:.5f}'.replace('.','p'):hasOneL.refine(f'hasDNNscore_{i:.5f}',cut = op.in_range(0.1, output_ww[0],i)) 
-                     for i in np.linspace(0.5,0.6,20)}
-
-            for name, selection in DNN_selections.items():
-                plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-
-            DNN_selections2 = {f'hasDNNscore_Cat2{i:.5f}_{j:.5f}'.replace('.','p'):hasOneL.refine(f'hasDNNscore_{i:.5f}_{j:.5f}',cut = op.in_range(i, output_ww[0],j)) 
-                     for i in np.linspace(0.6,0.7,20) for j in np.linspace(0.7,0.8,20)}
-
-            for name, selection in DNN_selections2.items():
-                plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-
-            DNN_selections3 = {f'hasDNNscore_Cat3{i:.5f}_{j:.5f}'.replace('.','p'):hasOneL.refine(f'hasDNNscore_{i:.5f}_{j:.5f}',cut = op.in_range(i, output_ww[0],j)) 
-                     for i in np.linspace(0.8,0.85,20) for j in np.linspace(0.85,0.92,20)}
-
-            for name, selection in DNN_selections3.items():
-                plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))         
-   
-            DNN_selections4 = {f'hasDNNscore2_Cat4{i:.5f}'.replace('.','p'):hasOneL.refine(f'hasDNNscore_{i:.5f}',cut = output_ww[0] > i) 
-                     for i in np.linspace(0.92,1.0,20)}
-
-            for name, selection in DNN_selections4.items():
-                plots.append(Plot.make1D(name, mGG, selection, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             # final_variables = {
             #     "weight": noSel.weight,
@@ -1077,11 +1114,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             # plots.append(Skim("oneT_C2", final_variables,hasDNNscore2_tt))   
             # plots.append(Skim("twoT", final_variables,c4_Zveto))   
 
-
-        yields.add(hasZeroL, title='hasZeroL')
-        yields.add(hasTwoL, title='hasTwoL')
-        yields.add(c3, "One Tau No Lept")
-        yields.add(c4_Zveto, "Two Taus")
         return plots
 
 
