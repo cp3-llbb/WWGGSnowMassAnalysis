@@ -159,7 +159,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             entries_smp.append(colEntries_withEff)
         if len(smp_signal) > 1:
             sepStr += f"|{align}|"
-            smpHdrs.append("\\textbf{Signal}")
+            #smpHdrs.append("\\textbf{Signal}")
             stTotSig, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
                 smp, p) for smp in smp_signal) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             stTotSig, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: Stack(entries=[h for h in (getHist(
@@ -208,7 +208,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             entries_smp.append(colEntries_withEff)
         if len(smp_mc) > 1:
             sepStr += f"|{align}|"
-            smpHdrs.append("\\textbf{Background}")
+            #smpHdrs.append("\\textbf{Background}")
             stTotMC, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
                 smp, p) for smp in smp_mc) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             stTotMC, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: Stack(entries=[h for h in (getHist(
@@ -249,25 +249,6 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
                 if mcCont[1] != 0.:
                     colEntries.append("${{0:.{0}f}}$".format(
                         ratioPrecision).format(ratio[1]))
-                else:
-                    colEntries.append("---")
-            else:
-                colEntries.append("---")
-        entries_smp.append(colEntries)
-    if smp_signal and smp_mc:
-        sepStr += f"|{align}|"
-        smpHdrs.append("$S/\sqrt{B}$")
-        colEntries = []
-        import numpy.ma as ma
-        for stSig, stMC in zip(stTotSig, stTotMC):
-            if stSig is not None and stMC is not None:
-                dtCont = stSig.contents
-                mcCont = ma.array(stMC.contents)
-                ratio = dtCont/np.sqrt(mcCont)
-                ratioErr = np.sqrt(mcCont**2*stSig.sumw2 +
-                                   dtCont**2*(stMC.sumw2+stMC.syst2))/mcCont**2
-                if mcCont[1] != 0.:
-                    colEntries.append("${0:.5f}$".format(ratio[1]))
                 else:
                     colEntries.append("---")
             else:
@@ -1053,18 +1034,63 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             bbGGKiller_ZeroL = hasZeroL.refine("bbGGKiller_ZeroL", cut = output_bbGGKiller[0] < 0.8)
             yields_ZeroL.add(bbGGKiller_ZeroL, title='bbGGKiller') 
 
-            hasDNNscore_FH1 = bbGGKiller_ZeroL.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
+            hasDNNscore_FH1 = bbGGKiller_ZeroL.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.4))
             yields_ZeroL.add(hasDNNscore_FH1, title='hasDNNscore_FH1')
 
-            hasDNNscore_FH2 = bbGGKiller_ZeroL.refine("hasDNNscore_FH2", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.8))
+            hasDNNscore_FH2 = bbGGKiller_ZeroL.refine("hasDNNscore_FH2", cut = op.in_range(0.4, output_WWGGIdentifier[0], 0.6))
             yields_ZeroL.add(hasDNNscore_FH2, title='hasDNNscore_FH2')
 
-            hasDNNscore_FH3 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.92))
+            hasDNNscore_FH3 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.8))
             yields_ZeroL.add(hasDNNscore_FH3, title='hasDNNscore_FH3')
 
-            hasDNNscore_FH4 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4", cut = op.in_range(0.92, output_WWGGIdentifier[0], 1.0 ))
+            hasDNNscore_FH4 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4", cut = output_WWGGIdentifier[0] > 0.8)
             yields_ZeroL.add(hasDNNscore_FH4, title='hasDNNscore_FH4')
-            
+            #=============================================================================================================
+
+            hasDNNscore_FH1_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH1_x", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.3))
+            yields_ZeroL.add(hasDNNscore_FH1_x, title='hasDNNscore_FH1_x')
+
+            hasDNNscore_FH2_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH2_x", cut = op.in_range(0.3, output_WWGGIdentifier[0], 0.6))
+            yields_ZeroL.add(hasDNNscore_FH2_x, title='hasDNNscore_FH2_x')
+
+            #==================================================================================================================
+
+            hasDNNscore_FH1_y = bbGGKiller_ZeroL.refine("hasDNNscore_FH1_y", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.25))
+            yields_ZeroL.add(hasDNNscore_FH1_y, title='hasDNNscore_FH1_y')
+
+            hasDNNscore_FH2_y = bbGGKiller_ZeroL.refine("hasDNNscore_FH2_y", cut = op.in_range(0.25, output_WWGGIdentifier[0], 0.6))
+            yields_ZeroL.add(hasDNNscore_FH2_y, title='hasDNNscore_FH2_y')  
+
+            hasDNNscore_FH3_94 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_94", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.94))
+            yields_ZeroL.add(hasDNNscore_FH3_94, title='hasDNNscore_FH3_94')
+
+            hasDNNscore_FH4_94 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_94", cut =  output_WWGGIdentifier[0] > 0.94 )
+            yields_ZeroL.add(hasDNNscore_FH4_94, title='hasDNNscore_FH4_94')
+
+            hasDNNscore_FH3_95 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_95", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.95))
+            yields_ZeroL.add(hasDNNscore_FH3_95, title='hasDNNscore_FH3_95')
+
+            hasDNNscore_FH4_95 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_95", cut =  output_WWGGIdentifier[0] > 0.95 )
+            yields_ZeroL.add(hasDNNscore_FH4_95, title='hasDNNscore_FH4_95')         
+
+            hasDNNscore_FH3_96 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_96", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.96))
+            yields_ZeroL.add(hasDNNscore_FH3_96, title='hasDNNscore_FH3_96')
+
+            hasDNNscore_FH4_96 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_96", cut =  output_WWGGIdentifier[0] > 0.96 )
+            yields_ZeroL.add(hasDNNscore_FH4_96, title='hasDNNscore_FH4_96')            
+   
+            hasDNNscore_FH3_97 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_97", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.97))
+            yields_ZeroL.add(hasDNNscore_FH3_97, title='hasDNNscore_FH3_97')
+
+            hasDNNscore_FH4_97 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_97", cut =  output_WWGGIdentifier[0] > 0.97 )
+            yields_ZeroL.add(hasDNNscore_FH4_97, title='hasDNNscore_FH4_97')   
+
+            hasDNNscore_FH3_98 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_98", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.98))
+            yields_ZeroL.add(hasDNNscore_FH3_98, title='hasDNNscore_FH3_98')
+
+            hasDNNscore_FH4_98 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_98", cut =  output_WWGGIdentifier[0] > 0.98 )
+            yields_ZeroL.add(hasDNNscore_FH4_98, title='hasDNNscore_FH4_98')   
+
             #=================================== hasTwoL & Two Taus =====================================
 
             # bbGGKiller_TwoL = hasTwoL.refine("bbGGKiller_TwoL", cut = output_bbGGKiller[0] < 0.8)
@@ -1109,6 +1135,10 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_135",mGG , hasDNNscore_FH3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_135",mGG , hasDNNscore_FH4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_x",mGG , hasDNNscore_FH1_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_y",mGG , hasDNNscore_FH1_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_x",mGG , hasDNNscore_FH2_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_y",mGG , hasDNNscore_FH2_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             # final_variables = {
             #     "weight": noSel.weight,
