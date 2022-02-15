@@ -37,7 +37,7 @@ samples:
     generated-events: sumgenweight
     cross-section: 0.00001617507
     line-color: "#ff0000" 
-    legend: 'HH \rightarrow \gamma\gamma 4Q'
+    legend: 'HH \rightarrow WW \gamma\gamma (FH)'
     split: 40
   GluGluToHHTo2B2G_node_cHHH1_TuneCP5_14TeV-powheg-pythia8_200PU:
     era: HL
@@ -137,30 +137,30 @@ samples:
     cross-section: 3901 #McM #sheet =3901*0.02146 = 83.71546 ??  
     legend: 'G+jets 20-Inf'
     split: 40
-  QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    era: HL
-    type: mc
-    files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 141200 #McM 141200 #sheet 0.001977 #filtereff / 1.412e+08 fb (soumya)
-    legend: 'QCD 40-Inf MGG 80-Inf'
-    split: 40
-  QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    era: HL
-    type: mc
-    files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 295700 #McM / #sheeet 295700*0.001541 = 455.6737   #filtereff=0.001541 it should be 295700
-    legend: 'QCD 30-Inf MGG 40-80'
-    split: 40
-  QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
-    era: HL
-    type: mc
-    files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
-    generated-events: sumgenweight
-    cross-section: 16510 #McM /
-    legend: 'QCD 30-40 MGG 80-Inf'
-    split: 40  
+  # QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #   era: HL
+  #   type: mc
+  #   files: QCD_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 141200 #McM 141200 #sheet 0.001977 #filtereff / 1.412e+08 fb (soumya)
+  #   legend: 'QCD 40-Inf MGG 80-Inf'
+  #   split: 40
+  # QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #   era: HL
+  #   type: mc
+  #   files: QCD_Pt-30toInf_DoubleEMEnriched_MGG-40to80_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 295700 #McM / #sheeet 295700*0.001541 = 455.6737   #filtereff=0.001541 it should be 295700
+  #   legend: 'QCD 30-Inf MGG 40-80'
+  #   split: 40
+  # QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU:
+  #   era: HL
+  #   type: mc
+  #   files: QCD_Pt-30to40_DoubleEMEnriched_MGG-80toInf_TuneCUEP8M2T4_14TeV_Pythia8_200PU.txt
+  #   generated-events: sumgenweight
+  #   cross-section: 16510 #McM /
+  #   legend: 'QCD 30-40 MGG 80-Inf'
+  #   split: 40  
   W1JetsToLNu_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU:
     era: HL
     type: mc
