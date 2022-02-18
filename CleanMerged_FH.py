@@ -159,7 +159,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             entries_smp.append(colEntries_withEff)
         if len(smp_signal) > 1:
             sepStr += f"|{align}|"
-            #smpHdrs.append("\\textbf{Signal}")
+            smpHdrs.append("\\textbf{Signal}")
             stTotSig, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
                 smp, p) for smp in smp_signal) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             stTotSig, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: Stack(entries=[h for h in (getHist(
@@ -208,7 +208,7 @@ def _makeYieldsTexTable(MCevents, report, samples, entryPlots, stretch=1.5, orie
             entries_smp.append(colEntries_withEff)
         if len(smp_mc) > 1:
             sepStr += f"|{align}|"
-            #smpHdrs.append("\\textbf{Background}")
+            smpHdrs.append("\\textbf{Background}")
             stTotMC, colEntries = colEntriesFromCFREntryHists(report, {eName: Stack(entries=[h for h in (getHist(
                 smp, p) for smp in smp_mc) if h]) for eName, p in entryPlots.items()}, precision=yieldPrecision)
             stTotMC, colEntries_forEff = colEntriesFromCFREntryHists_forEff(report, {eName: Stack(entries=[h for h in (getHist(
@@ -709,8 +709,6 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
         m_eg = op.invariant_mass(idElectrons[0].p4, idPhotons[0].p4)
         m_Z = 91.18
 
-        bJet_pt = op.switch(op.rng_len(bJets)==0,op.c_float(0.),bJets[0].pt) 
-
         thirdEl = op.switch(op.rng_len(idElectrons) < 3, op.c_float(0.), idElectrons[2].pt)     
         thirdMu = op.switch(op.rng_len(isoMuons) < 3, op.c_float(0.), isoMuons[2].pt) 
         #############################################
@@ -722,7 +720,7 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             op.AND(op.AND(nMuon >= 2, nElec == 0), isoMuons[0].charge != isoMuons[1].charge, op.NOT(op.deltaR(isoMuons[0].p4, isoMuons[1].p4) < 0.4), op.OR(mMu < 80, mMu >100))),
             pTGG > 91, 
             op.AND(thirdEl < 10, thirdMu < 10),
-            bJet_pt < 20 ,
+            op.rng_len(bJets) < 1 ,
             met[0].pt > 20   
             ))
 
@@ -950,10 +948,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             tt_DNNmodel_path_even = "/home/ucl/cp3/sdonerta/DNN_HHWWGG/DNN_Tau/even_model_test3.onnx"
             tt_DNNmodel_path_odd  = "/home/ucl/cp3/sdonerta/DNN_HHWWGG/DNN_Tau/odd_model_test3.onnx"
 
+            # WWGGIdentifier_DNNmodel_path_even = "/home/ucl/cp3/sdonerta/DNN_FH/even_model_WWGGIdentifier.onnx"
+            # WWGGIdentifier_DNNmodel_path_odd  = "/home/ucl/cp3/sdonerta/DNN_FH/odd_model_WWGGIdentifier.onnx"
             WWGGIdentifier_DNNmodel_path_even = "/home/ucl/cp3/sjain/bamboodev/DNN_new/DNN_HHWWGG/DNN_FH/even_model_WWGGIdentifier.onnx"
-            WWGGIdentifier_DNNmodel_path_odd  = "/home/ucl/cp3/sjain/bamboodev/DNN_new/DNN_HHWWGG/DNN_FH/odd_model_WWGGIdentifier.onnx"
-            bbGGKiller_DNNmodel_path_even = "/home/ucl/cp3/sjain/bamboodev/DNN_new/DNN_HHWWGG/DNN_FH/even_model_bbGGKiller.onnx"
-            bbGGKiller_DNNmodel_path_odd  = "/home/ucl/cp3/sjain/bamboodev/DNN_new/DNN_HHWWGG/DNN_FH/odd_model_bbGGKiller.onnx"
+            WWGGIdentifier_DNNmodel_path_odd  = "/home/ucl/cp3/sjain/bamboodev/DNN_new/DNN_HHWWGG/DNN_FH/odd_model_WWGGIdentifier.onnx" 
+            bbGGKiller_DNNmodel_path_even = "/home/ucl/cp3/sdonerta/DNN_FH/even_model_bbGGKiller.onnx"
+            bbGGKiller_DNNmodel_path_odd  = "/home/ucl/cp3/sdonerta/DNN_FH/odd_model_bbGGKiller.onnx"
 
             mvaVariables.pop("weight", None)
             mvaVariables_c3.pop("weight", None)
@@ -1044,16 +1044,16 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             bbGGKiller_ZeroL = hasZeroL.refine("bbGGKiller_ZeroL", cut = output_bbGGKiller[0] < 0.8)
             yields_ZeroL.add(bbGGKiller_ZeroL, title='bbGGKiller') 
 
-            hasDNNscore_FH1 = bbGGKiller_ZeroL.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.25))
+            hasDNNscore_FH1 = bbGGKiller_ZeroL.refine("hasDNNscore_FH1", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
             yields_ZeroL.add(hasDNNscore_FH1, title='hasDNNscore_FH1')
 
-            hasDNNscore_FH2 = bbGGKiller_ZeroL.refine("hasDNNscore_FH2", cut = op.in_range(0.25, output_WWGGIdentifier[0], 0.55))
+            hasDNNscore_FH2 = bbGGKiller_ZeroL.refine("hasDNNscore_FH2", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.8))
             yields_ZeroL.add(hasDNNscore_FH2, title='hasDNNscore_FH2')
 
-            hasDNNscore_FH3 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3", cut = op.in_range(0.55, output_WWGGIdentifier[0], 0.85))
+            hasDNNscore_FH3 = bbGGKiller_ZeroL.refine("hasDNNscore_FH3", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.9))
             yields_ZeroL.add(hasDNNscore_FH3, title='hasDNNscore_FH3')
 
-            hasDNNscore_FH4 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4", cut = output_WWGGIdentifier[0] > 0.85)
+            hasDNNscore_FH4 = bbGGKiller_ZeroL.refine("hasDNNscore_FH4", cut = output_WWGGIdentifier[0] > 0.9)
             yields_ZeroL.add(hasDNNscore_FH4, title='hasDNNscore_FH4')
             #=============================================================================================================
 
@@ -1065,18 +1065,32 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
             # #==================================================================================================================
 
-            hasDNNscore_FH1_x = hasZeroL.refine("hasDNNscore_FH1_x", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.55))
-            yields_ZeroL.add(hasDNNscore_FH1_x, title='hasDNNscore_FH1_x')
+            # hasDNNscore_FH1_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH1_x", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
+            # yields_ZeroL.add(hasDNNscore_FH1_x, title='hasDNNscore_FH1_x')
 
-            hasDNNscore_FH2_x = hasZeroL.refine("hasDNNscore_FH2_x", cut = op.in_range(0.55, output_WWGGIdentifier[0], 0.75))
+            hasDNNscore_FH2_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH2_x", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.75))
             yields_ZeroL.add(hasDNNscore_FH2_x, title='hasDNNscore_FH2_x')
 
-            hasDNNscore_FH3_x = hasZeroL.refine("hasDNNscore_FH3_x", cut = op.in_range(0.75, output_WWGGIdentifier[0], 0.9))
-            yields_ZeroL.add(hasDNNscore_FH3_x, title='hasDNNscore_FH3_x')
+            # hasDNNscore_FH3_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_x", cut = op.in_range(0.75, output_WWGGIdentifier[0], 0.9))
+            # yields_ZeroL.add(hasDNNscore_FH3_x, title='hasDNNscore_FH3_x')
 
-            hasDNNscore_FH4_x = hasZeroL.refine("hasDNNscore_FH4_x", cut = output_WWGGIdentifier[0] > 0.9)
+            hasDNNscore_FH4_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_x", cut = output_WWGGIdentifier[0] > 0.75)
             yields_ZeroL.add(hasDNNscore_FH4_x, title='hasDNNscore_FH4_x')
 
+            # #==================================================================================================================
+
+            hasDNNscore_FH1_y = bbGGKiller_ZeroL.refine("hasDNNscore_FH1_y", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.3))
+            yields_ZeroL.add(hasDNNscore_FH1_y, title='hasDNNscore_FH1_y')
+
+            hasDNNscore_FH2_y = bbGGKiller_ZeroL.refine("hasDNNscore_FH2_y", cut = op.in_range(0.3, output_WWGGIdentifier[0], 0.6))
+            yields_ZeroL.add(hasDNNscore_FH2_y, title='hasDNNscore_FH2_y')
+
+            # hasDNNscore_FH3_x = bbGGKiller_ZeroL.refine("hasDNNscore_FH3_x", cut = op.in_range(0.75, output_WWGGIdentifier[0], 0.9))
+            # yields_ZeroL.add(hasDNNscore_FH3_x, title='hasDNNscore_FH3_x')
+
+            hasDNNscore_FH4_y = bbGGKiller_ZeroL.refine("hasDNNscore_FH4_y", cut = output_WWGGIdentifier[0] > 0.6)
+            yields_ZeroL.add(hasDNNscore_FH4_y, title='hasDNNscore_FH4_y')
+           
             #=================================== hasTwoL & Two Taus =====================================
 
             # bbGGKiller_TwoL = hasTwoL.refine("bbGGKiller_TwoL", cut = output_bbGGKiller[0] < 0.8)
@@ -1122,10 +1136,15 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_135",mGG , hasDNNscore_FH3, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_135",mGG , hasDNNscore_FH4, EqB(20, 115.,135.), title = "m_{\gamma\gamma}"))
 
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_x",mGG , hasDNNscore_FH1_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            #plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_x",mGG , hasDNNscore_FH1_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_x",mGG , hasDNNscore_FH2_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_x",mGG , hasDNNscore_FH3_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+           # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_x",mGG , hasDNNscore_FH3_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_x",mGG , hasDNNscore_FH4_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+    
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_y",mGG , hasDNNscore_FH1_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_y",mGG , hasDNNscore_FH2_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+           # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_x",mGG , hasDNNscore_FH3_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_y",mGG , hasDNNscore_FH4_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             from bamboo.plots import Skim
             final_variables = {
