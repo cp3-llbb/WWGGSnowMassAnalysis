@@ -1058,14 +1058,14 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             yields_ZeroL.add(hasDNNscore_FH4, title='hasDNNscore_FH4')
             #=============================================================================================================
 
-            hasDNNscore_FH1_x = hasZeroL.refine("hasDNNscore_FH1_x", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.7))
+            hasDNNscore_FH1_x = hasZeroL.refine("hasDNNscore_FH1_x", cut = output_WWGGIdentifier[0] < 0.8)
             yields_ZeroL.add(hasDNNscore_FH1_x, title='hasDNNscore_FH1_x')
 
-            hasDNNscore_FH2_x = hasZeroL.refine("hasDNNscore_FH2_x", cut = op.in_range(0.7, output_WWGGIdentifier[0], 0.8))
+            hasDNNscore_FH2_x = hasZeroL.refine("hasDNNscore_FH2_x", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.95))
             yields_ZeroL.add(hasDNNscore_FH2_x, title='hasDNNscore_FH2_x')
 
-            hasDNNscore_FH3_x = hasZeroL.refine("hasDNNscore_FH3_x", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.95))
-            yields_ZeroL.add(hasDNNscore_FH3_x, title='hasDNNscore_FH3_x')
+            # hasDNNscore_FH3_x = hasZeroL.refine("hasDNNscore_FH3_x", cut = op.in_range(0.9, output_WWGGIdentifier[0], 0.95))
+            # yields_ZeroL.add(hasDNNscore_FH3_x, title='hasDNNscore_FH3_x')
 
             hasDNNscore_FH4_x = hasZeroL.refine("hasDNNscore_FH4_x", cut = output_WWGGIdentifier[0] > 0.95)
             yields_ZeroL.add(hasDNNscore_FH4_x, title='hasDNNscore_FH4_x')
@@ -1075,14 +1075,14 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             # bbGGKiller_ZeroL_y = hasZeroL.refine("bbGGKiller_ZeroL_y", cut = output_bbGGKiller[0] < 0.8)
             # yields_ZeroL.add(bbGGKiller_ZeroL_y, title='bbGGKiller_y') 
 
-            hasDNNscore_FH1_y = hasZeroL.refine("hasDNNscore_FH1_y", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.6))
+            hasDNNscore_FH1_y = hasZeroL.refine("hasDNNscore_FH1_y", cut = op.in_range(0.05, output_WWGGIdentifier[0], 0.8))
             yields_ZeroL.add(hasDNNscore_FH1_y, title='hasDNNscore_FH1_y')
 
-            hasDNNscore_FH2_y = hasZeroL.refine("hasDNNscore_FH2_y", cut = op.in_range(0.6, output_WWGGIdentifier[0], 0.8))
+            hasDNNscore_FH2_y = hasZeroL.refine("hasDNNscore_FH2_y", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.92))
             yields_ZeroL.add(hasDNNscore_FH2_y, title='hasDNNscore_FH2_y')
 
-            hasDNNscore_FH3_y = hasZeroL.refine("hasDNNscore_FH3_y", cut = op.in_range(0.8, output_WWGGIdentifier[0], 0.92))
-            yields_ZeroL.add(hasDNNscore_FH3_y, title='hasDNNscore_FH3_y')
+            # hasDNNscore_FH3_y = hasZeroL.refine("hasDNNscore_FH3_y", cut = op.in_range(0.9, output_WWGGIdentifier[0], 0.92))
+            # yields_ZeroL.add(hasDNNscore_FH3_y, title='hasDNNscore_FH3_y')
 
             hasDNNscore_FH4_y = hasZeroL.refine("hasDNNscore_FH4_y", cut = output_WWGGIdentifier[0] > 0.92)
             yields_ZeroL.add(hasDNNscore_FH4_y, title='hasDNNscore_FH4_y')
@@ -1092,17 +1092,20 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             # bbGGKiller_ZeroL_i = hasZeroL.refine("bbGGKiller_ZeroL_i", cut = output_bbGGKiller[0] < 0.6)
             # yields_ZeroL.add(bbGGKiller_ZeroL_i, title='bbGGKiller_i') 
 
-            hasDNNscore_FH1_i = hasZeroL.refine("hasDNNscore_FH1_i", cut = op.in_range(0.1, output_WWGGIdentifier[0], 0.75))
+            hasDNNscore_FH1_i = hasZeroL.refine("hasDNNscore_FH1_i", cut = op.in_range(0.075, output_WWGGIdentifier[0], 0.8))
             yields_ZeroL.add(hasDNNscore_FH1_i, title='hasDNNscore_FH1_i')
 
-            hasDNNscore_FH2_i = hasZeroL.refine("hasDNNscore_FH2_i", cut = op.in_range(0.75, output_WWGGIdentifier[0], 0.85))
-            yields_ZeroL.add(hasDNNscore_FH2_i, title='hasDNNscore_FH2_i')
+            hasDNNscore_FH1_j = hasZeroL.refine("hasDNNscore_FH1_j", cut = op.in_range(0.025, output_WWGGIdentifier[0], 0.8))
+            yields_ZeroL.add(hasDNNscore_FH1_j, title='hasDNNscore_FH1_j')
 
-            hasDNNscore_FH3_i = hasZeroL.refine("hasDNNscore_FH3_i", cut = op.in_range(0.85, output_WWGGIdentifier[0], 0.95))
-            yields_ZeroL.add(hasDNNscore_FH3_i, title='hasDNNscore_FH3_i')
+            # hasDNNscore_FH2_i = hasZeroL.refine("hasDNNscore_FH2_i", cut = op.in_range(0.75, output_WWGGIdentifier[0], 0.85))
+            # yields_ZeroL.add(hasDNNscore_FH2_i, title='hasDNNscore_FH2_i')
 
-            hasDNNscore_FH4_i = hasZeroL.refine("hasDNNscore_FH4_i", cut = output_WWGGIdentifier[0] > 0.95)
-            yields_ZeroL.add(hasDNNscore_FH4_i, title='hasDNNscore_FH4_i')
+            # hasDNNscore_FH3_i = hasZeroL.refine("hasDNNscore_FH3_i", cut = op.in_range(0.85, output_WWGGIdentifier[0], 0.95))
+            # yields_ZeroL.add(hasDNNscore_FH3_i, title='hasDNNscore_FH3_i')
+
+            # hasDNNscore_FH4_i = hasZeroL.refine("hasDNNscore_FH4_i", cut = output_WWGGIdentifier[0] > 0.95)
+            # yields_ZeroL.add(hasDNNscore_FH4_i, title='hasDNNscore_FH4_i')
 
             #============================================================================================
 
@@ -1144,12 +1147,12 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
 
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_x",mGG , hasDNNscore_FH1_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_x",mGG , hasDNNscore_FH2_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_x",mGG , hasDNNscore_FH3_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            #plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_x",mGG , hasDNNscore_FH3_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_x",mGG , hasDNNscore_FH4_x, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
     
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_y",mGG , hasDNNscore_FH1_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_y",mGG , hasDNNscore_FH2_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_y",mGG , hasDNNscore_FH3_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            #plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_y",mGG , hasDNNscore_FH3_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_y",mGG , hasDNNscore_FH4_y, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_z",mGG , hasDNNscore_FH1_z, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
@@ -1158,9 +1161,11 @@ class SnowmassExample(CMSPhase2SimRTBHistoModule):
             # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_z",mGG , hasDNNscore_FH4_z, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
             plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_i",mGG , hasDNNscore_FH1_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_i",mGG , hasDNNscore_FH2_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_i",mGG , hasDNNscore_FH3_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
-            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_i",mGG , hasDNNscore_FH4_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_2_i",mGG , hasDNNscore_FH2_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_3_i",mGG , hasDNNscore_FH3_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+            # plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_4_i",mGG , hasDNNscore_FH4_i, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
+
+            plots.append(Plot.make1D("Inv_mass_gghasZeroL_DNN_j",mGG , hasDNNscore_FH1_j, EqB(80, 100.,180.), title = "m_{\gamma\gamma}"))
 
 
             from bamboo.plots import Skim
