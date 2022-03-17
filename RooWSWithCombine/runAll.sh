@@ -1,13 +1,19 @@
 #!/bin/bash
+### set this up in CMSSW combine setup###
+
+###clean the area under your dir to have a clean run##
 rm -f *.root *.txt *.pdf
+### copy the input rootfiles and txt files to combine that were produced after running Florian's produceDataCards.py 
 cp /home/ucl/cp3/$3/bamboodev/DatacardProducer/DataCard2_FH/$1/*.txt .
 cp /home/ucl/cp3/$3/bamboodev/DatacardProducer/DataCard2_FH/$1/*.root .
+
+#### make the histograms in rootworkspace format, have the fits done and update the root files ### 
 python exampleHHWWgg.py
+
+####### these root files are updated in combine datacards produced from florian's script #####  
 source produceDataCards.sh $2
 
-
-### combination of various datacards## 
-
+### manual combination of various datacards here ### 
 
 combineCards.py bin1=Inv_mass_gghasOneL_DNN_1_HL.txt bin2=Inv_mass_gghasOneL_DNN_2_HL.txt bin3=Inv_mass_gghasOneL_DNN_3_HL.txt bin4=Inv_mass_gghasOneL_DNN_4_HL.txt  >& wwgg_oneL.txt
 combineCards.py bin1=wwgg_oneL.txt bin2=Inv_mass_gghasTwoL_HL.txt  >& wwgg.txt

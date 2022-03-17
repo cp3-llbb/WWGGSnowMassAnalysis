@@ -1,0 +1,8 @@
+After the combine setup (tried in CMSSW_10_X setup), in src: 
+1. have this directory copied. 
+2. Do : 
+>  ./runAll.sh outputdir_from_produceDataCards.py output_store_dir <username(sjain/sdonerta depending on who ran previous step)> 
+
+This runs the conversions, fits, combines the datacards and gives the results in output_store_dir
+
+Then in fit dir: the ipynb files runs the final fit plots to be put in paper. Two version with/without ratio plots are there. 
